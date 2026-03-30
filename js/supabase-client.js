@@ -107,6 +107,71 @@
     return data;
   }
 
+
+
+  async function updateSettings(userId, patch) {
+    const supabase = getClient();
+    const payload = { user_id: userId, ...patch };
+    const { error } = await supabase.from('user_settings').upsert(payload, { onConflict: 'user_id' });
+    if (error) throw error;
+    return getSettings(userId);
+  }
+
+  async function getLatestWeight(userId) {
+    const supabase = getClient();
+    const { data, error } = await supabase.from('weight_logs').select('*').eq('user_id', userId).order('logged_at', { ascending: false }).limit(1).maybeSingle();
+    if (error) throw error;
+    return data;
+  }
+
+  async function logWeight(userId, weight, note) {
+    const supabase = getClient();
+    const { error } = await supabase.from('weight_logs').insert({ user_id: userId, weight, note: note || null });
+    if (error) throw error;
+  }
+
+  async function getHydrationForDate(userId, dateStr) {
+    const supabase = getClient();
+    const start = `${dateStr}T00:00:00`;
+    const end = `${dateStr}T23:59:59.999`;
+    const { data, error } = await supabase.from('hydration_logs').select('amount_ml').eq('user_id', userId).gte('logged_at', start).lte('logged_at', end);
+    if (error) throw error;
+    return (data || []).reduce((sum, row) => sum + Number(row.amount_ml || 0), 0);
+  }
+
+  async function addHydration(userId, amountMl) {
+    const supabase = getClient();
+    const { error } = await supabase.from('hydration_logs').insert({ user_id: userId, amount_ml: amountMl });
+    if (error) throw error;
+  }
+
+  async function getOrCreateDailyCheckin(userId, dateStr) {
+    const supabase = getClient();
+    const { data, error } = await supabase.from('daily_checkins').select('*').eq('user_id', userId).eq('date', dateStr).maybeSingle();
+    if (error) throw error;
+    if (data) return data;
+    const { data: inserted, error: insertError } = await supabase.from('daily_checkins').insert({ user_id: userId, date: dateStr }).select('*').single();
+    if (insertError) throw insertError;
+    return inserted;
+  }
+
+  async function updateDailyCheckin(userId, dateStr, patch) {
+    const supabase = getClient();
+    await getOrCreateDailyCheckin(userId, dateStr);
+    const { error } = await supabase.from('daily_checkins').update(patch).eq('user_id', userId).eq('date', dateStr);
+    if (error) throw error;
+    const { data, error: reloadError } = await supabase.from('daily_checkins').select('*').eq('user_id', userId).eq('date', dateStr).single();
+    if (reloadError) throw reloadError;
+    return data;
+  }
+
+  async function getLatestBadges(userId, limit = 3) {
+    const supabase = getClient();
+    const { data, error } = await supabase.from('user_badges').select('*').eq('user_id', userId).order('earned_at', { ascending: false }).limit(limit);
+    if (error) throw error;
+    return data || [];
+  }
+
   async function completeOnboarding(userId, profilePatch, settingsPatch) {
     const supabase = getClient();
     const { error: profileError } = await supabase.from('profiles').update({ ...profilePatch, onboarding_complete: true }).eq('id', userId);
@@ -141,6 +206,14 @@
     ensureUserSettings,
     getProfile,
     getSettings,
+    updateSettings,
+    getLatestWeight,
+    logWeight,
+    getHydrationForDate,
+    addHydration,
+    getOrCreateDailyCheckin,
+    updateDailyCheckin,
+    getLatestBadges,
     completeOnboarding,
     authRedirect
   };

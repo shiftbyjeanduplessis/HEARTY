@@ -3,95 +3,204 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hearty App Shell</title>
+  <title>Hearty App</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/auth.css" />
+  <link rel="stylesheet" href="css/app.css" />
 </head>
-<body>
-  <div class="topbar"><div class="topbar-inner"><a class="logo" href="index.html"><div class="logo-heart">❤</div><div><div>Hearty</div><span class="logo-sub">GLP-1 Companion</span></div></a><div class="nav"><a href="index.html">Public site</a><button class="button secondary" id="logout-button">Log out</button></div></div></div>
-  <main class="shell">
-    <div class="shell-header">
-      <div class="shell-title"><h1 id="hello-title">Welcome back</h1><p id="hello-sub">Loading your app shell...</p></div>
-      <div class="app-actions"><a href="HOME.html" class="button secondary">Open original Home</a><a href="MEALS.html" class="button secondary">Open original Meals</a></div>
+<body class="app-body">
+  <main class="app-shell">
+    <div class="app-top">
+      <a class="brand" href="index.html">
+        <div class="brand-heart">❤</div>
+        <div>
+          <div class="brand-title">Hearty</div>
+          <div class="brand-sub">GLP-1 Companion</div>
+        </div>
+      </a>
+      <div class="top-actions">
+        <a href="index.html" class="app-button-secondary">Public site</a>
+        <button id="logout-button" class="app-button-secondary">Log out</button>
+      </div>
     </div>
-    <div class="layout">
-      <aside class="sidebar">
-        <div class="menu">
-          <button class="active" data-view="home">Home</button>
-          <button data-view="meals">Meals</button>
-          <button data-view="progress">Progress</button>
-          <button data-view="settings">Settings</button>
+
+    <div id="app-notice" class="notice"></div>
+
+    <section id="home-screen" data-screen="home" class="stack">
+      <div class="main-grid">
+        <div class="stack">
+          <section class="card hero-card">
+            <div class="hero-copy">
+              <div class="eyebrow"><span class="eyebrow-dot"></span><span id="today-date">Today</span></div>
+              <h1 id="hello-title">Welcome back</h1>
+              <p id="hello-sub">Loading your daily dashboard...</p>
+            </div>
+            <div class="ring-wrap">
+              <svg width="112" height="112" viewBox="0 0 112 112">
+                <circle cx="56" cy="56" r="50" fill="none" stroke="#dce7f6" stroke-width="12"></circle>
+                <circle id="ring-progress" cx="56" cy="56" r="50" fill="none" stroke="url(#ringGradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 314.159"></circle>
+                <defs>
+                  <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#2563eb"></stop>
+                    <stop offset="100%" stop-color="#0d9488"></stop>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="ring-center"><strong id="ring-percent">0%</strong><span>Complete</span></div>
+            </div>
+          </section>
+
+          <section class="kpi-grid">
+            <div class="card kpi-card">
+              <div class="kpi-label">Latest weight</div>
+              <div class="kpi-value" id="weight-value">—</div>
+              <div class="kpi-note" id="weight-note">Loading</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">Hydration today</div>
+              <div class="kpi-value" id="hydration-total">0 ml</div>
+              <div class="kpi-note" id="hydration-target-text">3000 ml target</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">Theme</div>
+              <div class="kpi-value" id="theme-value">clean</div>
+              <div class="kpi-note">Loaded from profile</div>
+            </div>
+            <div class="card kpi-card">
+              <div class="kpi-label">Account</div>
+              <div class="kpi-value" style="font-size:1rem" id="session-email">—</div>
+              <div class="kpi-note">Protected session</div>
+            </div>
+          </section>
+
+          <section class="card pad">
+            <div class="section-head">
+              <div>
+                <h2>Today’s checklist</h2>
+                <p>Keep the essentials visible. Four simple wins.</p>
+              </div>
+            </div>
+            <div class="task-list">
+              <div class="task-item">
+                <div class="task-left"><div class="task-icon">⚖</div><div class="task-meta"><strong>Morning weigh-in</strong><span>Log your scale weight for today.</span></div></div>
+                <button id="task-weigh" class="task-toggle">Mark done</button>
+              </div>
+              <div class="task-item">
+                <div class="task-left"><div class="task-icon">🚶</div><div class="task-meta"><strong>20–30 minute walk</strong><span>Gentle movement still counts.</span></div></div>
+                <button id="task-walk" class="task-toggle">Mark done</button>
+              </div>
+              <div class="task-item">
+                <div class="task-left"><div class="task-icon">📘</div><div class="task-meta"><strong>Today’s lesson</strong><span>Complete your daily GLP-1 lesson.</span></div></div>
+                <button id="task-lesson" class="task-toggle">Mark done</button>
+              </div>
+              <div class="task-item">
+                <div class="task-left"><div class="task-icon">💧</div><div class="task-meta"><strong>Hydration target</strong><span id="hydration-note">Keep going.</span></div></div>
+                <div style="min-width:110px;text-align:right;font-weight:800;color:#0d9488">Water</div>
+              </div>
+            </div>
+          </section>
         </div>
-      </aside>
-      <section class="panel">
-        <div class="kpi-grid">
-          <div class="kpi"><span>Session</span><strong id="session-email">—</strong></div>
-          <div class="kpi"><span>Theme</span><strong id="theme-value">Clean</strong></div>
-          <div class="kpi"><span>Onboarding</span><strong>Done</strong></div>
+
+        <div class="stack">
+          <section class="card pad">
+            <div class="section-head">
+              <div>
+                <h3>Daily weigh-in</h3>
+                <p>Weigh yourself first thing in the morning, before eating or drinking.</p>
+              </div>
+            </div>
+            <form id="weight-form" class="inline-form">
+              <div class="field">
+                <label for="weight-input">Weight (kg)</label>
+                <input id="weight-input" type="number" step="0.1" min="0" placeholder="98.4" required>
+              </div>
+              <div class="field">
+                <label for="weight-note-input">Note</label>
+                <input id="weight-note-input" type="text" placeholder="Optional note">
+              </div>
+              <button class="app-button" type="submit">Save weight</button>
+            </form>
+          </section>
+
+          <section class="card pad">
+            <div class="section-head">
+              <div>
+                <h3>Hydration</h3>
+                <p>Quick add your water. Your target updates from your latest weight.</p>
+              </div>
+            </div>
+            <div style="height:10px;background:#deebfb;border-radius:999px;overflow:hidden;margin-bottom:14px"><div id="hydration-bar" style="height:100%;width:0;background:linear-gradient(90deg,#2563eb,#0d9488);border-radius:999px"></div></div>
+            <div class="inline-form" style="margin-bottom:10px">
+              <button id="water-250" type="button" class="app-button-secondary">+250 ml</button>
+              <button id="water-500" type="button" class="app-button-secondary">+500 ml</button>
+            </div>
+            <form id="water-custom-form" class="inline-form">
+              <div class="field">
+                <label for="water-custom-input">Custom amount (ml)</label>
+                <input id="water-custom-input" type="number" min="1" placeholder="750">
+              </div>
+              <button class="app-button" type="submit">Add water</button>
+            </form>
+          </section>
+
+          <section class="card pad">
+            <div class="section-head">
+              <div>
+                <h3>Support Mode</h3>
+                <p id="support-status">Support Mode is off</p>
+              </div>
+            </div>
+            <div class="support-grid">
+              <button class="support-chip" data-type="nausea">Nausea</button>
+              <button class="support-chip" data-type="fatigue">Fatigue</button>
+              <button class="support-chip" data-type="bloating">Bloating</button>
+              <button class="support-chip" data-type="low appetite">Low appetite</button>
+              <button class="support-chip" id="support-off" type="button">Switch off</button>
+            </div>
+          </section>
+
+          <section class="card pad">
+            <div class="section-head">
+              <div>
+                <h3>Latest badges</h3>
+                <p>Your three newest wins appear here.</p>
+              </div>
+            </div>
+            <div id="badge-list" class="badges"></div>
+          </section>
         </div>
-        <div id="view-home" class="view">
-          <div class="panel-grid">
-            <div class="tile"><h3>Home wiring</h3><p>This is where the real daily experience will live: weigh-in, hydration, support mode, badges, and today’s lesson.</p></div>
-            <div class="tile"><h3>Next build target</h3><p>Wire weight logs, hydration logs, daily check-ins, and meal plans into Supabase next.</p></div>
-          </div>
-        </div>
-        <div id="view-meals" class="view hidden">
-          <div class="tile"><h3>Meals</h3><p>Use this shell to start replacing standalone MEALS.html with a real data-driven page.</p><div class="app-actions"><a class="button secondary" href="MEALS.html">Open current Meals page</a></div></div>
-        </div>
-        <div id="view-progress" class="view hidden">
-          <div class="tile"><h3>Progress</h3><p>Next wire-up target: weight graph, progress photos, and badges cabinet.</p><div class="app-actions"><a class="button secondary" href="PROGRESS.html">Open current Progress page</a></div></div>
-        </div>
-        <div id="view-settings" class="view hidden">
-          <div class="tile"><h3>Settings snapshot</h3><div id="settings-lines"></div></div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
+
+    <section data-screen="meals" class="card pad hidden">
+      <div class="section-head"><div><h2>Meals next</h2><p>This shell is ready for the real meals planner. Your original standalone page is still included in the zip.</p></div></div>
+      <a href="MEALS.html" class="app-button-secondary">Open existing Meals page</a>
+    </section>
+
+    <section data-screen="progress" class="card pad hidden">
+      <div class="section-head"><div><h2>Progress next</h2><p>Next wire-up target: graph, photo timeline, and badges cabinet.</p></div></div>
+      <a href="PROGRESS.html" class="app-button-secondary">Open existing Progress page</a>
+    </section>
+
+    <section data-screen="settings" class="card pad hidden">
+      <div class="section-head"><div><h2>Settings snapshot</h2><p>Loaded live from Supabase.</p></div></div>
+      <div id="settings-lines"></div>
+    </section>
   </main>
+
+  <nav class="bottom-nav">
+    <div class="bottom-nav-inner">
+      <button class="nav-btn active" data-view="home"><span>⌂</span><span>Home</span></button>
+      <button class="nav-btn" data-view="meals"><span>🍽</span><span>Meals</span></button>
+      <button class="nav-btn" data-view="progress"><span>📈</span><span>Progress</span></button>
+      <button class="nav-btn" data-view="settings"><span>⚙</span><span>Settings</span></button>
+    </div>
+  </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js"></script>
   <script src="js/supabase-client.js"></script>
-  <script>
-    const buttons = Array.from(document.querySelectorAll('[data-view]'));
-    const views = Array.from(document.querySelectorAll('.view'));
-    buttons.forEach((button) => {
-      button.addEventListener('click', () => {
-        buttons.forEach((b) => b.classList.remove('active'));
-        views.forEach((view) => view.classList.add('hidden'));
-        button.classList.add('active');
-        document.getElementById('view-' + button.dataset.view).classList.remove('hidden');
-      });
-    });
-
-    document.getElementById('logout-button').addEventListener('click', async () => {
-      await window.HEARTY.signOut();
-      window.location.href = 'login.html';
-    });
-
-    (async function () {
-      try {
-        const result = await window.HEARTY.authRedirect();
-        if (!result) return;
-        const user = result.session.user;
-        const profile = result.profile;
-        const settings = await window.HEARTY.getSettings(user.id);
-        document.getElementById('hello-title').textContent = `Welcome back, ${profile.full_name || 'there'}`;
-        document.getElementById('hello-sub').textContent = 'This protected shell confirms auth, profile load, settings load, and onboarding gating are all working.';
-        document.getElementById('session-email').textContent = user.email || '—';
-        document.getElementById('theme-value').textContent = profile.theme || 'clean';
-        const lines = [];
-        if (settings) {
-          for (const [key, value] of Object.entries(settings)) {
-            if (key === 'user_id') continue;
-            lines.push(`<div class="stat-line"><span>${key}</span><strong>${value === null ? '—' : value}</strong></div>`);
-          }
-        }
-        document.getElementById('settings-lines').innerHTML = lines.join('') || '<p>No settings returned yet.</p>';
-      } catch (error) {
-        document.querySelector('.panel').innerHTML = `<div class="notice show error">${error.message}</div>`;
-      }
-    })();
-  </script>
+  <script src="js/home.js"></script>
 </body>
 </html>
