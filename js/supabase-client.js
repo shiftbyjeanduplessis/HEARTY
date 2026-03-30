@@ -78,13 +78,13 @@
     }
 
     const payload = {
-      id: user.id,
-      email: user.email,
-      full_name: fullName || user.user_metadata?.full_name || '',
-      account_type: 'consumer',
-      access_level: 'pending',
-      tester_flag: false,
-      source: 'app_signup'
+  id: user.id,
+  email: user.email,
+  full_name: fullName || user.user_metadata?.full_name || '',
+  account_type: 'user',
+  tester_flag: false,
+  source: 'app_signup'
+};
     };
     const { error } = await supabase.from('profiles').insert(payload);
     if (error) throw error;
