@@ -3,6 +3,7 @@
     session: null,
     profile: null,
     settings: null,
+    access: null,
     today: new Date().toISOString().slice(0,10),
     hydrationTarget: 3000,
     hydrationToday: 0,
@@ -52,7 +53,8 @@
     q('ring-percent').textContent = `${percent}%`;
     q('today-date').textContent = fmtDate(state.today);
     q('session-email').textContent = state.session?.user?.email || '—';
-    q('theme-value').textContent = state.profile?.theme || 'clean';
+    q('theme-value').textContent = state.settings?.theme || 'clean';
+    q('access-value').textContent = state.access?.hasAccess ? 'Active' : 'Pending';
     q('support-status').textContent = supportTitle();
     q('hydration-target-text').textContent = `${state.hydrationTarget} ml target`;
     q('hydration-total').textContent = `${state.hydrationToday} ml`;
@@ -78,7 +80,8 @@
       ['Dietary mode', state.settings?.dietary_mode ?? '—'],
       ['Exercise mode', state.settings?.exercise_mode ?? '—'],
       ['Units', state.settings?.units ?? '—'],
-      ['Leftovers', state.settings?.leftovers_enabled ? 'On' : 'Off']
+      ['Leftovers', state.settings?.leftovers_enabled ? 'On' : 'Off'],
+      ['Access level', state.profile?.access_level || 'pending']
     ].map(([k,v])=>`<div class="stat-line"><span>${k}</span><strong>${v}</strong></div>`).join('');
     const badgeWrap = q('badge-list');
     if (!state.badges.length){
@@ -97,6 +100,7 @@
     state.session = await window.HEARTY.getSession();
     state.profile = await window.HEARTY.getProfile(state.session.user.id);
     state.settings = await window.HEARTY.getSettings(state.session.user.id);
+    state.access = await window.HEARTY.getAccessState(state.session.user.id);
     state.latestWeight = await window.HEARTY.getLatestWeight(state.session.user.id);
     state.hydrationToday = await window.HEARTY.getHydrationForDate(state.session.user.id, state.today);
     state.checkin = await window.HEARTY.getOrCreateDailyCheckin(state.session.user.id, state.today);

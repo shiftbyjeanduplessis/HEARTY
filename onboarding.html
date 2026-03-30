@@ -58,7 +58,9 @@
           return;
         }
         const profile = await window.HEARTY.getProfile(session.user.id);
-        if (profile && profile.onboarding_complete) {
+        let settings = await window.HEARTY.getSettings(session.user.id);
+        if (!settings) settings = await window.HEARTY.ensureUserSettings(session.user.id);
+        if (settings && settings.onboarding_complete) {
           window.location.href = 'app.html';
         }
       } catch (error) {
@@ -76,14 +78,15 @@
         if (!session) throw new Error('No active session found.');
         await window.HEARTY.completeOnboarding(
           session.user.id,
-          { theme: document.getElementById('theme').value },
+          {},
           {
             starting_weight: Number(document.getElementById('starting_weight').value),
             target_weight: Number(document.getElementById('target_weight').value),
             meal_frequency: Number(document.getElementById('meal_frequency').value),
             leftovers_enabled: document.getElementById('leftovers_enabled').checked,
             dietary_mode: document.getElementById('dietary_mode').value,
-            exercise_mode: document.getElementById('exercise_mode').value
+            exercise_mode: document.getElementById('exercise_mode').value,
+            theme: document.getElementById('theme').value
           }
         );
         window.location.href = 'app.html';

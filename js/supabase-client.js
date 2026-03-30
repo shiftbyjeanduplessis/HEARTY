@@ -28,9 +28,7 @@
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: { full_name: fullName }
-      }
+      options: { data: { full_name: fullName } }
     });
     if (error) throw error;
     return data;
@@ -65,22 +63,42 @@
 
   async function ensureProfile(user, fullName) {
     const supabase = getClient();
+    const existing = await getProfile(user.id);
+    if (existing) {
+      const patch = {};
+      if (!existing.email && user.email) patch.email = user.email;
+      if ((!existing.full_name || existing.full_name.trim() === '') && (fullName || user.user_metadata?.full_name)) {
+        patch.full_name = fullName || user.user_metadata?.full_name || '';
+      }
+      if (Object.keys(patch).length) {
+        const { error } = await supabase.from('profiles').update(patch).eq('id', user.id);
+        if (error) throw error;
+      }
+      return getProfile(user.id);
+    }
+
     const payload = {
       id: user.id,
       email: user.email,
       full_name: fullName || user.user_metadata?.full_name || '',
-      theme: 'clean',
-      onboarding_complete: false
+      account_type: 'consumer',
+      access_level: 'pending',
+      tester_flag: false,
+      source: 'app_signup'
     };
-    const { error } = await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
+    const { error } = await supabase.from('profiles').insert(payload);
     if (error) throw error;
+    return getProfile(user.id);
   }
 
   async function ensureUserSettings(userId) {
     const supabase = getClient();
     const payload = {
       user_id: userId,
+      onboarding_complete: false,
+      theme: 'clean',
       target_weight: null,
+      starting_weight: null,
       meal_frequency: 3,
       leftovers_enabled: false,
       dietary_mode: 'balanced',
@@ -91,6 +109,7 @@
     };
     const { error } = await supabase.from('user_settings').upsert(payload, { onConflict: 'user_id' });
     if (error) throw error;
+    return getSettings(userId);
   }
 
   async function getProfile(userId) {
@@ -107,14 +126,47 @@
     return data;
   }
 
-
-
   async function updateSettings(userId, patch) {
     const supabase = getClient();
     const payload = { user_id: userId, ...patch };
     const { error } = await supabase.from('user_settings').upsert(payload, { onConflict: 'user_id' });
     if (error) throw error;
     return getSettings(userId);
+  }
+
+  async function getActiveAccessGrant(userId) {
+    const supabase = getClient();
+    const now = new Date().toISOString();
+    const { data, error } = await supabase
+      .from('access_grants')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .or(`end_date.is.null,end_date.gte.${now}`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error && !String(error.message || '').toLowerCase().includes('does not exist')) throw error;
+    return data || null;
+  }
+
+  function hasProfileAccess(profile, grant) {
+    if (!profile) return false;
+    if (profile.tester_flag) return true;
+    if (grant) return true;
+    if (profile.access_expires_at && new Date(profile.access_expires_at).getTime() > Date.now()) return true;
+    if (['active', 'tester', 'admin', 'owner', 'staff'].includes(String(profile.access_level || '').toLowerCase())) return true;
+    return false;
+  }
+
+  async function getAccessState(userId) {
+    const profile = await getProfile(userId);
+    const grant = await getActiveAccessGrant(userId);
+    return {
+      profile,
+      grant,
+      hasAccess: hasProfileAccess(profile, grant)
+    };
   }
 
   async function getLatestWeight(userId) {
@@ -174,9 +226,11 @@
 
   async function completeOnboarding(userId, profilePatch, settingsPatch) {
     const supabase = getClient();
-    const { error: profileError } = await supabase.from('profiles').update({ ...profilePatch, onboarding_complete: true }).eq('id', userId);
-    if (profileError) throw profileError;
-    const { error: settingsError } = await supabase.from('user_settings').upsert({ user_id: userId, ...settingsPatch }, { onConflict: 'user_id' });
+    if (profilePatch && Object.keys(profilePatch).length) {
+      const { error: profileError } = await supabase.from('profiles').update(profilePatch).eq('id', userId);
+      if (profileError) throw profileError;
+    }
+    const { error: settingsError } = await supabase.from('user_settings').upsert({ user_id: userId, onboarding_complete: true, ...settingsPatch }, { onConflict: 'user_id' });
     if (settingsError) throw settingsError;
   }
 
@@ -186,12 +240,14 @@
       window.location.href = 'login.html';
       return null;
     }
-    const profile = await getProfile(session.user.id);
-    if (!profile || !profile.onboarding_complete) {
+    let settings = await getSettings(session.user.id);
+    if (!settings) settings = await ensureUserSettings(session.user.id);
+    if (!settings.onboarding_complete) {
       window.location.href = 'onboarding.html';
       return null;
     }
-    return { session, profile };
+    const access = await getAccessState(session.user.id);
+    return { session, settings, access };
   }
 
   window.HEARTY = {
@@ -207,6 +263,8 @@
     getProfile,
     getSettings,
     updateSettings,
+    getActiveAccessGrant,
+    getAccessState,
     getLatestWeight,
     logWeight,
     getHydrationForDate,

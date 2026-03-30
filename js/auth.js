@@ -20,6 +20,7 @@ function setLoading(button, isLoading, loadingText) {
 async function redirectAfterLogin() {
   const session = await window.HEARTY.getSession();
   if (!session) return;
-  const profile = await window.HEARTY.getProfile(session.user.id);
-  window.location.href = profile && profile.onboarding_complete ? 'app.html' : 'onboarding.html';
+  let settings = await window.HEARTY.getSettings(session.user.id);
+  if (!settings) settings = await window.HEARTY.ensureUserSettings(session.user.id);
+  window.location.href = settings && settings.onboarding_complete ? 'app.html' : 'onboarding.html';
 }
