@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hearty Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="topbar"><div class="topbar-inner"><a class="logo" href="index.html"><div class="logo-heart">❤</div><div><div>Hearty</div><span class="logo-sub">GLP-1 Companion</span></div></a><div class="nav"><a href="index.html">Back to site</a><a href="signup.html" class="button secondary">Create account</a></div></div></div>
+  <main class="container">
+    <div class="auth-grid">
+      <section class="card hero-card">
+        <div class="kicker">Login</div>
+        <h1>Welcome back to your GLP-1 companion.</h1>
+        <p>Log in to pick up where you left off: hydration, meals, side effects, daily weigh-ins, and your progress dashboard.</p>
+        <div class="badge-row">
+          <div class="badge"><strong>Home</strong><span>Tasks, water, weigh-in</span></div>
+          <div class="badge"><strong>Meals</strong><span>Support Mode food swaps</span></div>
+          <div class="badge"><strong>Progress</strong><span>Weight trends and badges</span></div>
+        </div>
+      </section>
+      <section class="card form-card">
+        <h2>Log in</h2>
+        <p class="sub">Use the email and password you created for Hearty.</p>
+        <form id="login-form">
+          <div class="field"><label class="label" for="email">Email</label><input class="input" type="email" id="email" required /></div>
+          <div class="field"><label class="label" for="password">Password</label><input class="input" type="password" id="password" required /></div>
+          <button id="login-button" class="button primary full" type="submit">Log in</button>
+          <div id="login-notice" class="notice"></div><p class="footer-copy"><a href="forgot-password.html" style="color:var(--brand);font-weight:700">Forgot password?</a></p>
+        </form>
+        <div class="list">
+          <div class="list-item"><div class="check">✓</div><div><b>Protected app access</b><div class="meta">Users who are not logged in will be redirected to login.</div></div></div>
+          <div class="list-item"><div class="check">✓</div><div><b>Onboarding-aware routing</b><div class="meta">If setup is incomplete, Hearty sends the user to onboarding first.</div></div></div>
+        </div>
+        <p class="footer-copy">Need an account? <a href="signup.html" style="color:var(--brand);font-weight:700">Create one here</a>.</p>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (async function(){
+      try { if (window.HEARTY.hasConfig) await redirectAfterLogin(); } catch (e) {}
+    })();
+    document.getElementById('login-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearNotice('login-notice');
+      const button = document.getElementById('login-button');
+      try {
+        setLoading(button, true, 'Logging in...');
+        await window.HEARTY.signIn({
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value
+        });
+        await redirectAfterLogin();
+      } catch (error) {
+        showNotice('login-notice', error.message || 'Unable to log in right now.');
+      } finally {
+        setLoading(button, false, 'Logging in...');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+
+:root{
+  --bg:#f4f8ff;--card:#ffffff;--line:rgba(100,140,190,.18);--ink:#1e3a5f;--muted:#60758f;
+  --brand:#2563eb;--brand2:#0d9488;--cta:#f97316;--cta2:#ea6c0a;--ok:#0f766e;--danger:#b91c1c;
+  --shadow:0 20px 55px rgba(14,31,53,.10);
+  --radius:24px;--font:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0;font-family:var(--font);color:var(--ink)}
+body{background:radial-gradient(900px 400px at 15% -5%,rgba(37,99,235,.07),transparent 55%),radial-gradient(700px 350px at 90% 5%,rgba(249,115,22,.05),transparent 50%),linear-gradient(180deg,#fafcff,#f0f7ff);min-height:100vh}
+a{text-decoration:none;color:inherit}
+.topbar{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line);z-index:10}
+.topbar-inner{max-width:1120px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800}
+.logo-heart{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:flex;align-items:center;justify-content:center;color:#fff}
+.logo-sub{display:block;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+.nav{display:flex;align-items:center;gap:14px}
+.nav a{font-size:14px;color:var(--muted);font-weight:600}
+.nav .button.secondary{padding:10px 16px}
+.container{max-width:1120px;margin:0 auto;padding:40px 20px 60px}
+.auth-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:start}
+.card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
+.hero-card{padding:34px;background:linear-gradient(160deg,#1e3a5f 0%,#1d4ed8 100%);color:#fff}
+.hero-card h1{font-size:clamp(32px,5vw,54px);line-height:1.04;letter-spacing:-.04em;margin:0 0 12px}
+.hero-card p{margin:0;color:rgba(255,255,255,.76);line-height:1.7}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border:1px solid rgba(255,255,255,.15);padding:7px 12px;border-radius:999px;margin-bottom:18px;color:#7dd3fc;background:rgba(255,255,255,.08)}
+.badge-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+.badge{padding:14px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.badge strong{display:block;font-size:20px}
+.badge span{display:block;font-size:12px;color:rgba(255,255,255,.7);margin-top:4px}
+.form-card h2{font-size:34px;letter-spacing:-.04em;line-height:1.05;margin:0 0 8px}
+.sub{color:var(--muted);line-height:1.7;margin:0 0 22px}
+.field{margin-bottom:16px}
+.label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}
+.input,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:16px;padding:14px 15px;font-size:15px;outline:none}
+.input:focus,select:focus{border-color:var(--brand);box-shadow:0 0 0 4px rgba(37,99,235,.10)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:14px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer}
+.button.primary{background:linear-gradient(180deg,var(--cta),var(--cta2));color:#fff;box-shadow:0 8px 24px rgba(249,115,22,.28)}
+.button.secondary{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.button.full{width:100%}
+.meta{font-size:13px;color:var(--muted)}
+.notice{margin-top:14px;padding:12px 14px;border-radius:14px;font-size:14px;display:none}
+.notice.show{display:block}.notice.error{background:#fef2f2;color:var(--danger);border:1px solid #fecaca}.notice.success{background:#ecfdf5;color:var(--ok);border:1px solid #a7f3d0}
+.list{display:grid;gap:12px;margin-top:18px}
+.list-item{display:flex;align-items:flex-start;gap:12px;padding:14px;border-radius:18px;background:#f8fbff;border:1px solid var(--line)}
+.list-item b{display:block;margin-bottom:4px}
+.check{width:22px;height:22px;border-radius:8px;background:#eff6ff;color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:0 0 auto}
+.footer-copy{margin-top:18px;font-size:12px;color:var(--muted)}
+.shell{max-width:1180px;margin:0 auto;padding:22px 18px 90px}.shell-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.shell-title h1{font-size:34px;letter-spacing:-.04em;margin:0 0 5px}.shell-title p{margin:0;color:var(--muted)}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:18px}.sidebar,.panel{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+.sidebar{padding:16px;position:sticky;top:84px;height:fit-content}.panel{padding:22px}
+.menu{display:grid;gap:8px}.menu button{border:none;background:#fff;padding:14px 16px;border-radius:16px;text-align:left;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;border:1px solid transparent}.menu button.active{background:#eff6ff;border-color:rgba(37,99,235,.18);color:var(--brand)}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}.kpi{padding:18px;border-radius:18px;background:#f8fbff;border:1px solid var(--line)}
+.kpi span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px}.kpi strong{font-size:28px;letter-spacing:-.04em}
+.panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.tile{padding:18px;border-radius:18px;background:#fff;border:1px solid var(--line)}
+.tile h3{margin:0 0 8px;font-size:18px}.tile p{margin:0;color:var(--muted);line-height:1.7}.stat-line{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.stat-line:last-child{border-bottom:none}
+.app-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.hidden{display:none}
+@media (max-width: 900px){.auth-grid,.layout,.panel-grid,.row,.badge-row,.kpi-grid{grid-template-columns:1fr}.sidebar{position:static}.nav{gap:10px}.nav a:not(.button){display:none}}

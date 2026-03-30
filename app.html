@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hearty App Shell</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="topbar"><div class="topbar-inner"><a class="logo" href="index.html"><div class="logo-heart">❤</div><div><div>Hearty</div><span class="logo-sub">GLP-1 Companion</span></div></a><div class="nav"><a href="index.html">Public site</a><button class="button secondary" id="logout-button">Log out</button></div></div></div>
+  <main class="shell">
+    <div class="shell-header">
+      <div class="shell-title"><h1 id="hello-title">Welcome back</h1><p id="hello-sub">Loading your app shell...</p></div>
+      <div class="app-actions"><a href="HOME.html" class="button secondary">Open original Home</a><a href="MEALS.html" class="button secondary">Open original Meals</a></div>
+    </div>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="menu">
+          <button class="active" data-view="home">Home</button>
+          <button data-view="meals">Meals</button>
+          <button data-view="progress">Progress</button>
+          <button data-view="settings">Settings</button>
+        </div>
+      </aside>
+      <section class="panel">
+        <div class="kpi-grid">
+          <div class="kpi"><span>Session</span><strong id="session-email">—</strong></div>
+          <div class="kpi"><span>Theme</span><strong id="theme-value">Clean</strong></div>
+          <div class="kpi"><span>Onboarding</span><strong>Done</strong></div>
+        </div>
+        <div id="view-home" class="view">
+          <div class="panel-grid">
+            <div class="tile"><h3>Home wiring</h3><p>This is where the real daily experience will live: weigh-in, hydration, support mode, badges, and today’s lesson.</p></div>
+            <div class="tile"><h3>Next build target</h3><p>Wire weight logs, hydration logs, daily check-ins, and meal plans into Supabase next.</p></div>
+          </div>
+        </div>
+        <div id="view-meals" class="view hidden">
+          <div class="tile"><h3>Meals</h3><p>Use this shell to start replacing standalone MEALS.html with a real data-driven page.</p><div class="app-actions"><a class="button secondary" href="MEALS.html">Open current Meals page</a></div></div>
+        </div>
+        <div id="view-progress" class="view hidden">
+          <div class="tile"><h3>Progress</h3><p>Next wire-up target: weight graph, progress photos, and badges cabinet.</p><div class="app-actions"><a class="button secondary" href="PROGRESS.html">Open current Progress page</a></div></div>
+        </div>
+        <div id="view-settings" class="view hidden">
+          <div class="tile"><h3>Settings snapshot</h3><div id="settings-lines"></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    const buttons = Array.from(document.querySelectorAll('[data-view]'));
+    const views = Array.from(document.querySelectorAll('.view'));
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        buttons.forEach((b) => b.classList.remove('active'));
+        views.forEach((view) => view.classList.add('hidden'));
+        button.classList.add('active');
+        document.getElementById('view-' + button.dataset.view).classList.remove('hidden');
+      });
+    });
+
+    document.getElementById('logout-button').addEventListener('click', async () => {
+      await window.HEARTY.signOut();
+      window.location.href = 'login.html';
+    });
+
+    (async function () {
+      try {
+        const result = await window.HEARTY.authRedirect();
+        if (!result) return;
+        const user = result.session.user;
+        const profile = result.profile;
+        const settings = await window.HEARTY.getSettings(user.id);
+        document.getElementById('hello-title').textContent = `Welcome back, ${profile.full_name || 'there'}`;
+        document.getElementById('hello-sub').textContent = 'This protected shell confirms auth, profile load, settings load, and onboarding gating are all working.';
+        document.getElementById('session-email').textContent = user.email || '—';
+        document.getElementById('theme-value').textContent = profile.theme || 'clean';
+        const lines = [];
+        if (settings) {
+          for (const [key, value] of Object.entries(settings)) {
+            if (key === 'user_id') continue;
+            lines.push(`<div class="stat-line"><span>${key}</span><strong>${value === null ? '—' : value}</strong></div>`);
+          }
+        }
+        document.getElementById('settings-lines').innerHTML = lines.join('') || '<p>No settings returned yet.</p>';
+      } catch (error) {
+        document.querySelector('.panel').innerHTML = `<div class="notice show error">${error.message}</div>`;
+      }
+    })();
+  </script>
+</body>
+</html>

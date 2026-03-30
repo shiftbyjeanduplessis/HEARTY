@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hearty Signup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="topbar"><div class="topbar-inner"><a class="logo" href="index.html"><div class="logo-heart">❤</div><div><div>Hearty</div><span class="logo-sub">GLP-1 Companion</span></div></a><div class="nav"><a href="index.html">Back to site</a><a href="login.html" class="button secondary">Login</a></div></div></div>
+  <main class="container">
+    <div class="auth-grid">
+      <section class="card hero-card">
+        <div class="kicker">Founding user access</div>
+        <h1>Start your Hearty account.</h1>
+        <p>Create the user, save the profile, create default settings, and send the user straight into onboarding.</p>
+        <div class="badge-row">
+          <div class="badge"><strong>Profile</strong><span>Name, email, theme state</span></div>
+          <div class="badge"><strong>Settings</strong><span>Meal and support defaults</span></div>
+          <div class="badge"><strong>Onboarding</strong><span>Setup before app access</span></div>
+        </div>
+      </section>
+      <section class="card form-card">
+        <h2>Create your account</h2>
+        <p class="sub">This is the first step in the full flow: sales page → signup → onboarding → app.</p>
+        <form id="signup-form">
+          <div class="field"><label class="label" for="full_name">Full name</label><input class="input" type="text" id="full_name" required /></div>
+          <div class="field"><label class="label" for="email">Email</label><input class="input" type="email" id="email" required /></div>
+          <div class="row">
+            <div class="field"><label class="label" for="password">Password</label><input class="input" type="password" id="password" minlength="6" required /></div>
+            <div class="field"><label class="label" for="confirm_password">Confirm password</label><input class="input" type="password" id="confirm_password" minlength="6" required /></div>
+          </div>
+          <button id="signup-button" class="button primary full" type="submit">Create account</button>
+          <div id="signup-notice" class="notice"></div>
+        </form>
+        <p class="footer-copy">Already have an account? <a href="login.html" style="color:var(--brand);font-weight:700">Log in</a>.</p>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearNotice('signup-notice');
+      const button = document.getElementById('signup-button');
+      const fullName = document.getElementById('full_name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      if (password !== confirmPassword) {
+        showNotice('signup-notice', 'Passwords do not match.');
+        return;
+      }
+      try {
+        setLoading(button, true, 'Creating account...');
+        const data = await window.HEARTY.signUp({ email, password, fullName });
+        const user = data.user || data.session?.user;
+        if (!user) throw new Error('Sign-up succeeded but no user was returned. Check your auth settings.');
+        await window.HEARTY.ensureProfile(user, fullName);
+        await window.HEARTY.ensureUserSettings(user.id);
+        window.location.href = 'onboarding.html';
+      } catch (error) {
+        showNotice('signup-notice', error.message || 'Unable to create the account right now.');
+      } finally {
+        setLoading(button, false, 'Creating account...');
+      }
+    });
+  </script>
+</body>
+</html>

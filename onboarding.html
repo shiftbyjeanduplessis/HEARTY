@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hearty Onboarding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div class="topbar"><div class="topbar-inner"><a class="logo" href="index.html"><div class="logo-heart">❤</div><div><div>Hearty</div><span class="logo-sub">GLP-1 Companion</span></div></a><div class="nav"><a href="app.html">Skip to app</a></div></div></div>
+  <main class="container">
+    <div class="auth-grid">
+      <section class="card hero-card">
+        <div class="kicker">Onboarding</div>
+        <h1>Let’s set up the first real user state.</h1>
+        <p>This page marks onboarding complete and saves the first set of actual Hearty settings into Supabase.</p>
+        <div class="list">
+          <div class="list-item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.10)"><div class="check">✓</div><div><b style="color:#fff">Profile patch</b><div class="meta" style="color:rgba(255,255,255,.72)">full name, theme, onboarding complete</div></div></div>
+          <div class="list-item" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.10)"><div class="check">✓</div><div><b style="color:#fff">Settings patch</b><div class="meta" style="color:rgba(255,255,255,.72)">target weight, meal frequency, leftovers, dietary mode</div></div></div>
+        </div>
+      </section>
+      <section class="card form-card">
+        <h2>Complete setup</h2>
+        <p class="sub">This is a lean first pass to get the project moving into a real beta state.</p>
+        <form id="onboarding-form">
+          <div class="row">
+            <div class="field"><label class="label" for="starting_weight">Starting weight (kg)</label><input class="input" type="number" step="0.1" id="starting_weight" required /></div>
+            <div class="field"><label class="label" for="target_weight">Target weight (kg)</label><input class="input" type="number" step="0.1" id="target_weight" required /></div>
+          </div>
+          <div class="row">
+            <div class="field"><label class="label" for="meal_frequency">Meal frequency</label><select id="meal_frequency"><option value="3">3 meals</option><option value="4">4 meals</option><option value="5">5 meals</option></select></div>
+            <div class="field"><label class="label" for="dietary_mode">Dietary mode</label><select id="dietary_mode"><option value="balanced">Balanced</option><option value="high_protein">High protein</option><option value="halaal">Halaal</option><option value="vegetarian">Vegetarian</option></select></div>
+          </div>
+          <div class="row">
+            <div class="field"><label class="label" for="exercise_mode">Exercise mode</label><select id="exercise_mode"><option value="home">Home</option><option value="gym">Gym</option><option value="chair">Chair / seated</option></select></div>
+            <div class="field"><label class="label" for="theme">Theme</label><select id="theme"><option value="clean">Clean</option><option value="sage">Sage</option><option value="sand">Sand</option><option value="midnight">Midnight</option></select></div>
+          </div>
+          <div class="field"><label class="label"><input type="checkbox" id="leftovers_enabled" /> Use dinner leftovers for next day lunch</label></div>
+          <button id="onboarding-button" class="button primary full" type="submit">Finish setup</button>
+          <div id="onboarding-notice" class="notice"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (async function () {
+      try {
+        const session = await window.HEARTY.getSession();
+        if (!session) {
+          window.location.href = 'login.html';
+          return;
+        }
+        const profile = await window.HEARTY.getProfile(session.user.id);
+        if (profile && profile.onboarding_complete) {
+          window.location.href = 'app.html';
+        }
+      } catch (error) {
+        showNotice('onboarding-notice', error.message || 'Unable to load onboarding.');
+      }
+    })();
+
+    document.getElementById('onboarding-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      clearNotice('onboarding-notice');
+      const button = document.getElementById('onboarding-button');
+      try {
+        setLoading(button, true, 'Saving setup...');
+        const session = await window.HEARTY.getSession();
+        if (!session) throw new Error('No active session found.');
+        await window.HEARTY.completeOnboarding(
+          session.user.id,
+          { theme: document.getElementById('theme').value },
+          {
+            starting_weight: Number(document.getElementById('starting_weight').value),
+            target_weight: Number(document.getElementById('target_weight').value),
+            meal_frequency: Number(document.getElementById('meal_frequency').value),
+            leftovers_enabled: document.getElementById('leftovers_enabled').checked,
+            dietary_mode: document.getElementById('dietary_mode').value,
+            exercise_mode: document.getElementById('exercise_mode').value
+          }
+        );
+        window.location.href = 'app.html';
+      } catch (error) {
+        showNotice('onboarding-notice', error.message || 'Unable to save setup right now.');
+      } finally {
+        setLoading(button, false, 'Saving setup...');
+      }
+    });
+  </script>
+</body>
+</html>
