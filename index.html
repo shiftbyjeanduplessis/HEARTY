@@ -331,6 +331,10 @@
     }
 
     async function goHomeIfLoggedIn() {
+      const isAuthCallback =
+        window.location.hash.includes("access_token") ||
+        window.location.search.includes("code=");
+
       try {
         const { data: { session } } = await supabase.auth.getSession();
 
@@ -343,7 +347,11 @@
         console.warn("Session check failed:", error);
       }
 
-      unlockLogin();
+      if (!isAuthCallback) {
+        unlockLogin();
+      } else {
+        setTimeout(unlockLogin, 4000);
+      }
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -426,12 +434,6 @@
     }
 
     goHomeIfLoggedIn();
-
-    setTimeout(unlockLogin, 1200);
-
-    window.addEventListener("load", () => {
-      setTimeout(unlockLogin, 800);
-    });
   </script>
 </body>
 </html>
