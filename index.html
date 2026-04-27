@@ -54,26 +54,25 @@
       inset:0;
       z-index:9999;
       background:
-        radial-gradient(900px 420px at 0% 0%, rgba(47,109,246,.10), transparent 55%),
-        linear-gradient(180deg,#f8fbff,#eef5fb);
+        radial-gradient(900px 420px at 50% 18%, rgba(47,109,246,.18), transparent 55%),
+        radial-gradient(700px 360px at 50% 85%, rgba(20,184,166,.14), transparent 55%),
+        linear-gradient(180deg,#ffffff,#eef5fb);
       display:flex;
-      flex-direction:column;
       align-items:center;
       justify-content:center;
-      color:var(--muted);
-      font-weight:650;
-      transition:opacity .28s ease;
+      transition:opacity .35s ease, visibility .35s ease;
     }
 
     #splash.hide{
       opacity:0;
+      visibility:hidden;
       pointer-events:none;
     }
 
     #splash img{
-      width:140px;
+      width:min(520px,90vw);
       height:auto;
-      margin-bottom:14px;
+      margin-bottom:0;
     }
 
     .auth-card{
@@ -231,7 +230,7 @@
       .auth-card{padding:30px 20px 26px;border-radius:28px}
       .auth-logo{height:56px}
       .auth-title{font-size:1.75rem}
-      #splash img{width:82px}
+      #splash img{width:min(420px,92vw)}
     }
   </style>
 </head>
@@ -297,7 +296,14 @@
     function hideSplash() {
       if (!splash) return;
       splash.classList.add("hide");
-      setTimeout(() => splash.remove(), 320);
+      setTimeout(() => {
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 450);
+    }
+
+    function unlockLogin() {
+      document.body.classList.remove("auth-checking");
+      hideSplash();
     }
 
     function isStandalone() {
@@ -325,16 +331,19 @@
     }
 
     async function goHomeIfLoggedIn() {
-      const { data: { session } } = await supabase.auth.getSession();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-      if (session) {
-        await ensureProfile();
-        window.location.replace("./home.html");
-        return;
+        if (session) {
+          await ensureProfile();
+          window.location.replace("./home.html");
+          return;
+        }
+      } catch (error) {
+        console.warn("Session check failed:", error);
       }
 
-      document.body.classList.remove("auth-checking");
-      hideSplash();
+      unlockLogin();
     }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
@@ -417,6 +426,12 @@
     }
 
     goHomeIfLoggedIn();
+
+    setTimeout(unlockLogin, 1200);
+
+    window.addEventListener("load", () => {
+      setTimeout(unlockLogin, 800);
+    });
   </script>
 </body>
 </html>
