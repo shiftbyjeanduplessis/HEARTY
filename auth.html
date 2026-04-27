@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hearty Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7fbff, #eef5fb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #123;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.92);
+      border: 1px solid rgba(180,200,220,0.5);
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(50,80,110,0.18);
+      padding: 32px 26px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #5d6f7e;
+      font-size: 15px;
+      margin-bottom: 26px;
+      line-height: 1.5;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      border-radius: 16px;
+      border: 1px solid #d7e2ec;
+      padding: 15px 16px;
+      font-size: 16px;
+      margin-bottom: 14px;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .primary {
+      background: #1167d8;
+      color: white;
+      box-shadow: 0 12px 24px rgba(17,103,216,0.25);
+    }
+
+    .ghost {
+      background: white;
+      color: #123;
+      border: 1px solid #d7e2ec;
+    }
+
+    .message {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #5d6f7e;
+      min-height: 22px;
+    }
+  </style>
+
+<style id="hearty-layer-2-page-intro-unification">
+/* Layer 2: unify the first page intro block across all app pages. No engines or page logic changed. */
+.shell > .page-header,
+.shell > .status-strip,
+.shell main > .section-intro,
+main.stack > .hero{
+  position:relative !important;
+  margin:0 0 18px !important;
+  padding:24px !important;
+  border-radius:28px !important;
+  border:1px solid var(--line) !important;
+  background:var(--card) !important;
+  box-shadow:var(--shadow) !important;
+  backdrop-filter:blur(10px) !important;
+  -webkit-backdrop-filter:blur(10px) !important;
+  overflow:hidden !important;
+}
+.shell > .page-header::before,
+.shell > .status-strip::before,
+.shell main > .section-intro::before,
+main.stack > .hero::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 0 auto 0 !important;
+  height:1px !important;
+  background:linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,255,255,0)) !important;
+  pointer-events:none !important;
+}
+.shell > .status-strip,
+.shell > .page-header{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  flex-wrap:wrap !important;
+}
+.shell main > .section-intro{
+  display:block !important;
+}
+main.stack > .hero{
+  display:block !important;
+}
+.shell > .page-header .kicker,
+.shell > .page-header .progress-kicker,
+.shell > .status-strip .eyebrow,
+.shell main > .section-intro::before,
+main.stack > .hero .section-label{
+  font-size:.74rem !important;
+  font-weight:800 !important;
+  letter-spacing:.17em !important;
+  color:var(--muted) !important;
+  text-transform:uppercase !important;
+  margin-bottom:12px !important;
+}
+.shell > .page-header .page-title,
+.shell > .page-header .page-greeting,
+.shell > .status-strip .headline,
+.shell main > .section-intro h1,
+main.stack > .hero h1{
+  margin:0 0 10px !important;
+  font-size:clamp(1.7rem, 3vw, 2.5rem) !important;
+  line-height:1.02 !important;
+  letter-spacing:-.04em !important;
+  font-weight:680 !important;
+  color:var(--ink) !important;
+}
+.shell > .page-header .page-copy,
+.shell > .page-header .page-header-subcopy,
+.shell > .status-strip .subline,
+.shell main > .section-intro p,
+main.stack > .hero p{
+  margin:0 !important;
+  max-width:42rem !important;
+  color:var(--muted) !important;
+  font-size:1rem !important;
+  line-height:1.55 !important;
+  font-weight:500 !important;
+}
+.shell > .status-strip .day-pill,
+.shell > .page-header .status-pill,
+main.stack > .hero .location-toggle{
+  align-self:flex-start !important;
+  margin-top:2px !important;
+}
+/* Social had its intro outside the card language; keep it visually identical to Settings. */
+.shell main > .section-intro h1 + p{margin-top:0 !important;}
+@media (max-width:760px){
+  .shell > .page-header,
+  .shell > .status-strip,
+  .shell main > .section-intro,
+  main.stack > .hero{
+    padding:18px !important;
+    border-radius:22px !important;
+    margin-bottom:16px !important;
+  }
+  .shell > .page-header,
+  .shell > .status-strip{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    gap:12px !important;
+  }
+  .shell > .status-strip .day-pill,
+  .shell > .page-header .status-pill{
+    width:auto !important;
+  }
+}
+</style>
+
+
+<!-- =========================================================
+  Layer 4: Authoritative Theme System
+  Purpose: one shared theme reader/writer across all pages.
+  Does not change page content or app logic.
+========================================================= -->
+<script id="hearty-layer4-theme-authority">
+(function(){
+  var VALID = ['clean_blue','sunlit','midnight','rose_aurora'];
+  var DEFAULT_THEME = 'clean_blue';
+  var USER_SELECTED_KEY = 'heartyThemeUserSelected';
+  function valid(t){ return VALID.indexOf(t) >= 0 ? t : DEFAULT_THEME; }
+  function firstUse(){ try { return localStorage.getItem('heartyCoreSetupDone') !== 'true'; } catch(e){ return false; } }
+  function readTheme(){
+    try{
+      var userPicked = localStorage.getItem(USER_SELECTED_KEY) === 'true';
+      if(firstUse() && !userPicked) return DEFAULT_THEME;
+      return valid(localStorage.getItem('heartyTheme') || localStorage.getItem('hearty-theme') || document.documentElement.getAttribute('data-theme') || DEFAULT_THEME);
+    }catch(e){ return valid(document.documentElement.getAttribute('data-theme') || DEFAULT_THEME); }
+  }
+  function syncLogo(theme){
+    try{
+      var logo = document.querySelector('.brand-logo');
+      if(!logo) return;
+      var src = logo.getAttribute('data-default-logo') || logo.getAttribute('src');
+      if(theme === 'sunlit' && logo.getAttribute('data-sunlit-logo')) src = logo.getAttribute('data-sunlit-logo');
+      if(theme === 'midnight' && logo.getAttribute('data-midnight-logo')) src = logo.getAttribute('data-midnight-logo');
+      if(theme === 'rose_aurora' && logo.getAttribute('data-rose-aurora-logo')) src = logo.getAttribute('data-rose-aurora-logo');
+      if(src) logo.setAttribute('src', src);
+      document.documentElement.classList.add('logo-ready');
+    }catch(e){}
+  }
+  function paintTheme(theme, opts){
+    theme = valid(theme); opts = opts || {};
+    document.documentElement.setAttribute('data-theme', theme);
+    if(document.body) document.body.setAttribute('data-theme', theme);
+    try{
+      localStorage.setItem('heartyTheme', theme);
+      localStorage.setItem('hearty-theme', theme);
+      if(opts.userSelected) localStorage.setItem(USER_SELECTED_KEY, 'true');
+    }catch(e){}
+    try{
+      document.querySelectorAll('.theme-option[data-theme], [data-theme-choice]').forEach(function(el){
+        var choice = el.getAttribute('data-theme') || el.getAttribute('data-theme-choice');
+        var on = choice === theme;
+        el.classList.toggle('active', on);
+        el.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('select[name="theme"], #themeSelect, .theme-select').forEach(function(sel){ if(sel.value !== theme) sel.value = theme; });
+    }catch(e){}
+    syncLogo(theme);
+  }
+  window.heartyApplyTheme = function(theme){ paintTheme(theme, {userSelected:true}); };
+  window.heartyReadTheme = readTheme;
+  paintTheme(readTheme(), {userSelected:false});
+  document.addEventListener('DOMContentLoaded', function(){ paintTheme(readTheme(), {userSelected:false}); }, true);
+  requestAnimationFrame(function(){ paintTheme(readTheme(), {userSelected:false}); });
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('.theme-option[data-theme], [data-theme-choice]') : null;
+    if(btn){ paintTheme(btn.getAttribute('data-theme') || btn.getAttribute('data-theme-choice'), {userSelected:true}); }
+  }, true);
+  document.addEventListener('change', function(e){
+    var t = e.target;
+    if(t && (t.matches('select[name="theme"]') || t.matches('#themeSelect') || t.matches('.theme-select') || t.matches('[data-theme-input]'))){ paintTheme(t.value, {userSelected:true}); }
+  }, true);
+  window.addEventListener('storage', function(e){
+    if(e.key === 'heartyTheme' || e.key === 'hearty-theme' || e.key === USER_SELECTED_KEY || e.key === 'heartyCoreSetupDone'){ paintTheme(readTheme(), {userSelected:false}); }
+  });
+})();
+</script>
+<style id="hearty-layer4-theme-vars">
+:root,html[data-theme="clean_blue"]{--bg-1:#eef4fb;--bg-2:#f8fbff;--bg-base:#f6f9fe;--bg-layer-1:radial-gradient(circle at 18% 8%,rgba(108,150,235,.05),transparent 30%);--bg-layer-2:radial-gradient(circle at 88% 12%,rgba(132,174,244,.04),transparent 28%);--bg-layer-3:linear-gradient(180deg,#fbfdff 0%,#f2f6fc 100%);--ink:#132235;--muted:#6f7c8d;--line:rgba(143,163,184,.22);--card:rgba(255,255,255,.94);--shadow:0 18px 44px rgba(14,31,53,.08);--shadow-soft:0 8px 22px rgba(14,31,53,.05);--surface-top:rgba(255,255,255,.82);--surface-bottom:rgba(255,255,255,.68);--surface-button:rgba(255,255,255,.94);--surface-chip:rgba(255,255,255,.96);--accent:#2f6df6;--accent-2:#14b8a6;--theme-accent:#2f6df6;--topbar-bg:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));--icon-bg:var(--surface-button);--pill-bg:var(--surface-chip)}
+html[data-theme="sunlit"]{--bg-1:#f6ead2;--bg-2:#fffaf0;--bg-base:#fff7e6;--bg-layer-1:radial-gradient(circle at 18% 8%,rgba(245,158,11,.12),transparent 32%);--bg-layer-2:radial-gradient(circle at 88% 12%,rgba(20,184,166,.08),transparent 30%);--bg-layer-3:linear-gradient(180deg,#fffaf0 0%,#f7ecd5 100%);--ink:#1f170d;--muted:#7a643f;--line:rgba(196,172,112,.24);--card:rgba(255,253,247,.94);--shadow:0 18px 44px rgba(91,61,22,.10);--shadow-soft:0 8px 22px rgba(91,61,22,.06);--surface-top:rgba(255,255,255,.88);--surface-bottom:rgba(255,249,238,.74);--surface-button:rgba(255,255,255,.94);--surface-chip:rgba(255,250,240,.96);--accent:#ea580c;--accent-2:#f59e0b;--theme-accent:#ea580c;--topbar-bg:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));--icon-bg:var(--surface-button);--pill-bg:var(--surface-chip)}
+html[data-theme="midnight"]{--bg-1:#0b1424;--bg-2:#050b15;--bg-base:#0a111b;--bg-layer-1:radial-gradient(900px 320px at 18% -8%,rgba(126,155,255,.12),transparent 48%);--bg-layer-2:radial-gradient(760px 280px at 82% 0%,rgba(116,145,235,.08),transparent 46%);--bg-layer-3:linear-gradient(180deg,#0a1120 0%,#0b1322 52%,#0a101b 100%);--ink:#edf3fb;--muted:#9faec1;--line:rgba(124,148,180,.16);--card:rgba(16,24,36,.78);--shadow:0 18px 44px rgba(2,8,23,.30);--shadow-soft:0 8px 22px rgba(2,8,23,.20);--surface-top:rgba(18,27,39,.76);--surface-bottom:rgba(14,22,33,.64);--surface-button:rgba(21,30,43,.86);--surface-chip:rgba(21,30,43,.90);--accent:#89a8ff;--accent-2:#22d3ee;--theme-accent:#89a8ff;--topbar-bg:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));--icon-bg:var(--surface-button);--pill-bg:var(--surface-chip)}
+html[data-theme="rose_aurora"]{--bg-1:#1a0f1a;--bg-2:#2a1428;--bg-base:#0d0a10;--bg-layer-1:radial-gradient(900px 320px at 18% -8%,rgba(210,143,178,.14),transparent 48%);--bg-layer-2:radial-gradient(760px 280px at 82% 0%,rgba(165,128,190,.10),transparent 46%);--bg-layer-3:linear-gradient(180deg,#18111a 0%,#171118 52%,#130d14 100%);--ink:#f8f0f5;--muted:#b89fac;--line:rgba(195,148,172,.14);--card:rgba(22,16,26,.82);--shadow:0 22px 52px rgba(6,2,10,.44);--shadow-soft:0 10px 26px rgba(6,2,10,.30);--surface-top:rgba(30,21,36,.80);--surface-bottom:rgba(20,15,24,.68);--surface-button:rgba(36,26,42,.88);--surface-chip:rgba(38,27,44,.92);--accent:#d89abb;--accent-2:#c9955c;--theme-accent:#d89abb;--topbar-bg:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));--icon-bg:var(--surface-button);--pill-bg:var(--surface-chip)}
+body{background:var(--bg-base)!important;color:var(--ink)!important}body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;background:var(--bg-layer-1),var(--bg-layer-2),var(--bg-layer-3),var(--bg-base)!important}.topbar{background:var(--topbar-bg)!important;border-color:var(--line)!important;box-shadow:var(--shadow-soft)!important}.icon-btn{background:var(--icon-bg)!important;border-color:var(--line)!important;color:var(--muted)!important}.bottom-nav{background:color-mix(in srgb,var(--surface-chip) 78%,transparent)!important;border-color:var(--line)!important;box-shadow:var(--shadow-soft)!important}.bottom-nav .nav-item.active,.bottom-nav .nav-item[aria-current="page"]{color:var(--theme-accent)!important}html[data-theme="midnight"] .card,html[data-theme="midnight"] .settings-card,html[data-theme="midnight"] .settings-panel,html[data-theme="midnight"] .tile,html[data-theme="midnight"] .placeholder-card,html[data-theme="rose_aurora"] .card,html[data-theme="rose_aurora"] .settings-card,html[data-theme="rose_aurora"] .settings-panel,html[data-theme="rose_aurora"] .tile,html[data-theme="rose_aurora"] .placeholder-card{background:var(--card)!important;border-color:var(--line)!important;color:var(--ink)!important}html[data-theme="midnight"] input,html[data-theme="midnight"] select,html[data-theme="midnight"] textarea,html[data-theme="rose_aurora"] input,html[data-theme="rose_aurora"] select,html[data-theme="rose_aurora"] textarea{background:rgba(255,255,255,.04)!important;color:var(--ink)!important;border-color:var(--line)!important}
+</style>
+</head>
+
+<body>
+  <main class="auth-card">
+    <div class="logo">Hearty</div>
+    <div class="subtitle">
+      Sign in to continue your GLP-1 companion journey.
+    </div>
+
+    <input id="email" type="email" placeholder="Email address" autocomplete="email" />
+
+    <button class="primary" id="sendBtn">
+      Send login link
+    </button>
+
+    <button class="ghost" id="googleBtn">
+      Continue with Google
+    </button>
+
+    <button class="ghost" id="appleBtn">
+      Continue with Apple
+    </button>
+
+    <div class="message" id="message"></div>
+  </main>
+
+  <script type="module">
+    import { supabase } from "./supabase-client.js";
+
+    const emailInput = document.getElementById("email");
+    const sendBtn = document.getElementById("sendBtn");
+    const googleBtn = document.getElementById("googleBtn");
+    const appleBtn = document.getElementById("appleBtn");
+    const message = document.getElementById("message");
+
+    async function ensureProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const provider = user.app_metadata?.provider || "email";
+
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        email: user.email,
+        full_name: user.user_metadata?.full_name || null,
+        avatar_url: user.user_metadata?.avatar_url || null,
+        auth_provider: provider,
+        updated_at: new Date().toISOString()
+      });
+    }
+
+    async function redirectIfLoggedIn() {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (session) {
+        await ensureProfile();
+        window.location.href = "./home.html";
+      }
+    }
+
+    sendBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        message.textContent = "Please enter your email address.";
+        return;
+      }
+
+      sendBtn.disabled = true;
+      message.textContent = "Sending login link...";
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth.html`
+        }
+      });
+
+      if (error) {
+        message.textContent = error.message;
+        sendBtn.disabled = false;
+        return;
+      }
+
+      message.textContent = "Check your email and click the login link.";
+      sendBtn.disabled = false;
+    });
+
+    googleBtn.addEventListener("click", async () => {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth.html`
+        }
+      });
+    });
+
+    appleBtn.addEventListener("click", async () => {
+      await supabase.auth.signInWithOAuth({
+        provider: "apple",
+        options: {
+          redirectTo: `${window.location.origin}/auth.html`
+        }
+      });
+    });
+
+    redirectIfLoggedIn();
+  </script>
+</body>
+</html>
