@@ -1,0 +1,14 @@
+Hearty launch stability patch
+
+Changes made:
+1. Disabled external badge CSS/boot script in HOME.html to prevent badge module crashes from blocking launch.
+2. Updated supabase-client.js to expose window.supabaseClient / window.heartySupabase / window.supabase.
+3. Added supabase-client module script before hearty-meals-db-bridge.js in meals.html and meals-onboarding.html.
+4. Added lowercase deployment aliases for case-sensitive hosting: home.html, settings.html, support.html, social.html, exercise.html, progress.html.
+5. Added index.html as a copy of auth.html so the app starts at login on the root path.
+
+Not changed:
+- Meals engine logic
+- Exercise workout logic
+- Progress photo local-only behavior
+- Support mode logic
