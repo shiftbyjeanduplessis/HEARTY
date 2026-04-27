@@ -242,7 +242,7 @@
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth.html`
+          redirectTo: `${window.location.origin}/`
         }
       });
     });
@@ -251,7 +251,7 @@
       await supabase.auth.signInWithOAuth({
         provider: "apple",
         options: {
-          redirectTo: `${window.location.origin}/auth.html`
+          redirectTo: `${window.location.origin}/`
         }
       });
     });
