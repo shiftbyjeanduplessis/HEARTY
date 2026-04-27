@@ -20,32 +20,32 @@
 
     *{box-sizing:border-box}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
         radial-gradient(900px 420px at 0% 0%, rgba(47,109,246,.10), transparent 55%),
         radial-gradient(900px 460px at 100% 100%, rgba(20,184,166,.09), transparent 55%),
-        linear-gradient(180deg, #f7fbff, #eef5fb);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      color: var(--ink);
+        linear-gradient(180deg,#f7fbff,#eef5fb);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      color:var(--ink);
     }
 
-    .auth-card {
-      width: 100%;
-      max-width: 430px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      box-shadow: var(--shadow);
-      padding: 34px 26px 30px;
-      text-align: center;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+    .auth-card{
+      width:100%;
+      max-width:430px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:34px 26px 30px;
+      text-align:center;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
     }
 
     .auth-logo-wrap{
@@ -79,22 +79,22 @@
       color:var(--ink);
     }
 
-    .subtitle {
-      color: var(--muted);
-      font-size: 15px;
-      margin-bottom: 26px;
-      line-height: 1.5;
+    .subtitle{
+      color:var(--muted);
+      font-size:15px;
+      margin-bottom:26px;
+      line-height:1.5;
     }
 
-    input {
-      width: 100%;
-      border-radius: 16px;
-      border: 1px solid #d7e2ec;
-      padding: 15px 16px;
-      font-size: 16px;
-      margin-bottom: 14px;
-      outline: none;
-      background: rgba(255,255,255,.96);
+    input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid #d7e2ec;
+      padding:15px 16px;
+      font-size:16px;
+      margin-bottom:14px;
+      outline:none;
+      background:rgba(255,255,255,.96);
     }
 
     input:focus{
@@ -102,39 +102,39 @@
       box-shadow:0 0 0 4px rgba(17,103,216,.10);
     }
 
-    button {
-      width: 100%;
-      border: 0;
-      border-radius: 16px;
-      padding: 15px 16px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    button{
+      width:100%;
+      border:0;
+      border-radius:16px;
+      padding:15px 16px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      margin-top:8px;
+      transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;
     }
 
     button:hover{transform:translateY(-1px)}
     button:active{transform:scale(.985)}
     button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
-    .primary {
-      background: linear-gradient(180deg, var(--blue), var(--blue-deep));
-      color: white;
-      box-shadow: 0 12px 24px rgba(17,103,216,0.25);
+    .primary{
+      background:linear-gradient(180deg,var(--blue),var(--blue-deep));
+      color:white;
+      box-shadow:0 12px 24px rgba(17,103,216,0.25);
     }
 
-    .ghost {
-      background: white;
-      color: #123;
-      border: 1px solid #d7e2ec;
+    .ghost{
+      background:white;
+      color:#123;
+      border:1px solid #d7e2ec;
     }
 
-    .message {
-      margin-top: 18px;
-      font-size: 14px;
-      color: var(--muted);
-      min-height: 22px;
+    .message{
+      margin-top:18px;
+      font-size:14px;
+      color:var(--muted);
+      min-height:22px;
       line-height:1.4;
     }
 
@@ -170,7 +170,7 @@
       Continue with Google
     </button>
 
-       <div class="message" id="message"></div>
+    <div class="message" id="message"></div>
   </main>
 
   <script type="module">
@@ -182,44 +182,58 @@
     const emailInput = document.getElementById("email");
     const sendBtn = document.getElementById("sendBtn");
     const googleBtn = document.getElementById("googleBtn");
-    const appleBtn = document.getElementById("appleBtn");
     const message = document.getElementById("message");
 
-    async function ensureProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const provider = user.app_metadata?.provider || "email";
-
-      await supabase.from("profiles").upsert({
-        id: user.id,
-        email: user.email,
-        full_name: user.user_metadata?.full_name || null,
-        avatar_url: user.user_metadata?.avatar_url || null,
-        auth_provider: provider,
-        updated_at: new Date().toISOString()
-      });
+    function setMessage(text) {
+      message.textContent = text || "";
     }
 
-    async function redirectIfLoggedIn() {
+    async function ensureProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const provider = user.app_metadata?.provider || "email";
+
+        await supabase.from("profiles").upsert({
+          user_id: user.id,
+          account_email: user.email,
+          user_name: user.user_metadata?.full_name || user.email || null,
+          first_name: user.user_metadata?.full_name?.split(" ")?.[0] || null,
+          auth_provider: provider,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "user_id" });
+      } catch (error) {
+        console.warn("Profile save failed, continuing login:", error);
+      }
+    }
+
+    async function goHomeIfLoggedIn() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (session) {
         await ensureProfile();
-        window.location.href = "./home.html";
+        window.location.replace("./home.html");
       }
     }
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        await ensureProfile();
+        window.location.replace("./home.html");
+      }
+    });
 
     sendBtn.addEventListener("click", async () => {
       const email = emailInput.value.trim();
 
       if (!email) {
-        message.textContent = "Please enter your email address.";
+        setMessage("Please enter your email address.");
         return;
       }
 
       sendBtn.disabled = true;
-      message.textContent = "Sending login link...";
+      setMessage("Sending login link...");
 
       const { error } = await supabase.auth.signInWithOtp({
         email,
@@ -229,34 +243,33 @@
       });
 
       if (error) {
-        message.textContent = error.message;
+        setMessage(error.message);
         sendBtn.disabled = false;
         return;
       }
 
-      message.textContent = "Check your email and click the login link.";
+      setMessage("Check your email and click the login link.");
       sendBtn.disabled = false;
     });
 
     googleBtn.addEventListener("click", async () => {
-      await supabase.auth.signInWithOAuth({
+      setMessage("Opening Google sign in...");
+
+      const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/`
         }
       });
+
+      if (error) setMessage(error.message);
     });
 
-    appleBtn.addEventListener("click", async () => {
-      await supabase.auth.signInWithOAuth({
-        provider: "apple",
-        options: {
-          redirectTo: `${window.location.origin}/`
-        }
-      });
+    emailInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") sendBtn.click();
     });
 
-    redirectIfLoggedIn();
+    goHomeIfLoggedIn();
   </script>
 </body>
 </html>
