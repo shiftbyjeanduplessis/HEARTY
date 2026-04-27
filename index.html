@@ -208,14 +208,17 @@
       }
     }
 
-    async function goHomeIfLoggedIn() {
-      const { data: { session } } = await supabase.auth.getSession();
+async function goHomeIfLoggedIn() {
+  const { data: { session } } = await supabase.auth.getSession();
 
-      if (session) {
-        await ensureProfile();
-        window.location.replace("./home.html");
-      }
-    }
+  if (session) {
+    await ensureProfile();
+    window.location.replace("./home.html");
+    return;
+  }
+
+  document.body.classList.remove("auth-checking");
+}
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
