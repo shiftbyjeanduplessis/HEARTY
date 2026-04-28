@@ -1,41 +1,48 @@
-# Hearty Meals Production Wired Files
+# Hearty Home Onboarding + Lessons Pack
 
-This package helps with steps 3 and 4.
+## Add files
 
-## Files
-- `001_meals_schema.sql`
-- `hearty-meals-db-bridge.js`
-- `meals-onboarding.html`
-- `meals.html`
+1. Put `js/hearty-lessons.v1.js` into your repo at:
 
-## Step 3: Onboarding save
-`meals-onboarding.html` now loads `hearty-meals-db-bridge.js`.
+```txt
+/js/hearty-lessons.v1.js
+```
 
-When the user finishes onboarding, it saves preferences to:
-- localStorage
-- Supabase `meal_preferences`
+2. In `home.html`, near the bottom before `</body>`, add:
 
-## Step 4: Meals page load/save
-`meals.html` now loads:
-- `hearty-meals-db-bridge.js`
-- production hooks
+```html
+<script src="./js/hearty-lessons.v1.js"></script>
+```
 
-The page now:
-- tries to load the saved plan from Supabase
-- saves generated plans to `meal_plans`
-- saves preference changes
-- saves lock/regenerate changes by re-saving the current plan
+3. Then paste the contents of:
 
-## Before testing
-1. Run `001_meals_schema.sql` in Supabase SQL Editor.
-2. Confirm the user is logged in before Meals loads.
-3. Confirm your app creates `window.supabaseClient` before `hearty-meals-db-bridge.js`.
+```txt
+home-onboarding-and-lessons-patch.html
+```
 
-## Test
-1. Log in.
-2. Complete onboarding.
-3. Generate a meal plan.
-4. Refresh.
-5. Confirm the same plan loads.
-6. Log out/in.
-7. Confirm the same plan still loads.
+directly after that script include and still before `</body>`.
+
+## Includes
+
+- Name onboarding modal
+- Supabase profile save for name
+- Placeholder data removal
+- Badge box removal
+- Empty medication state
+- 10 daily lessons
+- Max one lesson completed per calendar day
+- Lesson card disappears after lesson 10
+
+## Home onboarding rules locked
+
+- “What should we call you?” is a modal, not a task.
+- Daily Rhythm becomes “Welcome to Hearty” during first setup.
+- Intro task list:
+  - Add today’s weight
+  - Take first progress photo
+  - Set medication schedule
+  - Complete a 15-minute walk
+- Front photo is required.
+- Side/back photos are optional.
+- Photos stay local/device-only.
+- Every task must survive interruption.
