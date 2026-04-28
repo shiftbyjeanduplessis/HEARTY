@@ -9217,6 +9217,99 @@ html[data-theme="sunlit"] .task-icon-btn.done{
   new MutationObserver(cleanIfAccidentalSunlit).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 })();
 </script>
+<script id="remove-home-placeholder-data">
+(function(){
+  function setText(sel, text){
+    const el = document.querySelector(sel);
+    if(el) el.textContent = text;
+  }
 
+  function removeFakeMedication(){
+    const card = document.getElementById('injectionCard');
+    if(!card) return;
+
+    ['medication','type','dosage','dueWeekday','nextDate','lastDate'].forEach(k => {
+      delete card.dataset[k];
+    });
+
+    card.classList.remove('due','logged');
+    setText('#injectionCard .injection-title', 'No medication schedule set');
+    setText('#injectionCard .injection-copy', 'Add your medication schedule in Settings.');
+    const actions = document.getElementById('injectionActions');
+    if(actions) actions.innerHTML = '';
+  }
+
+  function removeFakeProgress(){
+    setText('#adherenceValue', '0%');
+    setText('#waterValue', '0L');
+
+    document.querySelectorAll('.ring-wrap').forEach(ring => {
+      ring.dataset.progress = '0';
+    });
+
+    document.querySelectorAll('.ring-progress').forEach(circle => {
+      circle.style.strokeDashoffset = '339.292';
+    });
+
+    document.querySelectorAll('.ring-caption').forEach(el => {
+      if(el.textContent.includes('actions complete')) {
+        el.textContent = 'Actions will update as you log today';
+      }
+    });
+
+    document.querySelectorAll('.progress-main').forEach(el => {
+      el.textContent = 'No weight progress logged yet';
+    });
+
+    document.querySelectorAll('.progress-meta').forEach(el => {
+      if(el.textContent.includes('kg') || el.textContent.includes('Goal')) {
+        el.textContent = 'Add your first weigh-in to begin tracking.';
+      }
+    });
+
+    const labels = document.querySelector('.goal-labels');
+    if(labels){
+      labels.innerHTML = `
+        <span>Start not set</span>
+        <span>Next milestone not set</span>
+        <span>Goal set by your doctor</span>
+      `;
+    }
+
+    const fill = document.querySelector('.goalbar-fill');
+    if(fill) fill.style.width = '0%';
+  }
+
+  function removeFakeHydration(){
+    setText('#waterGlassCount', '0 GLASSES');
+    setText('#waterValue', '0L');
+
+    const fill = document.getElementById('waterProgressFill');
+    if(fill) fill.style.width = '0%';
+
+    document.querySelectorAll('.hydration-sub').forEach(el => {
+      el.textContent = 'Tap once for each glass';
+    });
+  }
+
+  function removeFakeProtocol(){
+    setText('#protocolSummary', '0 of 4 complete');
+
+    const adherence = document.getElementById('adherenceValue');
+    if(adherence) adherence.textContent = '0%';
+  }
+
+  function run(){
+    removeFakeMedication();
+    removeFakeProgress();
+    removeFakeHydration();
+    removeFakeProtocol();
+  }
+
+  document.addEventListener('DOMContentLoaded', run);
+  setTimeout(run, 250);
+  setTimeout(run, 1000);
+})();
+</script>
 </body>
 </html>
