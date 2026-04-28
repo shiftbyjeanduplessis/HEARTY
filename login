@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hearty Login</title>
+
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0057ff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hearty">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+
+  <style>
+    :root{
+      --ink:#102033;
+      --muted:#5d6f7e;
+      --line:rgba(180,200,220,0.5);
+      --card:rgba(255,255,255,0.9);
+      --blue:#1167d8;
+      --blue-deep:#0756c8;
+      --shadow:0 24px 70px rgba(50,80,110,0.18);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(900px 420px at 0% 0%, rgba(47,109,246,.10), transparent 55%),
+        radial-gradient(900px 460px at 100% 100%, rgba(20,184,166,.09), transparent 55%),
+        linear-gradient(180deg,#f7fbff,#eef5fb);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      color:var(--ink);
+    }
+
+    body.auth-checking .auth-card{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    #splash{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background-color:#0057ff;
+background-image:url("/hearty-splash.png");
+background-position:center center;
+background-size:contain;
+background-repeat:no-repeat;
+      transition:opacity .35s ease, visibility .35s ease;
+    }
+
+    #splash.hide{
+      opacity:0;
+      visibility:hidden;
+      pointer-events:none;
+    }
+
+    .auth-card{
+      width:100%;
+      max-width:430px;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:34px 26px 30px;
+      text-align:center;
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+    }
+
+    .auth-logo-wrap{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+      margin-bottom:16px;
+    }
+
+    .auth-logo{
+      height:64px;
+      width:auto;
+      max-width:300px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .auth-tagline{
+      font-size:.98rem;
+      font-weight:650;
+      color:var(--muted);
+    }
+
+    .auth-title{
+      margin:8px 0 8px;
+      font-size:1.9rem;
+      line-height:1.05;
+      font-weight:800;
+      letter-spacing:-.04em;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:15px;
+      margin-bottom:26px;
+      line-height:1.5;
+    }
+
+    input{
+      width:100%;
+      border-radius:16px;
+      border:1px solid #d7e2ec;
+      padding:15px 16px;
+      font-size:16px;
+      margin-bottom:14px;
+      outline:none;
+      background:rgba(255,255,255,.96);
+    }
+
+    input:focus{
+      border-color:rgba(17,103,216,.45);
+      box-shadow:0 0 0 4px rgba(17,103,216,.10);
+    }
+
+    button{
+      width:100%;
+      border:0;
+      border-radius:16px;
+      padding:15px 16px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      margin-top:8px;
+      transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease;
+    }
+
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:scale(.985)}
+    button:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+    .primary{
+      background:linear-gradient(180deg,var(--blue),var(--blue-deep));
+      color:white;
+      box-shadow:0 12px 24px rgba(17,103,216,0.25);
+    }
+
+    .ghost{
+      background:white;
+      color:#123;
+      border:1px solid #d7e2ec;
+    }
+
+    .install-banner{
+      display:none;
+      position:fixed;
+      left:14px;
+      right:14px;
+      bottom:14px;
+      z-index:50;
+      max-width:430px;
+      margin:0 auto;
+      padding:14px;
+      border-radius:22px;
+      background:rgba(255,255,255,.94);
+      border:1px solid var(--line);
+      box-shadow:0 18px 44px rgba(50,80,110,.18);
+      backdrop-filter:blur(16px);
+      -webkit-backdrop-filter:blur(16px);
+      text-align:left;
+      gap:12px;
+      align-items:center;
+    }
+
+    .install-banner.show{display:flex}
+
+    .install-banner strong{
+      display:block;
+      font-size:.95rem;
+      color:var(--ink);
+    }
+
+    .install-banner span{
+      display:block;
+      font-size:.82rem;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .install-banner button{
+      width:auto;
+      margin:0;
+      padding:10px 14px;
+      border-radius:14px;
+      font-size:.86rem;
+      white-space:nowrap;
+    }
+
+    .message{
+      margin-top:18px;
+      font-size:14px;
+      color:var(--muted);
+      min-height:22px;
+      line-height:1.4;
+    }
+
+    @media(max-width:560px){
+      body{padding:18px}
+      .auth-card{padding:30px 20px 26px;border-radius:28px}
+      .auth-logo{height:56px}
+      .auth-title{font-size:1.75rem}
+    }
+  </style>
+</head>
+
+<body class="auth-checking">
+  <div id="splash" aria-hidden="true"></div>
+
+  <main class="auth-card">
+    <div class="auth-logo-wrap">
+      <img src="./hearty-logo.png" alt="Hearty" class="auth-logo">
+      <div class="auth-tagline">Your GLP-1 Companion</div>
+    </div>
+
+    <h1 class="auth-title">Welcome back</h1>
+
+    <div class="subtitle">
+      Sign in to continue your journey with Hearty.
+    </div>
+
+    <input id="email" type="email" placeholder="Email address" autocomplete="email" />
+
+    <button class="primary" id="sendBtn">Continue with email</button>
+    <button class="ghost" id="googleBtn">Continue with Google</button>
+
+    <div class="message" id="message"></div>
+  </main>
+
+  <div class="install-banner" id="installBanner">
+    <div>
+      <strong>Install Hearty</strong>
+      <span>Add it to your home screen for a full-screen app feel.</span>
+    </div>
+    <button class="primary" id="installBtn">Install</button>
+  </div>
+
+  <script type="module">
+    import { supabase } from "./supabase-client.js";
+
+    window.supabaseClient = supabase;
+    window.supabase = supabase;
+
+    const emailInput = document.getElementById("email");
+    const sendBtn = document.getElementById("sendBtn");
+    const googleBtn = document.getElementById("googleBtn");
+    const message = document.getElementById("message");
+    const splash = document.getElementById("splash");
+    const installBanner = document.getElementById("installBanner");
+    const installBtn = document.getElementById("installBtn");
+
+    let deferredInstallPrompt = null;
+    let redirecting = false;
+
+    function setMessage(text) {
+      message.textContent = text || "";
+    }
+
+    function hideSplash() {
+      if (!splash) return;
+      splash.classList.add("hide");
+      setTimeout(() => {
+        if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
+      }, 450);
+    }
+
+    function unlockLogin() {
+      if (redirecting) return;
+      document.body.classList.remove("auth-checking");
+      hideSplash();
+    }
+
+    function isStandalone() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    async function ensureProfile() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const provider = user.app_metadata?.provider || "email";
+
+        await supabase.from("profiles").upsert({
+          user_id: user.id,
+          account_email: user.email,
+          user_name: user.user_metadata?.full_name || user.email || null,
+          first_name: user.user_metadata?.full_name?.split(" ")?.[0] || null,
+          auth_provider: provider,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "user_id" });
+      } catch (error) {
+        console.warn("Profile save failed, continuing login:", error);
+      }
+    }
+
+    async function sendToHome() {
+      if (redirecting) return;
+      redirecting = true;
+      await ensureProfile();
+      window.location.replace("./home.html");
+    }
+
+    async function goHomeIfLoggedIn() {
+      const isAuthCallback =
+        window.location.hash.includes("access_token") ||
+        window.location.search.includes("code=");
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (session) {
+          await sendToHome();
+          return;
+        }
+      } catch (error) {
+        console.warn("Session check failed:", error);
+      }
+
+      if (!isAuthCallback) {
+        unlockLogin();
+      } else {
+        setTimeout(unlockLogin, 5000);
+      }
+    }
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        await sendToHome();
+      }
+    });
+
+    sendBtn.addEventListener("click", async () => {
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        setMessage("Please enter your email address.");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      setMessage("Sending login link...");
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) {
+        setMessage(error.message);
+        sendBtn.disabled = false;
+        return;
+      }
+
+      setMessage("Check your email and click the login link.");
+      sendBtn.disabled = false;
+    });
+
+    googleBtn.addEventListener("click", async () => {
+      setMessage("Opening Google sign in...");
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+
+      if (error) setMessage(error.message);
+    });
+
+    emailInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") sendBtn.click();
+    });
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+
+      if (!isStandalone()) {
+        installBanner.classList.add("show");
+      }
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) {
+        setMessage("On iPhone, tap Share, then Add to Home Screen.");
+        return;
+      }
+
+      installBanner.classList.remove("show");
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js").catch(console.warn);
+      });
+    }
+
+    goHomeIfLoggedIn();
+  </script>
+</body>
+</html>
