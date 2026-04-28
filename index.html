@@ -29,6 +29,11 @@
 
     *{box-sizing:border-box}
 
+    html,body{
+      margin:0;
+      min-height:100%;
+    }
+
     body{
       margin:0;
       min-height:100vh;
@@ -42,6 +47,8 @@
       justify-content:center;
       padding:24px;
       color:var(--ink);
+      overflow-x:hidden;
+      -webkit-tap-highlight-color:transparent;
     }
 
     body.auth-checking .auth-card{
@@ -58,8 +65,11 @@
         radial-gradient(700px 360px at 50% 85%, rgba(20,184,166,.14), transparent 55%),
         linear-gradient(180deg,#ffffff,#eef5fb);
       display:flex;
+      flex-direction:column;
       align-items:center;
       justify-content:center;
+      color:#456176;
+      font-weight:700;
       transition:opacity .35s ease, visibility .35s ease;
     }
 
@@ -70,9 +80,14 @@
     }
 
     #splash img{
-      width:min(520px,90vw);
+      width:min(416px,82vw);
       height:auto;
       margin-bottom:0;
+    }
+
+    #splash div{
+      font-size:1.05rem;
+      letter-spacing:.01em;
     }
 
     .auth-card{
@@ -86,6 +101,7 @@
       text-align:center;
       backdrop-filter:blur(16px);
       -webkit-backdrop-filter:blur(16px);
+      transition:opacity .22s ease;
     }
 
     .auth-logo-wrap{
@@ -230,7 +246,7 @@
       .auth-card{padding:30px 20px 26px;border-radius:28px}
       .auth-logo{height:56px}
       .auth-title{font-size:1.75rem}
-      #splash img{width:min(420px,92vw)}
+      #splash img{width:min(336px,86vw)}
     }
   </style>
 </head>
@@ -238,6 +254,7 @@
 <body class="auth-checking">
   <div id="splash">
     <img src="./hearty-logo.png" alt="Hearty">
+    <div>Your GLP-1 Companion</div>
   </div>
 
   <main class="auth-card">
@@ -299,11 +316,6 @@
       setTimeout(() => {
         if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
       }, 450);
-    }
-
-    function unlockLogin() {
-      document.body.classList.remove("auth-checking");
-      hideSplash();
     }
 
     function isStandalone() {
@@ -434,6 +446,7 @@
     }
 
     goHomeIfLoggedIn();
+
   </script>
 </body>
 </html>

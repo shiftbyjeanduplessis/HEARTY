@@ -2406,8 +2406,6 @@ html[data-theme="rose_aurora"] .topbar{
     }
 
 </style>
-<link href="./css/hearty-badges.css" rel="stylesheet"/>
-<script src="./js/hearty-badge-boot.js" type="module"></script>
 <style id="hearty-nav-7tab-lock">
   .bottom-nav{
     margin-top:18px !important;
@@ -6445,6 +6443,24 @@ body::after{
   background:none !important;
 }
 </style>
+
+<style id="hearty-phase1-home-patch">
+.badges-card,#markerMiniRow,#homeLatestBadges{display:none!important;}
+@media(max-width:640px){#topMiniRow,.mini-pair{gap:10px!important}.support-compact{margin-bottom:0!important}}
+.hydration-log-copy{gap:22px!important;}
+.hydration-chip{margin-left:14px!important;}
+.medication-topline{justify-content:center!important;text-align:center!important;}
+.medication-compact .injection-actions{justify-content:center!important;width:100%!important;margin-top:12px!important;}
+.dose-cta-btn{width:auto!important;min-width:178px!important;height:46px!important;border-radius:16px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;padding:0 16px!important;}
+.dose-cta-icon{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;background:rgba(14,165,107,.12);}
+.dose-cta-icon svg{width:15px!important;height:15px!important;}
+.dose-cta-text{font-size:.86rem;font-weight:800;white-space:nowrap;}
+#lessonTaskItem,#todaysRhythmCard{box-shadow:0 0 0 1px rgba(47,109,246,.10),0 0 24px rgba(47,109,246,.14),var(--shadow)!important;}
+#lessonTaskItem{animation:heartyLessonPulse 2.4s ease-in-out infinite;}
+@keyframes heartyLessonPulse{0%,100%{box-shadow:0 0 0 1px rgba(47,109,246,.10),0 0 16px rgba(47,109,246,.10),var(--shadow-soft)}50%{box-shadow:0 0 0 1px rgba(47,109,246,.22),0 0 34px rgba(47,109,246,.22),var(--shadow)}}
+.hearty-first-use-overlay{position:fixed;inset:0;z-index:1600;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.22);backdrop-filter:blur(8px)}
+.hearty-first-use-overlay.show{display:flex}.hearty-first-use-card{width:min(420px,100%);border-radius:28px;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,251,255,.96));border:1px solid var(--line);box-shadow:0 28px 72px rgba(14,31,53,.18);padding:24px;text-align:center}.hearty-first-use-card h2{margin:0 0 8px;font-size:1.45rem;letter-spacing:-.04em}.hearty-first-use-card p{margin:0 0 18px;color:var(--muted);line-height:1.5}.hearty-first-use-card button{border:0;border-radius:16px;padding:13px 16px;font-weight:800;color:#fff;background:linear-gradient(180deg,var(--accent),#1550b3);}
+</style>
 </head>
 <body data-mock-weekday="Thursday">
 <div class="shell" id="pageRoot">
@@ -6589,10 +6605,7 @@ body::after{
 </div>
 <div class="compact-copy injection-copy">Mounjaro • Injection • 5 mg weekly</div>
 </section>
-<section class="card compact-card milestones-card badges-card" id="markerMiniRow">
-<div class="section-label" style="margin-bottom:8px">BADGES</div>
-<div id="homeLatestBadges"></div>
-</section>
+
 <section class="card rhythm-card-home rhythm-card" id="todaysRhythmCard">
 <div class="protocol-head">
 <div>
@@ -6657,7 +6670,7 @@ body::after{
 </div>
 <div class="weight-display">
 <div class="weight-readout">
-<div class="weight-value"><input aria-label="Weight in kilograms" class="weight-input" id="weightValueInput" inputmode="decimal" value="71.5"/></div>
+<div class="weight-value"><input aria-label="Weight in kilograms" class="weight-input" id="weightValueInput" inputmode="decimal" value="71.5"/ readonly inputmode="none"></div>
 <div class="weight-unit">KILOGRAMS</div>
 </div>
 <div class="weight-step-grid">
@@ -7037,8 +7050,9 @@ body::after{
       let actions = '';
       if(dueNow){
         actions = `
-          <button class="dose-icon-btn ${logged ? 'active' : ''}" type="button" id="doseCheckBtn" aria-pressed="${logged ? 'true' : 'false'}" aria-label="${logged ? 'Dose logged' : 'Log dose'}">
-            <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          <button class="dose-icon-btn dose-cta-btn ${logged ? 'active' : ''}" type="button" id="doseCheckBtn" aria-pressed="${logged ? 'true' : 'false'}" aria-label="${logged ? 'Dose logged' : 'Mark dose as taken'}">
+            <span class="dose-cta-icon"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>
+            <span class="dose-cta-text">${logged ? 'Taken' : 'Mark as taken'}</span>
           </button>`;
       }
       injectionActions.innerHTML = actions;
@@ -7107,10 +7121,8 @@ body::after{
       const current = readDailyNumber('heartyTodayWeightKg');
       weightValueInput.value = Number.isFinite(current) ? current.toFixed(1) : '71.5';
       openSheet(weightSheet);
-      setTimeout(() => {
-        weightValueInput.focus();
-        weightValueInput.select();
-      }, 50);
+      // Avoid opening the mobile keyboard; users adjust with the step buttons.
+      // setTimeout(() => { weightValueInput.focus(); weightValueInput.select(); }, 50);
     }
 
     function saveWeightEntry(){
@@ -7608,72 +7620,6 @@ const headlineEl = document.querySelector('.headline');
 if(headlineEl && nm && nm.trim()){
   headlineEl.textContent = `Hi, ${nm.trim()}`;
 }
-</script>
-<script id="home-badges-final-cabinet-only">
-(function(){
-  function parseTime(value){
-    if(value == null) return 0;
-    if(typeof value === 'number' && isFinite(value)) return value;
-    if(typeof value !== 'string') return 0;
-    var trimmed = value.trim();
-    if(!trimmed) return 0;
-    if(/^\d{10,13}$/.test(trimmed)) return Number(trimmed);
-    var parsed = Date.parse(trimmed);
-    return isNaN(parsed) ? 0 : parsed;
-  }
-
-  function starSvg(){
-    return '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.7l2.46 5 5.52.8-4 3.9.94 5.5L12 15.3 7.08 17.9 8.02 12.4 4 8.5l5.54-.8L12 2.7z"/></svg>';
-  }
-
-  function loadCabinet(){
-    try{
-      var raw = localStorage.getItem('heartyBadgeCabinet');
-      if(!raw) return [];
-      var parsed = JSON.parse(raw);
-      if(Array.isArray(parsed)){
-        return parsed.filter(function(item){ return item && item.earned; });
-      }
-      if(parsed && typeof parsed === 'object'){
-        return Object.keys(parsed).map(function(key){
-          var item = parsed[key];
-          if(item === true) return { id:key, title:key.replace(/[-_]/g,' '), earned:true, earnedAt:1 };
-          if(!item || item.earned === false) return null;
-          return Object.assign({ id:key }, item);
-        }).filter(Boolean).filter(function(item){ return item.earned !== false; });
-      }
-    }catch(e){}
-    return [];
-  }
-
-  function render(){
-    var host = document.getElementById('homeLatestBadges');
-    if(!host) return;
-
-    var badges = loadCabinet().sort(function(a,b){
-      return parseTime(b.earnedAt || b.timestamp || b.date || b.completedAt) -
-             parseTime(a.earnedAt || a.timestamp || a.date || a.completedAt);
-    }).slice(0,3);
-
-    if(!badges.length){
-      host.innerHTML = '<div class="home-badge-empty">Your latest 3 earned badges will appear here.</div>';
-      return;
-    }
-
-    host.innerHTML = badges.map(function(b, idx){
-      var title = b.title || b.name || b.label || 'Badge earned';
-      var sub = b.subtitle || b.description || '';
-      return '<div class="home-badge-card'+(idx===0?' latest':'')+'">' +
-        '<div class="home-badge-emblem">'+starSvg()+'</div>' +
-        '<div class="home-badge-title">'+title+'</div>' +
-        (sub ? '<div class="home-badge-sub">'+sub+'</div>' : '') +
-      '</div>';
-    }).join('');
-  }
-
-  document.addEventListener('DOMContentLoaded', render);
-  window.renderHomeLatestBadges = render;
-})();
 </script>
 <script id="home-chrome-nav-script">
 (function(){
@@ -9218,5 +9164,28 @@ html[data-theme="sunlit"] .task-icon-btn.done{
 })();
 </script>
 
+
+<script id="hearty-phase1-home-first-use">
+(function(){
+  try{
+    if(localStorage.getItem('heartyFirstUseWelcomeSeen') === 'true') return;
+    function run(){
+      var target = document.getElementById('todaysRhythmCard');
+      if(!target) return;
+      var overlay = document.createElement('div');
+      overlay.className = 'hearty-first-use-overlay show';
+      overlay.innerHTML = '<div class="hearty-first-use-card"><h2>Welcome to Hearty</h2><p>Let’s get your first day set up. We’ll start with the basics that matter most today.</p><button type="button" id="heartyFirstUseStart">Let’s get started</button></div>';
+      document.body.appendChild(overlay);
+      document.getElementById('heartyFirstUseStart').addEventListener('click', function(){
+        localStorage.setItem('heartyFirstUseWelcomeSeen','true');
+        overlay.classList.remove('show');
+        setTimeout(function(){ overlay.remove(); }, 200);
+        target.scrollIntoView({behavior:'smooth', block:'center'});
+      });
+    }
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

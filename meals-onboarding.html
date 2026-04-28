@@ -108,8 +108,7 @@
     <section class="setup-card" data-onboarding-root></section>
   </main>
 
-  <script type="module" src="./supabase-client.js"></script>
-<script src="./hearty-meals-db-bridge.js"></script>
+  <script src="./hearty-meals-db-bridge.js"></script>
   <script>
     (function(){
       "use strict";
@@ -379,5 +378,19 @@
       render();
     })();
   </script>
+<script id="hearty-phase1-meals-onboarding-patch">
+(function(){
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest('[data-food],[data-protein],[data-veg],[data-fruit],[data-starch]');
+    if(!btn) return;
+    var group = btn.closest('.option-grid,.choice-grid,.food-grid');
+    if(group && !group.hasAttribute('data-single-choice')){
+      e.preventDefault();
+      btn.classList.toggle('selected');
+      btn.setAttribute('aria-pressed', btn.classList.contains('selected') ? 'true':'false');
+    }
+  }, true);
+})();
+</script>
 </body>
 </html>

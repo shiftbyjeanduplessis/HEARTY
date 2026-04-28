@@ -900,7 +900,22 @@ render();
 </script>
 <script id="hearty-settings-theme-key-sync">
 (function(){function sync(){var t=document.documentElement.getAttribute('data-theme')||'clean_blue';try{localStorage.setItem('heartyTheme',t);localStorage.setItem('hearty-theme',t)}catch(e){}}document.addEventListener('click',function(e){var n=e.target&&e.target.closest?e.target.closest('[data-theme],.theme-option'):null;if(!n)return;var t=n.getAttribute('data-theme')||n.getAttribute('data-value')||n.value;if(t&&window.heartyApplyTheme)window.heartyApplyTheme(t);setTimeout(sync,0)},true);document.addEventListener('change',function(e){if(e.target&&(e.target.name==='theme'||e.target.id==='themeSelect'||e.target.matches('[data-theme-input],.theme-select'))){if(window.heartyApplyTheme)window.heartyApplyTheme(e.target.value);setTimeout(sync,0)}},true)})();
-</script></body></html>
+</script><style id="hearty-phase1-settings-privacy-note-style">.hearty-privacy-note{margin:14px 0;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:650;line-height:1.45}</style>
+<script id="hearty-phase1-settings-privacy-note">
+(function(){
+  function run(){
+    if(document.getElementById('heartyPrivacyNote')) return;
+    var host = document.querySelector('.shell') || document.body;
+    var note = document.createElement('div');
+    note.id = 'heartyPrivacyNote';
+    note.className = 'hearty-privacy-note';
+    note.textContent = 'Privacy note: Hearty does not store medication details or progress photos on our servers. These remain on your device unless you choose to share them.';
+    host.appendChild(note);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+})();
+</script>
+</body></html>
 
 <style id="hearty-layer-3-topbar">
 /* ===== LAYER 3: SETTINGS-SOURCE TOPBAR NORMALIZATION ONLY ===== */

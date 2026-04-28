@@ -952,6 +952,7 @@ html[data-theme="midnight"]{--bg-1:#0b1424;--bg-2:#050b15;--bg-base:#0a111b;--bg
 html[data-theme="rose_aurora"]{--bg-1:#1a0f1a;--bg-2:#2a1428;--bg-base:#0d0a10;--bg-layer-1:radial-gradient(900px 320px at 18% -8%,rgba(210,143,178,.14),transparent 48%);--bg-layer-2:radial-gradient(760px 280px at 82% 0%,rgba(165,128,190,.10),transparent 46%);--bg-layer-3:linear-gradient(180deg,#18111a 0%,#171118 52%,#130d14 100%);--ink:#f8f0f5;--muted:#b89fac;--line:rgba(195,148,172,.14);--card:rgba(22,16,26,.82);--shadow:0 22px 52px rgba(6,2,10,.44);--shadow-soft:0 10px 26px rgba(6,2,10,.30);--surface-top:rgba(30,21,36,.80);--surface-bottom:rgba(20,15,24,.68);--surface-button:rgba(36,26,42,.88);--surface-chip:rgba(38,27,44,.92);--accent:#d89abb;--accent-2:#c9955c;--theme-accent:#d89abb;--topbar-bg:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));--icon-bg:var(--surface-button);--pill-bg:var(--surface-chip)}
 body{background:var(--bg-base)!important;color:var(--ink)!important}body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-2;background:var(--bg-layer-1),var(--bg-layer-2),var(--bg-layer-3),var(--bg-base)!important}.topbar{background:var(--topbar-bg)!important;border-color:var(--line)!important;box-shadow:var(--shadow-soft)!important}.icon-btn{background:var(--icon-bg)!important;border-color:var(--line)!important;color:var(--muted)!important}.bottom-nav{background:color-mix(in srgb,var(--surface-chip) 78%,transparent)!important;border-color:var(--line)!important;box-shadow:var(--shadow-soft)!important}.bottom-nav .nav-item.active,.bottom-nav .nav-item[aria-current="page"]{color:var(--theme-accent)!important}html[data-theme="midnight"] .card,html[data-theme="midnight"] .settings-card,html[data-theme="midnight"] .settings-panel,html[data-theme="midnight"] .tile,html[data-theme="midnight"] .placeholder-card,html[data-theme="rose_aurora"] .card,html[data-theme="rose_aurora"] .settings-card,html[data-theme="rose_aurora"] .settings-panel,html[data-theme="rose_aurora"] .tile,html[data-theme="rose_aurora"] .placeholder-card{background:var(--card)!important;border-color:var(--line)!important;color:var(--ink)!important}html[data-theme="midnight"] input,html[data-theme="midnight"] select,html[data-theme="midnight"] textarea,html[data-theme="rose_aurora"] input,html[data-theme="rose_aurora"] select,html[data-theme="rose_aurora"] textarea{background:rgba(255,255,255,.04)!important;color:var(--ink)!important;border-color:var(--line)!important}
 </style>
+<style id="hearty-phase1-progress-patch">.badge-cabinet-head,.badge-collapsed-grid,.badge-expanded-grid,.badge-reward-overlay{display:none!important;}</style>
 </head>
 <body data-current-weight="" data-injection-day="" data-last-injection="" data-next-injection="" data-start-weight="" data-target-weight="" data-user-name="" data-current-dosage="" data-injection-day-name="Friday" data-medication="">
 <div class="shell">
@@ -965,7 +966,7 @@ body{background:var(--bg-base)!important;color:var(--ink)!important}body::before
   <div>
     <div class="eyebrow">PROGRESS</div>
     <h1 class="headline">Your progress at a glance</h1>
-    <div class="subline">Track your weight, photos, badges, and weekly consistency in one place.</div>
+    <div class="subline">Track your weight, photos, and weekly consistency in one place.</div>
   </div>
 </div>
 
