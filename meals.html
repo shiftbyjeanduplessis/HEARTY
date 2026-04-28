@@ -672,7 +672,6 @@ body{font-family:Inter,Arial,sans-serif;padding:24px;color:#102033;background:#f
 
 
 
-<style id="hearty-phase1-meals-patch">.meal-placeholder-card{display:none!important}.meal-empty-state{border-style:dashed!important}.support-mode-meals-chip{margin:0 0 14px;padding:12px 14px;border-radius:16px;border:1px solid rgba(245,158,11,.22);background:linear-gradient(180deg,rgba(255,248,238,.98),rgba(255,255,255,.96));color:#8b5e00;font-weight:800;font-size:.9rem;text-align:center}</style>
 </head>
 <body data-page="meals">
   <div class="shell">
@@ -735,19 +734,40 @@ body{font-family:Inter,Arial,sans-serif;padding:24px;color:#102033;background:#f
 <section class="card">
 <div class="section-label">TODAY'S MEALS</div>
 <div class="meal-list" id="todayMeals">
-  <article class="meal-card meal-empty-state">
+  <article class="meal-card meal-placeholder-card">
     <div class="meal-top">
-      <div class="meal-slot"><div class="meal-slot-time">Setup</div></div>
+      <div class="meal-slot"><div class="meal-slot-time">Breakfast</div></div>
       <div class="meal-heading">
-        <div class="meal-label">MEALS</div>
-        <div class="meal-title">Set up your meals to generate your first week</div>
-        <div class="meal-desc">Your plan will appear here after your food preferences are set.</div>
+        <div class="meal-label">BREAKFAST</div>
+        <div class="meal-title">Loading your breakfast</div>
+        <div class="meal-desc">The meal engine will fill this section when the page opens.</div>
       </div>
-      <div class="meal-badge optional-badge">New</div>
+      <div class="meal-badge optional-badge">—</div>
+    </div>
+  </article>
+  <article class="meal-card meal-placeholder-card">
+    <div class="meal-top">
+      <div class="meal-slot"><div class="meal-slot-time">Lunch</div></div>
+      <div class="meal-heading">
+        <div class="meal-label">LUNCH</div>
+        <div class="meal-title">Loading your lunch</div>
+        <div class="meal-desc">If this message stays visible, make sure meals-engine.js and meals-main.js are in the same folder.</div>
+      </div>
+      <div class="meal-badge optional-badge">—</div>
+    </div>
+  </article>
+  <article class="meal-card meal-placeholder-card">
+    <div class="meal-top">
+      <div class="meal-slot"><div class="meal-slot-time">Dinner</div></div>
+      <div class="meal-heading">
+        <div class="meal-label">DINNER</div>
+        <div class="meal-title">Loading your dinner</div>
+        <div class="meal-desc">This visible shell prevents the meal section from disappearing.</div>
+      </div>
+      <div class="meal-badge optional-badge">—</div>
     </div>
   </article>
 </div>
-<div class="support-mode-meals-chip" id="supportMealsChip" hidden>Support mode active — meals should adapt today</div>
 <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
 <button class="soft-btn" id="generateWeekBtn" type="button">Generate week</button>
 </div>
@@ -816,8 +836,7 @@ h1{margin:0 0 16px;font-size:24px;}
 table{width:100%;border-collapse:collapse;}
 th,td{padding:10px 12px;border:1px solid #dbe3ee;text-align:left;vertical-align:top;}
 th{background:#f3f7fb;}
-</style><style id="hearty-phase1-meals-patch">.meal-placeholder-card{display:none!important}.meal-empty-state{border-style:dashed!important}.support-mode-meals-chip{margin:0 0 14px;padding:12px 14px;border-radius:16px;border:1px solid rgba(245,158,11,.22);background:linear-gradient(180deg,rgba(255,248,238,.98),rgba(255,255,255,.96));color:#8b5e00;font-weight:800;font-size:.9rem;text-align:center}</style>
-</head><body><h1>{{TITLE}}</h1><table><thead><tr><th>Meal</th><th>Item</th></tr></thead><tbody>{{ROWS}}</tbody></table>
+</style></head><body><h1>{{TITLE}}</h1><table><thead><tr><th>Meal</th><th>Item</th></tr></thead><tbody>{{ROWS}}</tbody></table>
 <style id="hearty-onboarding-aware-meals-css">
 .meals-preference-card{
   margin-bottom:14px;
@@ -1670,27 +1689,107 @@ th{background:#f3f7fb;}
 })();
 </script>
 
-<script id="hearty-phase1-meals-first-use">
+
+<script id="hearty-fixed-generated-day-index">
 (function(){
-  function hasMealSetup(){
-    try{
-      var s = JSON.parse(localStorage.getItem('heartyMealsPageStateVFinal') || localStorage.getItem('heartyMealsStateV1') || '{}');
-      return !!(s && (s.profileComplete || s.onboarding || s.preferences));
-    }catch(e){ return false; }
+  "use strict";
+
+  const PAGE_STATE_KEY = "heartyMealsPageStateVFinal";
+  const UI_STATE_KEY = "heartyMealsStateV1";
+
+  function readState(){
+    try {
+      return JSON.parse(localStorage.getItem(PAGE_STATE_KEY) || localStorage.getItem(UI_STATE_KEY) || "{}");
+    } catch(e) {
+      return {};
+    }
   }
-  function run(){
-    var supportChip = document.getElementById('supportMealsChip');
-    try{ if(supportChip && localStorage.getItem('heartySupportState')) supportChip.hidden = false; }catch(e){}
-    if(hasMealSetup()) return;
-    if(sessionStorage.getItem('heartyMealSetupPromptSeen') === 'true') return;
-    sessionStorage.setItem('heartyMealSetupPromptSeen','true');
+
+  function writeState(state){
+    localStorage.setItem(PAGE_STATE_KEY, JSON.stringify(state || {}));
+    localStorage.setItem(UI_STATE_KEY, JSON.stringify(state || {}));
+  }
+
+  function startOfDay(value){
+    const d = value ? new Date(value) : new Date();
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function applyGeneratedDayIndex(state){
+    if (!state || typeof state !== "object") state = {};
+    if (!Array.isArray(state.weekPlan) || state.weekPlan.length === 0) return state;
+
+    if (!state.planGeneratedAt) {
+      state.planGeneratedAt = state.lastGeneratedAt || new Date().toISOString();
+    }
+
+    const generated = startOfDay(state.planGeneratedAt);
+    const today = startOfDay(new Date());
+    const daysSinceGenerated = Math.floor((today - generated) / 86400000);
+    const dayIndex = Math.min(6, Math.max(0, daysSinceGenerated));
+
+    state.currentDayIndex = dayIndex;
+    state.currentGeneratedDayIndex = dayIndex;
+
+    return state;
+  }
+
+  function markNewPlanGenerated(){
+    const state = readState();
+    state.planGeneratedAt = new Date().toISOString();
+    state.lastGeneratedAt = state.planGeneratedAt;
+    state.currentDayIndex = 0;
+    state.currentGeneratedDayIndex = 0;
+    writeState(state);
+  }
+
+  function refreshMealsUI(){
+    if (window.HeartyOnboardingAwareMeals && typeof window.HeartyOnboardingAwareMeals.renderAll === "function") {
+      window.HeartyOnboardingAwareMeals.renderAll();
+    }
+    if (window.HeartyProteinLogger && typeof window.HeartyProteinLogger.refresh === "function") {
+      window.HeartyProteinLogger.refresh();
+    }
+  }
+
+  window.HeartyGeneratedDayIndex = {
+    readState,
+    writeState,
+    applyGeneratedDayIndex,
+    markNewPlanGenerated
+  };
+
+  window.addEventListener("load", function(){
+    let state = readState();
+    state = applyGeneratedDayIndex(state);
+    writeState(state);
+    setTimeout(refreshMealsUI, 120);
+    setTimeout(refreshMealsUI, 600);
+  });
+
+  document.addEventListener("click", function(event){
+    const target = event.target;
+    if (!target) return;
+
+    const text = (target.textContent || "").toLowerCase();
+    const isGenerate =
+      target.id === "generateWeekBtn" ||
+      target.id === "heartyGenerateFromPrefsBtn" ||
+      text.includes("generate week") ||
+      text.includes("generate from preferences") ||
+      text.includes("generate my meals");
+
+    if (!isGenerate) return;
+
     setTimeout(function(){
-      if(confirm('Would you like to set up your meals now?')) window.location.href = './meals-onboarding.html';
-    }, 450);
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+      markNewPlanGenerated();
+      refreshMealsUI();
+    }, 300);
+  });
 })();
 </script>
+
 </body></html></template>
 
 <script id="hearty-theme-single-source-fix">
@@ -2496,26 +2595,5 @@ document.addEventListener('DOMContentLoaded',function(){buildNav();wireTopbar();
 })();
 </script>
 
-<script id="hearty-phase1-meals-first-use">
-(function(){
-  function hasMealSetup(){
-    try{
-      var s = JSON.parse(localStorage.getItem('heartyMealsPageStateVFinal') || localStorage.getItem('heartyMealsStateV1') || '{}');
-      return !!(s && (s.profileComplete || s.onboarding || s.preferences));
-    }catch(e){ return false; }
-  }
-  function run(){
-    var supportChip = document.getElementById('supportMealsChip');
-    try{ if(supportChip && localStorage.getItem('heartySupportState')) supportChip.hidden = false; }catch(e){}
-    if(hasMealSetup()) return;
-    if(sessionStorage.getItem('heartyMealSetupPromptSeen') === 'true') return;
-    sessionStorage.setItem('heartyMealSetupPromptSeen','true');
-    setTimeout(function(){
-      if(confirm('Would you like to set up your meals now?')) window.location.href = './meals-onboarding.html';
-    }, 450);
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
-})();
-</script>
 </body>
 </html>
