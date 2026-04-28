@@ -419,6 +419,11 @@ background-repeat:no-repeat;
     }
 
     goHomeIfLoggedIn();
+    setTimeout(() => {
+  document.body.classList.remove("auth-checking");
+  const splash = document.getElementById("splash");
+  if (splash) splash.classList.add("hide");
+}, 2000);
   </script>
 </body>
 </html>
