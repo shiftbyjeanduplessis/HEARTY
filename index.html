@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Hearty Login</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#f8fbff">
   <meta name="mobile-web-app-capable" content="yes">
@@ -16,8 +15,6 @@
 
   <style>
     :root{
-      --bg-1:#eef4fb;
-      --bg-2:#f8fbff;
       --ink:#102033;
       --muted:#5d6f7e;
       --line:rgba(180,200,220,0.5);
@@ -69,10 +66,10 @@
       pointer-events:none;
     }
 
-    #splash img{
-      width:min(340px,78vw);
+    .splash-logo{
+      width:min(300px,72vw);
       height:auto;
-      margin-bottom:0;
+      display:block;
     }
 
     .auth-card{
@@ -101,6 +98,7 @@
       width:auto;
       max-width:300px;
       object-fit:contain;
+      display:block;
     }
 
     .auth-tagline{
@@ -191,9 +189,7 @@
       align-items:center;
     }
 
-    .install-banner.show{
-      display:flex;
-    }
+    .install-banner.show{display:flex}
 
     .install-banner strong{
       display:block;
@@ -230,19 +226,19 @@
       .auth-card{padding:30px 20px 26px;border-radius:28px}
       .auth-logo{height:56px}
       .auth-title{font-size:1.75rem}
-      #splash img{width:min(300px,76vw)}
+      .splash-logo{width:min(260px,70vw)}
     }
   </style>
 </head>
 
 <body class="auth-checking">
   <div id="splash">
-    <img src="./hearty-logo.png" alt="Hearty">
+    <img src="/hearty-logo.png?v=4" alt="" class="splash-logo">
   </div>
 
   <main class="auth-card">
     <div class="auth-logo-wrap">
-      <img src="./hearty-logo.png" alt="Hearty" class="auth-logo">
+      <img src="/hearty-logo.png?v=4" alt="Hearty" class="auth-logo">
       <div class="auth-tagline">Your GLP-1 Companion</div>
     </div>
 
@@ -288,6 +284,7 @@
     const installBtn = document.getElementById("installBtn");
 
     let deferredInstallPrompt = null;
+    let redirecting = false;
 
     function setMessage(text) {
       message.textContent = text || "";
@@ -302,6 +299,7 @@
     }
 
     function unlockLogin() {
+      if (redirecting) return;
       document.body.classList.remove("auth-checking");
       hideSplash();
     }
@@ -330,6 +328,13 @@
       }
     }
 
+    async function sendToHome() {
+      if (redirecting) return;
+      redirecting = true;
+      await ensureProfile();
+      window.location.replace("./home.html");
+    }
+
     async function goHomeIfLoggedIn() {
       const isAuthCallback =
         window.location.hash.includes("access_token") ||
@@ -339,8 +344,7 @@
         const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
-          await ensureProfile();
-          window.location.replace("./home.html");
+          await sendToHome();
           return;
         }
       } catch (error) {
@@ -356,8 +360,7 @@
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        await ensureProfile();
-        window.location.replace("./home.html");
+        await sendToHome();
       }
     });
 
