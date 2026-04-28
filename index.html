@@ -330,34 +330,27 @@
       }
     }
 
-   async function goHomeIfLoggedIn() {
-  const isAuthCallback =
-    window.location.hash.includes("access_token") ||
-    window.location.search.includes("code=");
+    async function goHomeIfLoggedIn() {
+      const isAuthCallback =
+        window.location.hash.includes("access_token") ||
+        window.location.search.includes("code=");
 
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
-      await ensureProfile();
-      window.location.replace("./home.html");
-      return;
-    }
-  } catch (error) {
-    console.warn("Session check failed:", error);
-  }
-
-  if (!isAuthCallback) {
-    unlockLogin();
-  } else {
-    setTimeout(unlockLogin, 5000);
-  }
-}
+        if (session) {
+          await ensureProfile();
+          window.location.replace("./home.html");
+          return;
+        }
+      } catch (error) {
+        console.warn("Session check failed:", error);
+      }
 
       if (!isAuthCallback) {
         unlockLogin();
       } else {
-        setTimeout(unlockLogin, 4000);
+        setTimeout(unlockLogin, 5000);
       }
     }
 
