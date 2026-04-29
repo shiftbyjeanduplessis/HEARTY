@@ -51,10 +51,10 @@
       inset:0;
       z-index:9999;
       background-color:#0057ff;
-background-image:url("/hearty-splash.png");
-background-position:center center;
-background-size:contain;
-background-repeat:no-repeat;
+      background-image:url("/hearty-splash.png");
+      background-position:center center;
+      background-size:contain;
+      background-repeat:no-repeat;
       transition:opacity .35s ease, visibility .35s ease;
     }
 
@@ -209,10 +209,9 @@ background-repeat:no-repeat;
     const googleBtn = document.getElementById("googleBtn");
     const message = document.getElementById("message");
     const splash = document.getElementById("splash");
-    const installBanner = document.getElementById("installBanner");
-    const installBtn = document.getElementById("installBtn");
 
     let redirecting = false;
+    let splashUnlocked = false;
 
     function setMessage(text) {
       message.textContent = text || "";
@@ -227,12 +226,21 @@ background-repeat:no-repeat;
     }
 
     function unlockLogin() {
-      if (redirecting) return;
+      if (redirecting || splashUnlocked) return;
+      splashUnlocked = true;
       document.body.classList.remove("auth-checking");
       hideSplash();
     }
 
-     async function ensureProfile() {
+    function unlockLoginAfterSplashHold() {
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          unlockLogin();
+        }, 2000);
+      });
+    }
+
+    async function ensureProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
@@ -275,9 +283,7 @@ background-repeat:no-repeat;
         console.warn("Session check failed:", error);
       }
 
-      if (!isAuthCallback) {
-        unlockLogin();
-      } else {
+      if (isAuthCallback) {
         setTimeout(unlockLogin, 5000);
       }
     }
@@ -333,18 +339,14 @@ background-repeat:no-repeat;
       if (event.key === "Enter") sendBtn.click();
     });
 
-     if ("serviceWorker" in navigator) {
+    if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/service-worker.js").catch(console.warn);
       });
     }
 
+    unlockLoginAfterSplashHold();
     goHomeIfLoggedIn();
-    setTimeout(() => {
-  document.body.classList.remove("auth-checking");
-  const splash = document.getElementById("splash");
-  if (splash) splash.classList.add("hide");
-}, 2000);
   </script>
 </body>
 </html>
