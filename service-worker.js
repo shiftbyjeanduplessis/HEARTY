@@ -1,4 +1,4 @@
-const CACHE_NAME = "hearty-v1";
+const CACHE_NAME = "hearty-v2026-04-29-2";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
