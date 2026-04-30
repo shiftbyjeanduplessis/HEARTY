@@ -46,12 +46,13 @@
       pointer-events:none;
     }
 
-   #splash{
+ #splash{
   position:fixed;
   inset:0;
   z-index:9999;
   background:#0057ff url("/hearty-splash.png") center center no-repeat;
-background-size:110% auto;
+  background-size:cover;
+  transition:opacity .35s ease, visibility .35s ease;
 }
 
     #splash.hide{
@@ -268,6 +269,10 @@ background-size:110% auto;
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        if (window.location.search.includes("code=")) {
+  const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+  if (error) console.warn("Code exchange failed:", error);
+}
 
         if (session) {
           await sendToHome();
@@ -277,10 +282,9 @@ background-size:110% auto;
         console.warn("Session check failed:", error);
       }
 
-      if (isAuthCallback) {
-        setTimeout(unlockLogin, 5000);
-      }
-    }
+    if (isAuthCallback) {
+  setTimeout(unlockLogin, 1200);
+}
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
