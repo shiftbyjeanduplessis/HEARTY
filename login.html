@@ -230,9 +230,7 @@ background-size:110% auto;
 
     function unlockLoginAfterSplashHold() {
       window.addEventListener("load", () => {
-        setTimeout(() => {
-          unlockLogin();
-        }, 2000);
+        setTimeout(unlockLogin, 800);
       });
     }
 
