@@ -9360,53 +9360,6 @@ html[data-theme="sunlit"] .task-icon-btn.done{
   document.addEventListener('DOMContentLoaded', removeBadges);
   setTimeout(removeBadges, 300);
 })();
-</script>
-</script>
-
-<script id="empty-medication-card-state">
-(function(){
-  function fixEmptyMedication(){
-    const card = document.getElementById('injectionCard');
-    if(!card) return;
-
-    const title = card.querySelector('.injection-title');
-    const copy = card.querySelector('.injection-copy');
-    const actions = document.getElementById('injectionActions');
-
-    if(title && !title.textContent.trim()){
-      title.textContent = 'No medication schedule set';
-    }
-
-    if(copy && !copy.textContent.trim()){
-      copy.textContent = 'Complete onboarding to add your schedule. You can change it later in Settings.';
-    }
-
-    if(actions && !actions.children.length){
-      actions.innerHTML = `
-        <span style="
-          display:inline-flex;
-          justify-content:center;
-          align-items:center;
-          padding:9px 12px;
-          border-radius:999px;
-          background:rgba(255,255,255,.72);
-          border:1px solid rgba(143,163,184,.22);
-          color:#6d7b8c;
-          font-size:.78rem;
-          font-weight:700;
-        ">
-          Not set yet
-        </span>
-      `;
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', fixEmptyMedication);
-  setTimeout(fixEmptyMedication, 300);
-  setTimeout(fixEmptyMedication, 1000);
-})();
-</script>
-</script>
 
 <script id="empty-medication-card-state">
 (function(){
