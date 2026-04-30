@@ -9143,18 +9143,44 @@ html[data-theme="sunlit"] .task-icon-btn.done{
   function safeJson(raw, fallback){ try{return JSON.parse(raw)||fallback;}catch(e){return fallback;} }
   function openSheet(sheet){ if(!sheet)return; sheet.classList.add('show'); sheet.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
   function closeSheet(sheet){ if(!sheet)return; sheet.classList.remove('show'); sheet.setAttribute('aria-hidden','true'); if(!document.querySelector('.task-sheet-overlay.show')) document.body.style.overflow=''; }
-  function showCoreSetupIfNeeded(){
-    if(localStorage.getItem('heartyCoreSetupDone') === 'true') return;
-    var weightLogged = !!localStorage.getItem('heartyTodayWeightKg') || !!localStorage.getItem('heartyTodayWeightKg:' + todayKey());
-    if(!weightLogged) return;
-    var sheet = document.getElementById('coreSetupSheet'); if(!sheet) return;
-    var profile = safeJson(localStorage.getItem('hearty_profile'), {});
-    var nameEl = document.getElementById('coreSetupName'); var medEl = document.getElementById('coreSetupMedication'); var dayEl = document.getElementById('coreSetupInjectionDay');
-    if(nameEl && !nameEl.value) nameEl.value = localStorage.getItem('heartyUserName') || profile.name || '';
-    if(medEl && !medEl.value) medEl.value = localStorage.getItem('heartyMedicationName') || profile.medicationName || '';
-    if(dayEl && !dayEl.value) dayEl.value = localStorage.getItem('heartyInjectionDay') || profile.injectionDay || '';
-    setTimeout(function(){ openSheet(sheet); }, 180);
+ function showCoreSetupIfNeeded(){
+  if(localStorage.getItem('heartyCoreSetupDone') === 'true') return;
+
+  var sheet = document.getElementById('coreSetupSheet');
+  if(!sheet) return;
+
+  var profile = safeJson(localStorage.getItem('hearty_profile'), {});
+
+  var nameEl = document.getElementById('coreSetupName');
+  var medEl = document.getElementById('coreSetupMedication');
+  var dayEl = document.getElementById('coreSetupInjectionDay');
+
+  if(nameEl && !nameEl.value) {
+    nameEl.value =
+      localStorage.getItem('heartyUserName') ||
+      localStorage.getItem('heartyUserDisplayName') ||
+      profile.name ||
+      '';
   }
+
+  if(medEl && !medEl.value) {
+    medEl.value =
+      localStorage.getItem('heartyMedicationName') ||
+      profile.medicationName ||
+      '';
+  }
+
+  if(dayEl && !dayEl.value) {
+    dayEl.value =
+      localStorage.getItem('heartyInjectionDay') ||
+      profile.injectionDay ||
+      '';
+  }
+
+  setTimeout(function(){
+    openSheet(sheet);
+  }, 450);
+}
   function saveCoreSetup(){
     var name = ((document.getElementById('coreSetupName')||{}).value || '').trim();
     var med = ((document.getElementById('coreSetupMedication')||{}).value || '').trim();
@@ -9471,24 +9497,6 @@ html[data-theme="sunlit"] .task-icon-btn.done{
 })();
 </script>
 </body>
-<script id="hearty-name-onboarding-modal">
-(function(){
-  const NAME_KEY = 'heartyUserDisplayName';
-  const DONE_KEY = 'heartyNameOnboardingDone';
-
-  function createModal(){
-    if(document.getElementById('heartyNameModal')) return;
-
-    const modal = document.createElement('div');
-    modal.id = 'heartyNameModal';
-    modal.innerHTML = `
-      <div style="
-        position:fixed; inset:0; z-index:9998;
-        background:rgba(15,23,42,.34);
-        backdrop-filter:blur(8px);
-        display:flex; align-items:center; justify-content:center;
-        padding:20px;
-      ">
         <div style="
           width:min(100%,420px);
           background:rgba(255,255,255,.96);
