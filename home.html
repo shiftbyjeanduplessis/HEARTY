@@ -9340,6 +9340,30 @@ html[data-theme="sunlit"] .task-icon-btn.done{
 <script id="remove-badge-box">
 (function(){
   function removeBadges(){
+    const selectors = [
+      '#badgeCard',
+      '#badgesCard',
+      '#badgeBlock',
+      '#badgesBlock',
+      '.badge-card',
+      '.badges-card',
+      '.badge-block',
+      '.badges-block'
+    ];
+
+    selectors.forEach(sel => {
+      document.querySelectorAll(sel).forEach(el => el.remove());
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', removeBadges);
+  setTimeout(removeBadges, 300);
+})();
+</script>
+</body>
+</html>
+(function(){
+  function removeBadges(){
     // Try all likely badge containers (your file has inconsistent naming)
     const selectors = [
       '#badgeCard',
