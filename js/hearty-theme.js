@@ -18,40 +18,46 @@
     }
   }
 
+  function pickExistingSrc(logo){
+    const src = logo.getAttribute("src") || "";
+    if(src && !src.startsWith("data:")) return src;
+    return "/hearty-logo.png";
+  }
+
   function syncLogos(theme){
     const safe = safeTheme(theme);
 
     document.querySelectorAll(".brand-logo, .auth-logo").forEach((logo) => {
-      const current = logo.getAttribute("src") || "";
-      const defaultLogo =
+      const existingDefault =
         logo.getAttribute("data-default-logo") ||
         logo.getAttribute("data-clean-blue-logo") ||
+        pickExistingSrc(logo) ||
         "/hearty-logo.png";
 
-      const roseLogo =
-        logo.getAttribute("data-rose-aurora-logo") ||
-        "/hearty-logo-gold.png";
+      const roseLogo = logo.getAttribute("data-rose-aurora-logo");
 
-      const midnightLogo =
-        logo.getAttribute("data-midnight-logo") ||
-        defaultLogo;
+      /*
+        Important:
+        Do NOT force /hearty-logo-gold.png here.
+        If that file is missing, the logo flashes then disappears.
+        Gold appearance is handled safely by CSS filter.
+      */
+      let next = existingDefault;
 
-      const sunlitLogo =
-        logo.getAttribute("data-sunlit-logo") ||
-        defaultLogo;
+      if(safe === "rose_aurora" && roseLogo){
+        next = roseLogo;
+      }
 
-      let next = defaultLogo;
+      logo.onerror = function(){
+        this.onerror = null;
+        this.setAttribute("src", existingDefault || "/hearty-logo.png");
+      };
 
-      if (safe === "rose_aurora") next = roseLogo;
-      if (safe === "midnight") next = midnightLogo;
-      if (safe === "sunlit") next = sunlitLogo;
-
-      if (next && current !== next) {
+      if(next && logo.getAttribute("src") !== next){
         logo.setAttribute("src", next);
       }
 
-      logo.setAttribute("data-default-logo", defaultLogo);
-      logo.setAttribute("data-rose-aurora-logo", roseLogo);
+      logo.setAttribute("data-default-logo", existingDefault || "/hearty-logo.png");
     });
 
     document.documentElement.classList.add("logo-ready");
