@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="clean_blue">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Hearty — Community</title>
+<script>
+(function(){
+  var valid=['clean_blue','sunlit','midnight','rose_aurora'];
+  function readTheme(){
+    try{
+      var t=localStorage.getItem('heartyTheme')||localStorage.getItem('hearty-theme')||document.documentElement.getAttribute('data-theme')||'clean_blue';
+      return valid.indexOf(t)>=0?t:'clean_blue';
+    }catch(e){return 'clean_blue';}
+  }
+  var theme=readTheme();
+  document.documentElement.setAttribute('data-theme',theme);
+  window.heartyApplyTheme=function(t){
+    if(valid.indexOf(t)<0)t='clean_blue';
+    document.documentElement.setAttribute('data-theme',t);
+    try{localStorage.setItem('heartyTheme',t);localStorage.setItem('hearty-theme',t);}catch(e){}
+    syncLogo();
+  };
+  function syncLogo(){
+    var logo=document.querySelector('.brand-logo');
+    if(!logo)return;
+    var t=document.documentElement.getAttribute('data-theme')||'clean_blue';
+    logo.src=(t==='rose_aurora' && logo.dataset.roseAuroraLogo) ? logo.dataset.roseAuroraLogo : (logo.dataset.defaultLogo||'/hearty-logo.png');
+  }
+  document.addEventListener('DOMContentLoaded',syncLogo);
+})();
+</script>
+<style>
+    :root {
+      --bg-1: #eef4fb;
+      --bg-2: #f8fbff;
+      --card: rgba(255,255,255,0.92);
+      --card-solid: #ffffff;
+      --ink: #102033;
+      --muted: #6d7b8c;
+      --line: rgba(143,163,184,.24);
+      --shadow: 0 18px 44px rgba(14,31,53,.10);
+      --shadow-soft: 0 8px 22px rgba(14,31,53,.06);
+      --blue: #2f6df6;
+      --blue-soft: rgba(47,109,246,.10);
+      --love: #e11d48;
+      --love-soft: rgba(225,29,72,0.10);
+      --success: #15803d;
+      --success-soft: rgba(21,128,61,0.12);
+      --warning: #d97706;
+      --warning-soft: rgba(217,119,6,0.12);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(59,130,246,0.10), transparent 24%),
+        linear-gradient(180deg, #f9fbff 0%, var(--bg-1) 55%, #eef3fa 100%);
+      overflow-x: hidden;
+    }
+    button, input, textarea { font: inherit; }
+    a { color: inherit; }
+
+    .shell {
+      width: min(100%, var(--max));
+      max-width: 1280px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 20px 20px 32px;
+      position: relative;
+    }
+
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      padding:0 18px;
+      min-height:88px;
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.62));
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border-radius:22px;
+      box-shadow:var(--shadow-soft);
+    }
+    .brand { display:flex; align-items:center; gap:10px; min-width:0; }
+    .brand-logo {
+      display:block;
+      height:48px;
+      width:auto;
+      object-fit:contain;
+      object-position:left center;
+      max-width:min(72vw, 300px);
+      flex:0 0 auto;
+    }
+    .icon-btn,
+    .nav-item,
+    .chip-btn,
+    .action-btn,
+    .ghost-btn,
+    .sheet-close,
+    .reaction-btn,
+    .segmented-btn,
+    .mini-btn {
+      border: none;
+      cursor: pointer;
+      transition: .18s ease;
+      font: inherit;
+    }
+    .icon-btn {
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.9);
+      color:#5d6c7d;
+      box-shadow:var(--shadow-soft);
+      border:1px solid var(--line);
+      flex:0 0 auto;
+    }
+    .icon-btn svg,
+    .nav-item svg {
+      width:20px;
+      height:20px;
+      stroke:currentColor;
+      stroke-width:1.8;
+      fill:none;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      vector-effect:non-scaling-stroke;
+    }
+    .icon-btn:active,
+    .chip-btn:active,
+    .action-btn:active,
+    .ghost-btn:active,
+    .sheet-close:active,
+    .reaction-btn:active,
+    .segmented-btn:active,
+    .mini-btn:active { transform: scale(.985); }
+
+    main { padding: 0 16px 8px; }
+
+    .section-intro { padding: 4px 4px 2px; }
+    .section-intro h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3.6vw, 2.7rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      font-weight: 520;
+    }
+    .section-intro p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 720px;
+    }
+
+    .card,
+    .post-card,
+    .quick-row,
+    .hero-card,
+    .stat-card,
+    .empty-card,
+    .composer-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
+
+    .hero-card {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap: 16px;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .hero-copy strong {
+      display:block;
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+    .hero-copy p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 760px;
+    }
+    .hero-actions {
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .segmented {
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.72);
+      border:1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      margin: 14px 0 16px;
+      width: fit-content;
+      max-width: 100%;
+    }
+    .segmented-btn {
+      padding: 12px 16px;
+      min-height: 44px;
+      border-radius: 14px;
+      background: transparent;
+      color: #5f6d80;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .segmented-btn.active {
+      background: linear-gradient(180deg, rgba(233,242,255,.98), rgba(255,255,255,.96));
+      color: #1f4ec0;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 10px 18px rgba(47,109,246,.10);
+    }
+
+    .screen { display:none; gap:16px; padding-bottom:18px; }
+    .screen.active { display:grid; }
+
+    .quick-row {
+      display:grid;
+      grid-template-columns: minmax(0,1fr) auto;
+      gap:14px;
+      align-items:center;
+      padding:14px;
+    }
+    .profile-chip {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+      padding:4px;
+      border-radius:20px;
+      background:transparent;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+    }
+    .profile-chip span { display:block; min-width:0; }
+    .profile-chip strong {
+      display:block;
+      font-size:18px;
+      line-height:1.15;
+      letter-spacing:-0.02em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .profile-chip small {
+      display:block;
+      margin-top:5px;
+      font-size:14px;
+      line-height:1.45;
+      color:#445066;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .avatar,
+    .avatar-lg {
+      border-radius:18px;
+      background: linear-gradient(180deg, #e8eefb, #ffffff);
+      border:1px solid rgba(24,32,51,0.06);
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      color: var(--blue);
+      font-weight:700;
+      flex:0 0 auto;
+    }
+    .avatar { width:46px; height:46px; font-size:14px; }
+    .avatar-lg { width:82px; height:82px; font-size:22px; border-radius:24px; }
+    .avatar img,
+    .avatar-lg img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    .action-btn,
+    .ghost-btn,
+    .sheet-close,
+    .chip-btn,
+    .mini-btn {
+      padding:12px 16px;
+      min-height:46px;
+      border-radius:16px;
+      font-weight:650;
+    }
+    .action-btn { background: var(--ink); color: white; box-shadow: var(--shadow-soft); }
+    .action-btn.soft { background: var(--blue-soft); color: var(--blue); }
+    .ghost-btn { background: rgba(24,32,51,0.06); color: var(--ink); }
+    .ghost-btn.outline { background: transparent; border:1px solid var(--line); }
+    .chip-btn {
+      min-height: 40px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(24,32,51,0.05);
+      color: #324055;
+    }
+    .chip-btn.active {
+      background: var(--success-soft);
+      color: var(--success);
+      box-shadow: inset 0 0 0 1px rgba(21,128,61,0.08);
+    }
+    .mini-btn {
+      min-height: 38px;
+      padding: 9px 12px;
+      border-radius: 14px;
+      background: rgba(24,32,51,0.05);
+      color: var(--ink);
+    }
+
+    .feed-list,
+    .post-list,
+    .stack { display:grid; gap:16px; }
+    .post-card {
+      padding:18px;
+      background: rgba(255,255,255,0.94);
+      border:1px solid rgba(24,32,51,0.06);
+      box-shadow: var(--shadow-soft);
+    }
+    .badge-post {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(37,99,235,0.12);
+    }
+    .post-head {
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr) auto;
+      gap:14px;
+      align-items:center;
+    }
+    .post-user,
+    .user-row { min-width:0; }
+    .post-user strong,
+    .user-row strong { display:block; font-size:16px; line-height:1.2; letter-spacing:-0.01em; }
+    .meta,
+    .subtle,
+    .hint { color: var(--muted); }
+    .meta {
+      font-size:13px;
+      margin-top:4px;
+      line-height:1.35;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .post-text {
+      margin:15px 0 0;
+      font-size:16px;
+      line-height:1.6;
+      white-space:pre-wrap;
+      color:#243045;
+    }
+    .post-image {
+      margin-top:15px;
+      border-radius:20px;
+      width:100%;
+      max-height:320px;
+      object-fit:cover;
+      display:block;
+    }
+    .post-actions {
+      display:flex;
+      gap:10px;
+      margin-top:16px;
+      flex-wrap:wrap;
+    }
+    .reaction-btn {
+      padding:11px 15px;
+      min-height:42px;
+      border-radius:999px;
+      background:rgba(24,32,51,0.055);
+      color:#324055;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      font-weight:650;
+    }
+    .reaction-btn.active-like {
+      background: var(--blue-soft);
+      color: var(--blue);
+      box-shadow: inset 0 0 0 1px rgba(29,78,216,0.08);
+    }
+    .reaction-btn.active-love {
+      background: var(--love-soft);
+      color: var(--love);
+      box-shadow: inset 0 0 0 1px rgba(225,29,72,0.08);
+    }
+    .badge-banner {
+      margin-top:14px;
+      padding:16px;
+      border-radius:20px;
+      background: rgba(37,99,235,0.06);
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:12px;
+      align-items:center;
+    }
+    .badge-icon {
+      width:52px;
+      height:52px;
+      border-radius:18px;
+      background:white;
+      display:grid;
+      place-items:center;
+      font-size:24px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .profile-card { padding:20px; }
+    .profile-top {
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:14px;
+      align-items:center;
+    }
+    .profile-top .meta { white-space:normal; }
+    .status-line { margin:10px 0 0; font-size:15px; line-height:1.55; color:#364056; }
+    .stats-row {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      margin-top:16px;
+    }
+    .stat-box {
+      padding:12px;
+      border-radius:18px;
+      background: rgba(24,32,51,0.04);
+      text-align:center;
+      cursor:pointer;
+    }
+    .stat-box strong { display:block; font-size:18px; }
+    .stat-box span { font-size:12px; color: var(--muted); }
+    .profile-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+
+    .sheet,
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: none;
+    }
+    .overlay.active,
+    .sheet.active { display:block; }
+    .overlay {
+      background: rgba(15,23,42,0.44);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .sheet-panel {
+      position:absolute;
+      left:50%;
+      bottom:0;
+      transform:translateX(-50%);
+      width:min(100%, var(--max));
+      max-height:min(88vh, 780px);
+      overflow:auto;
+      background:#fcfdff;
+      border-radius:32px 32px 0 0;
+      padding:20px 16px calc(env(safe-area-inset-bottom) + 24px);
+      box-shadow:0 -24px 46px rgba(17,24,39,0.18);
+    }
+    .sheet-head {
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+    .sheet-head h2 { margin:0; font-size:22px; letter-spacing:-0.03em; }
+    .sheet-subtitle { font-size:14px; margin-top:4px; color: var(--muted); }
+    .sheet-close { background: rgba(24,32,51,0.06); }
+    .sheet-block {
+      background: rgba(24,32,51,0.03);
+      border-radius:22px;
+      padding:14px;
+      margin-top:12px;
+    }
+    .field { display:grid; gap:8px; margin-top:14px; }
+    .field label { font-size:13px; font-weight:600; }
+    .field input,
+    .field textarea {
+      border:1px solid rgba(24,32,51,0.08);
+      background:white;
+      border-radius:16px;
+      padding:14px;
+      outline:none;
+      color: var(--ink);
+    }
+    .field textarea { min-height:118px; resize:vertical; }
+    .field small { color: var(--muted); font-size:12px; }
+    .preview { margin-top:12px; display:none; }
+    .preview.active { display:block; }
+    .preview img {
+      width:100%;
+      border-radius:18px;
+      display:block;
+      max-height:280px;
+      object-fit:cover;
+    }
+    .sheet-actions,
+    .composer-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+    .sheet-actions .action-btn,
+    .sheet-actions .ghost-btn,
+    .composer-actions .action-btn,
+    .composer-actions .ghost-btn { flex:1; justify-content:center; }
+    .sheet-list { margin-top:14px; }
+    .user-row,
+    .setting-row,
+    .list-row {
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:12px;
+      align-items:center;
+      padding:14px 0;
+      border-top:1px solid var(--line);
+    }
+    .user-row:first-child,
+    .setting-row:first-child,
+    .list-row:first-child { border-top:none; padding-top:0; }
+    .toggle {
+      width:58px;
+      height:34px;
+      border-radius:999px;
+      background: rgba(24,32,51,0.12);
+      position:relative;
+      cursor:pointer;
+      box-shadow: inset 0 0 0 1px rgba(24,32,51,0.05);
+    }
+    .toggle::after {
+      content:"";
+      position:absolute;
+      width:26px;
+      height:26px;
+      border-radius:50%;
+      background:white;
+      top:4px;
+      left:4px;
+      box-shadow: var(--shadow-soft);
+      transition:.2s ease;
+    }
+    .toggle.on { background: rgba(21,128,61,0.28); }
+    .toggle.on::after { left:28px; }
+    .toggle-help { font-size:12px; margin-top:4px; color: var(--muted); }
+
+    .empty-card {
+      padding: 26px 16px;
+      text-align:center;
+      color: var(--muted);
+    }
+    .empty-icon {
+      width:72px;
+      height:72px;
+      border-radius:24px;
+      margin:0 auto 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(24,32,51,0.05);
+      font-size:28px;
+    }
+    .empty-card h3 { margin:0 0 8px; font-size:18px; color: var(--ink); }
+    .empty-card p { margin:0 auto 14px; max-width:320px; line-height:1.55; }
+
+    .bottom-nav {
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:10px;
+      padding:10px;
+      border-radius:26px;
+      background:rgba(255,255,255,.74);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      position:sticky;
+      bottom:12px;
+      z-index:40;
+    }
+    .nav-item {
+      display:grid;
+      gap:6px;
+      justify-items:center;
+      align-items:center;
+      padding:12px 8px 10px;
+      border-radius:18px;
+      color:#627286;
+      text-align:center;
+      font-size:.78rem;
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:none;
+      outline:none;
+      background: transparent;
+    }
+    .nav-item.active,
+    .nav-item[aria-current="page"] {
+      color:#1f4ec0;
+      background:linear-gradient(180deg, rgba(233,242,255,.98), rgba(255,255,255,.96));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 10px 18px rgba(47,109,246,.10);
+    }
+    .nav-item:focus-visible { outline:2px solid rgba(47,109,246,.45); outline-offset:2px; }
+    .nav-item svg { width:22px; height:22px; }
+
+    @media (min-width: 760px) {
+      .shell {
+        border-left:1px solid rgba(24,32,51,0.06);
+        border-right:1px solid rgba(24,32,51,0.06);
+        background: rgba(255,255,255,0.24);
+      }
+    }
+
+    @media (max-width: 760px) {
+    .brand-logo { height:40px !important; }
+      .shell { padding:14px 14px 24px; }
+      .topbar { min-height:78px; padding:0 14px; border-radius:20px; }
+      .brand-logo { height:48px; }
+      main { padding: 0; }
+      .hero-card,
+      .quick-row { grid-template-columns:1fr; align-items:stretch; }
+      .hero-actions { justify-content:flex-start; }
+      .profile-chip { padding: 2px 0; }
+      .profile-chip strong { font-size:17px; }
+      .profile-chip small { font-size:14px; white-space:normal; }
+      .post-card { padding:16px; }
+      .post-text { font-size:15px; }
+      .stats-row { grid-template-columns:1fr; }
+      .bottom-nav { gap:4px; padding:6px; border-radius:18px; }
+      .bottom-nav .nav-item { min-height:50px; padding:7px 2px 6px; font-size:.62rem; }
+      .bottom-nav .nav-item svg { width:18px; height:18px; }
+      .segmented { width: 100%; overflow:auto; }
+    }
+  </style>
+
+<style id="community-home-shell-v3-fix">
+.shell{max-width:1280px!important;margin:0 auto!important;padding:20px 20px 32px!important;}.topbar{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;margin-bottom:18px!important;padding:0 18px!important;min-height:88px!important;border-radius:22px!important;border:1px solid var(--line)!important;background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.62))!important;box-shadow:var(--shadow-soft)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;}.brand{display:flex!important;align-items:center!important;gap:8px!important;min-width:0!important;padding-left:8px!important;}.brand-logo{display:block!important;height:48px!important;width:auto!important;max-width:min(72vw,300px)!important;object-fit:contain!important;object-position:left center!important;filter:none!important;opacity:1!important;}.bottom-nav{margin-top:18px!important;display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:10px!important;padding:10px!important;border-radius:26px!important;background:rgba(255,255,255,.74)!important;border:1px solid var(--line)!important;box-shadow:var(--shadow-soft)!important;backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;position:sticky!important;bottom:12px!important;z-index:40!important;}.bottom-nav .nav-item{display:grid!important;gap:6px!important;justify-items:center!important;align-items:center!important;min-height:56px!important;padding:12px 8px 10px!important;border-radius:18px!important;text-align:center!important;font-size:.78rem!important;font-weight:600!important;text-decoration:none!important;}.bottom-nav .nav-item.active,.bottom-nav .nav-item[aria-current="page"]{color:#1f4ec0!important;background:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96))!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 18px rgba(47,109,246,.10)!important;}html[data-theme="midnight"] .topbar,html[data-theme="rose_aurora"] .topbar{background:linear-gradient(180deg,var(--surface-top,rgba(30,21,36,.84)),var(--surface-bottom,rgba(20,15,24,.72)))!important;}html[data-theme="midnight"] .bottom-nav,html[data-theme="rose_aurora"] .bottom-nav{background:color-mix(in srgb,var(--surface-top,rgba(30,21,36,.84)) 82%,transparent)!important;}@media(max-width:760px){.shell{padding:14px 14px 24px!important}.topbar{min-height:78px!important;padding:0 14px!important;border-radius:20px!important}.brand-logo{height:40px!important}.bottom-nav{gap:4px!important;padding:6px!important;border-radius:18px!important}.bottom-nav .nav-item{min-height:50px!important;padding:7px 2px 6px!important;font-size:.62rem!important}}
+</style>
+<script id="community-logo-repair-v3">
+(function(){var paths={clean_blue:['/hearty-logo.png','./hearty-logo.png','hearty-logo.png','/assets/hearty-logo.png'],sunlit:['/hearty-logo-gold.png','./hearty-logo-gold.png','hearty-logo-gold.png','/hearty-logo.png','./hearty-logo.png'],midnight:['/hearty-logo-white.png','./hearty-logo-white.png','hearty-logo-white.png','/hearty-logo.png','./hearty-logo.png'],rose_aurora:['/hearty-logo-gold.png','./hearty-logo-gold.png','hearty-logo-gold.png','/hearty-logo.png','./hearty-logo.png']};function theme(){return document.documentElement.getAttribute('data-theme')||'clean_blue'}function setLogo(){var img=document.querySelector('.brand-logo');if(!img)return;var list=paths[theme()]||paths.clean_blue;var i=0;img.onerror=function(){i++;if(i<list.length)img.src=list[i];else{img.onerror=null;img.style.visibility='hidden';img.style.width='160px';img.style.height='48px';}};var b=document.querySelector('.brand');if(b){b.querySelectorAll('.brand-wordmark,.logo-text,.brand-text').forEach(function(el){el.remove();});}img.style.display='block';img.style.visibility='visible';img.src=list[0];}document.addEventListener('DOMContentLoaded',setLogo);var old=window.heartyApplyTheme;window.heartyApplyTheme=function(t){if(typeof old==='function')old(t);else document.documentElement.setAttribute('data-theme',t||'clean_blue');setLogo();};})();
+</script>
+
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <img class="brand-logo" alt="Hearty" src="/hearty-logo.png" />
+      </div>
+      <button class="icon-btn" id="communityPrefsBtn" aria-label="Community preferences" type="button">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 .99-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .99 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51.99H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+      </button>
+    </header>
+
+    <main>
+      <div class="section-intro">
+        <h1>Community</h1>
+        <p>A calm space for encouragement, small wins, and quiet accountability while you work through your GLP‑1 journey.</p>
+      </div>
+
+      <div class="hero-card">
+        <div class="hero-copy">
+          <strong>Keep it supportive, practical, and private.</strong>
+          <p>Post short updates, react to wins, manage your profile, and share badge moments when you want to — without turning your progress into a public performance.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="action-btn" id="newPostBtn" type="button">Share</button>
+        </div>
+      </div>
+
+      <div class="segmented" aria-label="Social sections">
+        <button class="segmented-btn active" data-screen="feedScreen" type="button">Today in Your Circle</button>
+        <button class="segmented-btn" data-screen="profileScreen" type="button">Your Circle</button>
+      </div>
+
+      <section class="screen active" id="feedScreen">
+        <div class="quick-row">
+          <button class="profile-chip" id="openMyProfileBtn" type="button">
+            <div class="avatar" id="quickAvatar"></div>
+            <span>
+              <strong id="quickNickname">You</strong>
+              <small id="quickStatus">Complete your profile</small>
+            </span>
+          </button>
+        </div>
+        <div class="feed-list" id="feedList"></div>
+      </section>
+
+      <section class="screen" id="profileScreen">
+        <div class="card profile-card">
+          <div class="profile-top">
+            <div class="avatar-lg" id="profileAvatar"></div>
+            <div>
+              <strong id="profileNickname" style="font-size:22px; display:block;"></strong>
+              <div class="meta" id="profileMeta"></div>
+              <div class="status-line" id="profileStatus"></div>
+            </div>
+          </div>
+          <div class="stats-row">
+            <div class="stat-box">
+              <strong id="profilePostsCount">0</strong>
+              <span>Posts</span>
+            </div>
+            <div class="stat-box" id="followersStatBox">
+              <strong id="profileFollowersCount">0</strong>
+              <span>Followers</span>
+            </div>
+            <div class="stat-box" id="followingStatBox">
+              <strong id="profileFollowingCount">0</strong>
+              <span>Following</span>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="action-btn" id="editProfileBtn" type="button">Edit Profile</button>
+            <button class="ghost-btn" id="profileNewPostBtn" type="button">Share</button>
+          </div>
+        </div>
+        <div class="post-list" id="myPostsList"></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Page selector">
+  <a class="nav-item" href="home.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-5h5v5"/></svg>
+    <span>Home</span>
+  </a>
+  <a class="nav-item" href="meals.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8"/><path d="M4.5 3v5.2A2.5 2.5 0 0 0 7 10.7a2.5 2.5 0 0 0 2.5-2.5V3"/><path d="M7 11v10"/><path d="M16.5 3v18"/><path d="M16.5 3c2.2 1.2 3.5 3.2 3.5 5.8 0 2.4-1.2 4.2-3.5 5.1"/></svg>
+    <span>Meals</span>
+  </a>
+  <a class="nav-item" href="exercise.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/></svg>
+    <span>Exercise</span>
+  </a>
+  <a class="nav-item" href="progress.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M7.5 15.5l3.2-3.2 2.4 2.4 4.8-6"/><path d="M17.9 8.7h-3.2"/><path d="M17.9 8.7v3.2"/></svg>
+    <span>Progress</span>
+  </a>
+  <a class="nav-item" href="support.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.6c-.2 0-.4-.07-.56-.22C6.2 15.65 3 12.75 3 8.95 3 6.05 5.2 4 7.8 4c1.55 0 3.05.72 4.2 1.96C13.15 4.72 14.65 4 16.2 4 18.8 4 21 6.05 21 8.95c0 3.8-3.2 6.7-8.44 11.43-.16.15-.36.22-.56.22Z"/></svg>
+    <span>Support</span>
+  </a>
+  <a class="nav-item active" href="social.html" aria-current="page">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.25 11.25a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"/><path d="M15.75 11.25a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"/><path d="M3.5 20c.45-3.35 2.2-5.2 4.75-5.2S12.55 16.65 13 20"/><path d="M11 20c.45-3.35 2.2-5.2 4.75-5.2S20.05 16.65 20.5 20"/></svg>
+    <span>Community</span>
+  </a>
+  <a class="nav-item" href="settings.html">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.1 2.1 0 0 1-2.97 2.97l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.3a2.1 2.1 0 0 1-4.2 0v-.07a1.8 1.8 0 0 0-1.1-1.66 1.8 1.8 0 0 0-1.98.36l-.05.05a2.1 2.1 0 0 1-2.97-2.97l.05-.05A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.07A1.8 1.8 0 0 0 3.8 8a1.8 1.8 0 0 0-.36-1.98l-.05-.05A2.1 2.1 0 1 1 6.36 3l.05.05A1.8 1.8 0 0 0 8.4 3.4 1.8 1.8 0 0 0 9.5 1.75V1.7a2.1 2.1 0 0 1 4.2 0v.07a1.8 1.8 0 0 0 1.1 1.66 1.8 1.8 0 0 0 1.98-.36l.05-.05A2.1 2.1 0 1 1 19.8 6l-.05.05A1.8 1.8 0 0 0 19.4 8c.24.68.86 1.1 1.58 1.1h.12a2.1 2.1 0 0 1 0 4.2h-.12A1.8 1.8 0 0 0 19.4 15Z"/></svg>
+    <span>Settings</span>
+  </a>
+</nav>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="sheet" id="postSheet">
+    <div class="sheet-panel">
+      <div class="sheet-head">
+        <div>
+          <h2>Share</h2>
+          <div class="sheet-subtitle">Share a quick update with your private circle.</div>
+        </div>
+        <button class="sheet-close" data-close="postSheet" type="button">Close</button>
+      </div>
+      <div class="sheet-block" style="display:flex; align-items:center; gap:12px;">
+        <div class="avatar" id="composerAvatar"></div>
+        <div>
+          <strong id="composerNickname"></strong>
+          <div class="subtle" style="font-size:12px;">Text required. One image optional.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="postText">Post text</label>
+        <textarea id="postText" maxlength="300" placeholder="Share a quick update."></textarea>
+        <small><span id="postCharCount">0</span>/300</small>
+      </div>
+      <div class="composer-actions">
+        <button class="ghost-btn" id="addPhotoBtn" type="button">Add Photo</button>
+        <button class="ghost-btn" id="takePhotoBtn" type="button">Take Photo</button>
+      </div>
+      <div class="preview" id="postImagePreviewWrap">
+        <img id="postImagePreview" alt="Selected image preview" />
+      </div>
+      <div class="composer-actions">
+        <button class="ghost-btn outline" id="removePostImageBtn" type="button">Remove Image</button>
+        <button class="action-btn" id="submitPostBtn" type="button">Post</button>
+      </div>
+      <input id="galleryInput" type="file" accept="image/*" hidden />
+      <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden />
+    </div>
+  </div>
+
+  <div class="sheet" id="editProfileSheet">
+    <div class="sheet-panel">
+      <div class="sheet-head">
+        <div>
+          <h2>Edit Profile</h2>
+          <div class="sheet-subtitle">Profile photo, nickname, age, city, and status.</div>
+        </div>
+        <button class="sheet-close" data-close="editProfileSheet" type="button">Close</button>
+      </div>
+      <div class="sheet-block" style="display:flex; gap:14px; align-items:center;">
+        <div class="avatar-lg" id="editAvatarPreview"></div>
+        <div style="flex:1;">
+          <div class="composer-actions" style="margin-top:0;">
+            <button class="ghost-btn" id="changePhotoBtn" type="button">Choose Photo</button>
+            <button class="ghost-btn" id="takeProfilePhotoBtn" type="button">Take Photo</button>
+          </div>
+          <button class="ghost-btn outline" id="removeProfilePhotoBtn" style="margin-top:10px; width:100%;" type="button">Remove Photo</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="nicknameInput">Nickname</label>
+        <input id="nicknameInput" maxlength="24" placeholder="Nickname" />
+      </div>
+      <div class="field">
+        <label for="ageInput">Age</label>
+        <input id="ageInput" inputmode="numeric" maxlength="3" placeholder="Age" />
+      </div>
+      <div class="field">
+        <label for="cityInput">City / Location</label>
+        <input id="cityInput" maxlength="32" placeholder="Cape Town" />
+      </div>
+      <div class="field">
+        <label for="statusInput">Status</label>
+        <textarea id="statusInput" maxlength="120" placeholder="A short line about how you’re doing."></textarea>
+        <small><span id="statusCharCount">0</span>/120</small>
+      </div>
+      <div class="sheet-actions">
+        <button class="ghost-btn outline" data-close="editProfileSheet" type="button">Cancel</button>
+        <button class="action-btn" id="saveProfileBtn" type="button">Save Changes</button>
+      </div>
+      <input id="profileGalleryInput" type="file" accept="image/*" hidden />
+      <input id="profileCameraInput" type="file" accept="image/*" capture="user" hidden />
+    </div>
+  </div>
+
+  <div class="sheet" id="settingsSheet">
+    <div class="sheet-panel">
+      <div class="sheet-head">
+        <div>
+          <h2>Community Preferences</h2>
+          <div class="sheet-subtitle">Choose what you want to share with your circle.</div>
+        </div>
+        <button class="sheet-close" data-close="settingsSheet" type="button">Close</button>
+      </div>
+      <div class="card" style="box-shadow:none; border:1px solid var(--line); padding:20px;">
+        <div class="setting-row">
+          <div>
+            <strong>Photo and Update Sharing</strong>
+            <div class="toggle-help">When enabled, your private circle can see your shared photos and updates.</div>
+          </div>
+          <div class="toggle" id="badgeToggle"></div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <strong>Water Sharing</strong>
+            <div class="toggle-help">Allow hydration updates to appear in your private circle.</div>
+          </div>
+          <div class="toggle" id="waterToggle"></div>
+        </div>
+        <div class="sheet-actions">
+          <button class="ghost-btn outline" id="resetDataBtn" type="button">Clear Community Activity</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="listSheet">
+    <div class="sheet-panel">
+      <div class="sheet-head">
+        <div>
+          <h2 id="listTitle">Followers</h2>
+          <div class="sheet-subtitle" id="listSubtitle">People connected to this profile.</div>
+        </div>
+        <button class="sheet-close" data-close="listSheet" type="button">Close</button>
+      </div>
+      <div class="sheet-list" id="listContainer"></div>
+    </div>
+  </div>
+
+  <div class="sheet" id="userSheet">
+    <div class="sheet-panel">
+      <div class="sheet-head">
+        <div>
+          <h2>Profile</h2>
+          <div class="sheet-subtitle">View profile and posts.</div>
+        </div>
+        <button class="sheet-close" data-close="userSheet" type="button">Close</button>
+      </div>
+      <div class="card" style="box-shadow:none; border:1px solid var(--line); padding:20px;">
+        <div class="profile-top">
+          <div class="avatar-lg" id="viewUserAvatar"></div>
+          <div>
+            <strong id="viewUserNickname" style="font-size:22px; display:block;"></strong>
+            <div class="meta" id="viewUserMeta"></div>
+            <div class="status-line" id="viewUserStatus"></div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><strong id="viewUserPosts">0</strong><span>Posts</span></div>
+          <div class="stat-box"><strong id="viewUserFollowers">0</strong><span>Followers</span></div>
+          <div class="stat-box"><strong id="viewUserFollowing">0</strong><span>Following</span></div>
+        </div>
+        <div class="profile-actions">
+          <button class="action-btn" id="followToggleBtn" type="button">Follow</button>
+        </div>
+      </div>
+      <div class="post-list" id="viewUserPostsList" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <script>
+    const KEYS = {
+      users: 'heartyCommunityUsersV2',
+      currentUser: 'heartyCommunityCurrentUserV2',
+      follows: 'heartyCommunityFollowsV2',
+      posts: 'heartyCommunityPostsV2',
+      reactions: 'heartyCommunityReactionsV2',
+      settings: 'heartyCommunitySettingsV2'
+    };
+
+    const now = () => new Date().toISOString();
+    const uid = (prefix = 'id') => `${prefix}_${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36).slice(-4)}`;
+
+    const defaultCurrentUser = {
+      id: 'me',
+      nickname: 'Jean',
+      age: 34,
+      city: 'Cape Town',
+      profilePhoto: '',
+      statusText: 'Back on track. Keeping it simple.',
+      createdAt: now(),
+      updatedAt: now()
+    };
+
+    const seedUsers = [
+      { id: 'u_amy', nickname: 'Amy', age: 31, city: 'Durban', profilePhoto: '', statusText: 'Small steps. Steady week.', createdAt: now(), updatedAt: now() },
+      { id: 'u_mila', nickname: 'Mila', age: 42, city: 'Johannesburg', profilePhoto: '', statusText: 'Protein first. Water up.', createdAt: now(), updatedAt: now() },
+      { id: 'u_nadia', nickname: 'Nadia', age: 37, city: 'Pretoria', profilePhoto: '', statusText: 'Quiet consistency.', createdAt: now(), updatedAt: now() }
+    ];
+
+    const seedPosts = [
+      { id: 'p1', userId: 'u_amy', postType: 'text', text: 'Three good meals today and I kept things very plain. That felt easier than trying to be perfect.', imageUrl: '', createdAt: new Date(Date.now() - 1000 * 60 * 44).toISOString() },
+      { id: 'p2', userId: 'u_mila', postType: 'badge_alert', text: '', badgeId: 'badge_7day', badgeTitle: '7 Day Streak', badgeIcon: '✦', createdAt: new Date(Date.now() - 1000 * 60 * 140).toISOString() },
+      { id: 'p3', userId: 'u_nadia', postType: 'text', text: 'A short walk after dinner. Not a huge session, just enough to keep momentum.', imageUrl: '', createdAt: new Date(Date.now() - 1000 * 60 * 410).toISOString() }
+    ];
+
+    const seedFollows = [
+      { followerUserId: 'me', followedUserId: 'u_amy', createdAt: now() },
+      { followerUserId: 'me', followedUserId: 'u_mila', createdAt: now() },
+      { followerUserId: 'u_nadia', followedUserId: 'me', createdAt: now() }
+    ];
+
+    const seedReactions = [
+      { id: uid('r'), postId: 'p1', userId: 'me', reactionType: 'love', createdAt: now() }
+    ];
+
+    let activeViewedUserId = '';
+    let activeScreenId = 'feedScreen';
+    window.composerImage = '';
+    window.profileDraft = { ...defaultCurrentUser };
+
+    function load(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function save(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function ensureState() {
+      if (!load(KEYS.users, null)) save(KEYS.users, [defaultCurrentUser]);
+      if (!load(KEYS.currentUser, null)) save(KEYS.currentUser, defaultCurrentUser.id);
+      if (!load(KEYS.follows, null)) save(KEYS.follows, []);
+      if (!load(KEYS.posts, null)) save(KEYS.posts, []);
+      if (!load(KEYS.reactions, null)) save(KEYS.reactions, []);
+      if (!load(KEYS.settings, null)) save(KEYS.settings, { badgeFeedAlertsEnabled: false, waterSharingEnabled: true });
+    }
+
+    function getUsers() { return load(KEYS.users, []); }
+    function getCurrentUserId() { return load(KEYS.currentUser, defaultCurrentUser.id); }
+    function getCurrentUser() { return getUsers().find(u => u.id === getCurrentUserId()) || defaultCurrentUser; }
+    function getFollows() { return load(KEYS.follows, []); }
+    function getPosts() { return load(KEYS.posts, []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); }
+    function getReactions() { return load(KEYS.reactions, []); }
+    function getSettings() { return load(KEYS.settings, { badgeFeedAlertsEnabled: false, waterSharingEnabled: true }); }
+
+    function setUsers(users) { save(KEYS.users, users); }
+    function setFollows(follows) { save(KEYS.follows, follows); }
+    function setPosts(posts) { save(KEYS.posts, posts); }
+    function setReactions(reactions) { save(KEYS.reactions, reactions); }
+    function setSettings(settings) { save(KEYS.settings, settings); }
+    function resetData() {
+      Object.values(KEYS).forEach(k => localStorage.removeItem(k));
+      ensureState();
+      activeViewedUserId = '';
+      activeScreenId = 'feedScreen';
+      window.composerImage = '';
+      window.profileDraft = { ...defaultCurrentUser };
+      closeAllSheets();
+      renderAll();
+      showScreen('feedScreen');
+    }
+
+    function escapeHtml(s = '') {
+      return String(s).replace(/[&<>\"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    }
+
+    function initials(name = '?') {
+      return name.split(' ').filter(Boolean).slice(0, 2).map(x => x[0]).join('').toUpperCase() || '?';
+    }
+
+    function injectAvatar(el, user, large = false) {
+      const content = user.profilePhoto ? `<img src="${user.profilePhoto}" alt="${escapeHtml(user.nickname)}">` : escapeHtml(initials(user.nickname));
+      el.className = large ? 'avatar-lg' : 'avatar';
+      el.innerHTML = content;
+    }
+
+    function avatarMarkup(user, large = false) {
+      const cls = large ? 'avatar-lg' : 'avatar';
+      return user.profilePhoto
+        ? `<div class="${cls}"><img src="${user.profilePhoto}" alt="${escapeHtml(user.nickname)}"></div>`
+        : `<div class="${cls}">${escapeHtml(initials(user.nickname))}</div>`;
+    }
+
+    function timeAgo(iso) {
+      const diff = Math.max(0, Date.now() - new Date(iso).getTime());
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'now';
+      if (mins < 60) return `${mins}m ago`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d ago`;
+      return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
+    }
+
+    function countsForUser(userId) {
+      const posts = getPosts().filter(p => p.userId === userId).length;
+      const follows = getFollows();
+      return {
+        posts,
+        followers: follows.filter(f => f.followedUserId === userId).length,
+        following: follows.filter(f => f.followerUserId === userId).length
+      };
+    }
+
+    function isFollowing(targetId) {
+      return getFollows().some(f => f.followerUserId === getCurrentUserId() && f.followedUserId === targetId);
+    }
+
+    function toggleFollow(targetId) {
+      const me = getCurrentUserId();
+      if (me === targetId) return;
+      let follows = getFollows();
+      const exists = follows.some(f => f.followerUserId === me && f.followedUserId === targetId);
+      follows = exists
+        ? follows.filter(f => !(f.followerUserId === me && f.followedUserId === targetId))
+        : [...follows, { followerUserId: me, followedUserId: targetId, createdAt: now() }];
+      setFollows(follows);
+      renderAll();
+      if (activeViewedUserId === targetId) renderViewedUser(targetId);
+    }
+
+    function upsertReaction(postId, type) {
+      const me = getCurrentUserId();
+      let reactions = getReactions();
+      const existing = reactions.find(r => r.postId === postId && r.userId === me);
+      if (!existing) {
+        reactions.push({ id: uid('react'), postId, userId: me, reactionType: type, createdAt: now() });
+      } else if (existing.reactionType === type) {
+        reactions = reactions.filter(r => !(r.postId === postId && r.userId === me));
+      } else {
+        existing.reactionType = type;
+      }
+      setReactions(reactions);
+      renderAll();
+      if (activeViewedUserId) renderViewedUser(activeViewedUserId);
+    }
+
+    function reactionCounts(postId) {
+      const reactions = getReactions().filter(r => r.postId === postId);
+      return {
+        like: reactions.filter(r => r.reactionType === 'like').length,
+        love: reactions.filter(r => r.reactionType === 'love').length,
+        mine: reactions.find(r => r.userId === getCurrentUserId())?.reactionType || ''
+      };
+    }
+
+    function feedPosts() {
+      const me = getCurrentUserId();
+      const followed = new Set(getFollows().filter(f => f.followerUserId === me).map(f => f.followedUserId));
+      followed.add(me);
+      return getPosts().filter(p => followed.has(p.userId));
+    }
+
+    function renderPost(post) {
+      const user = getUsers().find(u => u.id === post.userId) || defaultCurrentUser;
+      const reactions = reactionCounts(post.id);
+      const isBadge = post.postType === 'badge_alert';
+      const meta = [user.nickname];
+      if (user.age) meta.push(user.age);
+      if (user.city) meta.push(user.city);
+      const metaText = `${meta.join(' • ')} • ${timeAgo(post.createdAt)}`;
+      const imageMarkup = post.imageUrl ? `<img class="post-image" src="${post.imageUrl}" alt="Shared post image">` : '';
+      const bodyMarkup = isBadge
+        ? `<div class="badge-banner"><div class="badge-icon">${escapeHtml(post.badgeIcon || '✦')}</div><div><strong>${escapeHtml(post.badgeTitle || 'Badge')}</strong><div class="subtle" style="margin-top:4px;">Shared from a Hearty milestone moment.</div></div></div>`
+        : `${post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : ''}${imageMarkup}`;
+      return `
+        <article class="post-card ${isBadge ? 'badge-post' : ''}">
+          <div class="post-head">
+            <button class="profile-chip open-user" data-user-id="${user.id}" type="button" style="padding:0; gap:12px;">
+              ${avatarMarkup(user)}
+              <span class="post-user">
+                <strong>${escapeHtml(user.nickname)}</strong>
+                <span class="meta">${escapeHtml(metaText)}</span>
+              </span>
+            </button>
+            <div></div>
+          </div>
+          ${bodyMarkup}
+          <div class="post-actions">
+            <button class="reaction-btn ${reactions.mine === 'like' ? 'active-like' : ''}" data-react data-post-id="${post.id}" data-react="like" type="button">👍 <span>${reactions.like}</span></button>
+            <button class="reaction-btn ${reactions.mine === 'love' ? 'active-love' : ''}" data-react data-post-id="${post.id}" data-react="love" type="button">❤️ <span>${reactions.love}</span></button>
+          </div>
+        </article>`;
+    }
+
+    function emptyCard(title, text, buttonText = '', buttonId = '') {
+      return `
+        <div class="empty-card">
+          <div class="empty-icon">✦</div>
+          <h3>${escapeHtml(title)}</h3>
+          <p>${escapeHtml(text)}</p>
+          ${buttonText ? `<button class="action-btn" id="${buttonId}" type="button">${escapeHtml(buttonText)}</button>` : ''}
+        </div>`;
+    }
+
+    function renderFeed() {
+      const posts = feedPosts();
+      const feed = document.getElementById('feedList');
+      if (!posts.length) {
+        feed.innerHTML = `<div class="card">${emptyCard('Nothing shared yet', 'Updates from your private circle appear here for 24 hours. Share a photo or a quick update to get started.', 'Share', 'emptyFeedPostBtn')}</div>`;
+        return;
+      }
+      feed.innerHTML = posts.map(renderPost).join('');
+    }
+
+    function renderMyProfile() {
+      const me = getCurrentUser();
+      const counts = countsForUser(me.id);
+      injectAvatar(document.getElementById('profileAvatar'), me, true);
+      document.getElementById('profileNickname').textContent = me.nickname || 'You';
+      document.getElementById('profileMeta').textContent = [me.age || '', me.city || ''].filter(Boolean).join(' • ') || 'Complete your profile';
+      document.getElementById('profileStatus').textContent = me.statusText || 'Complete your profile to help the community know who you are.';
+      document.getElementById('profilePostsCount').textContent = counts.posts;
+      document.getElementById('profileFollowersCount').textContent = counts.followers;
+      document.getElementById('profileFollowingCount').textContent = counts.following;
+
+      const myPosts = getPosts().filter(p => p.userId === me.id);
+      document.getElementById('myPostsList').innerHTML = myPosts.length
+        ? myPosts.map(renderPost).join('')
+        : `<div class="card">${emptyCard('Nothing shared yet', 'When you share your first update, it will appear here for 24 hours.', 'Share', 'emptyProfilePostBtn')}</div>`;
+    }
+
+    function renderQuickProfile() {
+      const me = getCurrentUser();
+      injectAvatar(document.getElementById('quickAvatar'), me, false);
+      injectAvatar(document.getElementById('composerAvatar'), me, false);
+      document.getElementById('quickNickname').textContent = me.nickname || 'You';
+      document.getElementById('quickStatus').textContent = me.statusText || 'Complete your profile';
+      document.getElementById('composerNickname').textContent = me.nickname || 'You';
+    }
+
+    function renderSettings() {
+      const settings = getSettings();
+      document.getElementById('badgeToggle').classList.toggle('on', !!settings.badgeFeedAlertsEnabled);
+      document.getElementById('waterToggle').classList.toggle('on', !!settings.waterSharingEnabled);
+    }
+
+    function renderViewedUser(userId) {
+      const user = getUsers().find(u => u.id === userId);
+      if (!user) return;
+      const counts = countsForUser(userId);
+      injectAvatar(document.getElementById('viewUserAvatar'), user, true);
+      document.getElementById('viewUserNickname').textContent = user.nickname;
+      document.getElementById('viewUserMeta').textContent = [user.age || '', user.city || ''].filter(Boolean).join(' • ') || 'Hearty member';
+      document.getElementById('viewUserStatus').textContent = user.statusText || 'No status shared yet.';
+      document.getElementById('viewUserPosts').textContent = counts.posts;
+      document.getElementById('viewUserFollowers').textContent = counts.followers;
+      document.getElementById('viewUserFollowing').textContent = counts.following;
+      const btn = document.getElementById('followToggleBtn');
+      btn.textContent = isFollowing(userId) ? 'Following' : 'Follow';
+      btn.classList.toggle('soft', isFollowing(userId));
+      document.getElementById('viewUserPostsList').innerHTML = getPosts().filter(p => p.userId === userId).map(renderPost).join('') || `<div class="card">${emptyCard('No posts yet', 'This member has not shared anything yet.')}</div>`;
+      activeViewedUserId = userId;
+    }
+
+    function openUserProfile(userId) {
+      renderViewedUser(userId);
+      openSheet('userSheet');
+    }
+
+    function buildUserList(userIds, emptyTitle, emptyText) {
+      const users = getUsers().filter(u => userIds.includes(u.id));
+      if (!users.length) return `<div class="card">${emptyCard(emptyTitle, emptyText)}</div>`;
+      return `<div class="card" style="padding:20px; box-shadow:none; border:1px solid var(--line);">${users.map(user => `
+        <div class="list-row">
+          <button class="profile-chip open-user" data-user-id="${user.id}" type="button" style="padding:0; gap:12px;">
+            ${avatarMarkup(user)}
+            <span class="user-row">
+              <strong>${escapeHtml(user.nickname)}</strong>
+              <span class="meta">${escapeHtml([user.age || '', user.city || ''].filter(Boolean).join(' • ') || 'Hearty member')}</span>
+            </span>
+          </button>
+          ${user.id !== getCurrentUserId() ? `<button class="mini-btn follow-list-btn" data-user-id="${user.id}" type="button">${isFollowing(user.id) ? 'Following' : 'Follow'}</button>` : ''}
+        </div>`).join('')}</div>`;
+    }
+
+    function openFollowersList() {
+      const me = getCurrentUserId();
+      const ids = getFollows().filter(f => f.followedUserId === me).map(f => f.followerUserId);
+      document.getElementById('listTitle').textContent = 'Followers';
+      document.getElementById('listSubtitle').textContent = 'People following your profile.';
+      document.getElementById('listContainer').innerHTML = buildUserList(ids, 'No followers yet', 'When someone follows your profile, they will appear here.');
+      openSheet('listSheet');
+    }
+
+    function openFollowingList() {
+      const me = getCurrentUserId();
+      const ids = getFollows().filter(f => f.followerUserId === me).map(f => f.followedUserId);
+      document.getElementById('listTitle').textContent = 'Following';
+      document.getElementById('listSubtitle').textContent = 'People you are following.';
+      document.getElementById('listContainer').innerHTML = buildUserList(ids, 'You are not following anyone yet', 'Load the demo community or follow someone from the feed.');
+      openSheet('listSheet');
+    }
+
+    function updateProfileDraft() {
+      const draft = window.profileDraft || getCurrentUser();
+      injectAvatar(document.getElementById('editAvatarPreview'), draft, true);
+      document.getElementById('nicknameInput').value = draft.nickname || '';
+      document.getElementById('ageInput').value = draft.age || '';
+      document.getElementById('cityInput').value = draft.city || '';
+      document.getElementById('statusInput').value = draft.statusText || '';
+      document.getElementById('statusCharCount').textContent = (draft.statusText || '').length;
+    }
+
+    function openEditProfile() {
+      window.profileDraft = { ...getCurrentUser() };
+      updateProfileDraft();
+      openSheet('editProfileSheet');
+    }
+
+    function saveProfile() {
+      const nickname = document.getElementById('nicknameInput').value.trim().slice(0, 24);
+      const ageRaw = document.getElementById('ageInput').value.trim();
+      const city = document.getElementById('cityInput').value.trim().slice(0, 32);
+      const statusText = document.getElementById('statusInput').value.trim().slice(0, 120);
+      const age = ageRaw ? Number(ageRaw) : '';
+      if (!nickname) { alert('Nickname is required.'); return; }
+      if (ageRaw && (!Number.isInteger(age) || age < 13 || age > 120)) { alert('Enter a valid age.'); return; }
+      const users = getUsers().map(u => u.id === getCurrentUserId() ? { ...u, ...window.profileDraft, nickname, age, city, statusText, updatedAt: now() } : u);
+      setUsers(users);
+      closeSheet('editProfileSheet');
+      renderAll();
+    }
+
+    function openSheet(id) {
+      document.getElementById('overlay').classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    function closeSheet(id) {
+      document.getElementById(id).classList.remove('active');
+      if (![...document.querySelectorAll('.sheet.active')].length) {
+        document.getElementById('overlay').classList.remove('active');
+      }
+    }
+
+    function closeAllSheets() {
+      document.querySelectorAll('.sheet.active').forEach(s => s.classList.remove('active'));
+      document.getElementById('overlay').classList.remove('active');
+    }
+
+    function showScreen(id) {
+      activeScreenId = id;
+      document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+      document.querySelectorAll('.segmented-btn[data-screen]').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === id));
+    }
+
+    function submitPost() {
+      const text = document.getElementById('postText').value.trim();
+      if (!text) { alert('Post text is required.'); return; }
+      const posts = getPosts();
+      posts.push({
+        id: uid('post'),
+        userId: getCurrentUserId(),
+        postType: 'text',
+        text: text.slice(0, 300),
+        imageUrl: window.composerImage || '',
+        createdAt: now()
+      });
+      setPosts(posts);
+      document.getElementById('postText').value = '';
+      document.getElementById('postCharCount').textContent = '0';
+      clearComposerImage();
+      closeSheet('postSheet');
+      showScreen('feedScreen');
+      renderAll();
+    }
+
+    function clearComposerImage() {
+      window.composerImage = '';
+      document.getElementById('postImagePreview').src = '';
+      document.getElementById('postImagePreviewWrap').classList.remove('active');
+      document.getElementById('galleryInput').value = '';
+      document.getElementById('cameraInput').value = '';
+    }
+
+    function fileToDataUrl(file, cb) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => cb(e.target.result);
+      reader.readAsDataURL(file);
+    }
+
+    function createBadgeAlert(title = 'Consistency Badge', icon = '✦') {
+      const settings = getSettings();
+      if (!settings.badgeFeedAlertsEnabled) {
+        alert('Photo and Update Sharing are off. Turn them on in Community Preferences first.');
+        return;
+      }
+      const posts = getPosts();
+      const badgeId = `badge_${title.toLowerCase().replace(/\s+/g, '_')}`;
+      const todayKey = new Date().toDateString();
+      const duplicate = posts.some(p => p.userId === getCurrentUserId() && p.postType === 'badge_alert' && p.badgeId === badgeId && new Date(p.createdAt).toDateString() === todayKey);
+      if (duplicate) {
+        alert('That badge alert was already created today.');
+        return;
+      }
+      posts.push({ id: uid('badge'), userId: getCurrentUserId(), postType: 'badge_alert', text: '', badgeId, badgeTitle: title, badgeIcon: icon, createdAt: now() });
+      setPosts(posts);
+      showScreen('feedScreen');
+      renderAll();
+    }
+
+    function bindDynamicEvents() {
+      document.querySelectorAll('[data-react]').forEach(btn => {
+        btn.onclick = () => upsertReaction(btn.dataset.postId, btn.dataset.react);
+      });
+      document.querySelectorAll('.open-user').forEach(btn => {
+        btn.onclick = () => openUserProfile(btn.dataset.userId);
+      });
+      document.querySelectorAll('.follow-list-btn').forEach(btn => {
+        btn.onclick = () => toggleFollow(btn.dataset.userId);
+      });
+      const emptyFeedPostBtn = document.getElementById('emptyFeedPostBtn');
+      if (emptyFeedPostBtn) emptyFeedPostBtn.onclick = () => openSheet('postSheet');
+      const emptyProfilePostBtn = document.getElementById('emptyProfilePostBtn');
+      if (emptyProfilePostBtn) emptyProfilePostBtn.onclick = () => openSheet('postSheet');
+    }
+
+    function renderAll() {
+      renderQuickProfile();
+      renderFeed();
+      renderMyProfile();
+      renderSettings();
+      bindDynamicEvents();
+      if (activeViewedUserId) renderViewedUser(activeViewedUserId);
+      showScreen(activeScreenId);
+    }
+
+    ensureState();
+
+    document.querySelectorAll('[data-screen]').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.screen)));
+    document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeSheet(btn.dataset.close)));
+
+    document.getElementById('newPostBtn').addEventListener('click', () => openSheet('postSheet'));
+    document.getElementById('profileNewPostBtn').addEventListener('click', () => openSheet('postSheet'));
+    document.getElementById('openMyProfileBtn').addEventListener('click', () => showScreen('profileScreen'));
+    document.getElementById('communityPrefsBtn').addEventListener('click', () => openSheet('settingsSheet'));
+    document.getElementById('editProfileBtn').addEventListener('click', openEditProfile);
+    document.getElementById('followersStatBox').addEventListener('click', openFollowersList);
+    document.getElementById('followingStatBox').addEventListener('click', openFollowingList);
+
+    document.getElementById('submitPostBtn').addEventListener('click', submitPost);
+    document.getElementById('postText').addEventListener('input', e => document.getElementById('postCharCount').textContent = e.target.value.length);
+    document.getElementById('addPhotoBtn').addEventListener('click', () => document.getElementById('galleryInput').click());
+    document.getElementById('takePhotoBtn').addEventListener('click', () => document.getElementById('cameraInput').click());
+    document.getElementById('removePostImageBtn').addEventListener('click', clearComposerImage);
+    document.getElementById('galleryInput').addEventListener('change', e => fileToDataUrl(e.target.files[0], data => {
+      window.composerImage = data;
+      document.getElementById('postImagePreview').src = data;
+      document.getElementById('postImagePreviewWrap').classList.add('active');
+    }));
+    document.getElementById('cameraInput').addEventListener('change', e => fileToDataUrl(e.target.files[0], data => {
+      window.composerImage = data;
+      document.getElementById('postImagePreview').src = data;
+      document.getElementById('postImagePreviewWrap').classList.add('active');
+    }));
+
+    document.getElementById('overlay').addEventListener('click', closeAllSheets);
+
+    document.getElementById('badgeToggle').addEventListener('click', () => {
+      const settings = getSettings();
+      settings.badgeFeedAlertsEnabled = !settings.badgeFeedAlertsEnabled;
+      setSettings(settings);
+      renderSettings();
+    });
+    document.getElementById('waterToggle').addEventListener('click', () => {
+      const settings = getSettings();
+      settings.waterSharingEnabled = !settings.waterSharingEnabled;
+      setSettings(settings);
+      renderSettings();
+    });
+    document.getElementById('resetDataBtn').addEventListener('click', resetData);
+
+    document.getElementById('changePhotoBtn').addEventListener('click', () => document.getElementById('profileGalleryInput').click());
+    document.getElementById('takeProfilePhotoBtn').addEventListener('click', () => document.getElementById('profileCameraInput').click());
+    document.getElementById('removeProfilePhotoBtn').addEventListener('click', () => {
+      window.profileDraft = { ...(window.profileDraft || getCurrentUser()), profilePhoto: '' };
+      updateProfileDraft();
+    });
+    document.getElementById('nicknameInput').addEventListener('input', e => {
+      window.profileDraft.nickname = e.target.value;
+      updateProfileDraft();
+    });
+    document.getElementById('ageInput').addEventListener('input', e => {
+      window.profileDraft.age = e.target.value.replace(/\D/g, '').slice(0, 3);
+    });
+    document.getElementById('cityInput').addEventListener('input', e => {
+      window.profileDraft.city = e.target.value.slice(0, 32);
+    });
+    document.getElementById('statusInput').addEventListener('input', e => {
+      window.profileDraft.statusText = e.target.value.slice(0, 120);
+      document.getElementById('statusCharCount').textContent = e.target.value.length;
+    });
+    document.getElementById('profileGalleryInput').addEventListener('change', e => fileToDataUrl(e.target.files[0], data => {
+      window.profileDraft.profilePhoto = data;
+      updateProfileDraft();
+    }));
+    document.getElementById('profileCameraInput').addEventListener('change', e => fileToDataUrl(e.target.files[0], data => {
+      window.profileDraft.profilePhoto = data;
+      updateProfileDraft();
+    }));
+    document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+    document.getElementById('followToggleBtn').addEventListener('click', () => activeViewedUserId && toggleFollow(activeViewedUserId));
+
+    renderAll();
+  </script>
+</body>
+</html>
