@@ -3,109 +3,11 @@
 
 <html lang="en" data-theme="clean_blue">
 <head>
-<script id="hearty-clean-default-authoritative-v2">
-(function(){
-  try{
-    var MIGRATION_KEY='heartyCleanDefaultMigrationV2';
-    if(localStorage.getItem(MIGRATION_KEY)!=='true'){
-      localStorage.setItem('heartyTheme','clean_blue');
-      localStorage.setItem('hearty-theme','clean_blue');
-      localStorage.setItem(MIGRATION_KEY,'true');
-    }
-    var current=localStorage.getItem('heartyTheme') || localStorage.getItem('hearty-theme') || 'clean_blue';
-    if(current==='sunlit' && localStorage.getItem('heartyThemeUserSelected')!=='true'){
-      current='clean_blue';
-      localStorage.setItem('heartyTheme','clean_blue');
-      localStorage.setItem('hearty-theme','clean_blue');
-    }
-    document.documentElement.setAttribute('data-theme', current || 'clean_blue');
-  }catch(e){
-    document.documentElement.setAttribute('data-theme','clean_blue');
-  }
-})();
-</script>
-
-<style id="prepaint-logo-hide">
-.brand-logo{opacity:0 !important;}
-html.logo-ready .brand-logo{opacity:1 !important;transition:none !important;}
-</style>
-<script id="prepaint-logo-sync">
-(function(){
-  function getTheme(){
-    try{
-      var firstUse = localStorage.getItem('heartyCoreSetupDone') !== 'true';
-      if(firstUse) return 'clean_blue';
-      if(localStorage.getItem('heartyCoreSetupDone') !== 'true') return 'clean_blue'; return localStorage.getItem('heartyTheme') || localStorage.getItem('hearty-theme') || document.documentElement.getAttribute('data-theme') || 'clean_blue';
-    }
-    catch(e){return document.documentElement.getAttribute('data-theme') || 'clean_blue';}
-  }
-  function pick(logo){
-    if(!logo) return;
-    var t=getTheme();
-    var src=logo.getAttribute('data-default-logo') || logo.getAttribute('src');
-    if(t==='sunlit' && logo.getAttribute('data-sunlit-logo')) src=logo.getAttribute('data-sunlit-logo');
-    else if(t==='midnight' && logo.getAttribute('data-midnight-logo')) src=logo.getAttribute('data-midnight-logo');
-    else if(t==='rose_aurora' && logo.getAttribute('data-rose-aurora-logo')) src=logo.getAttribute('data-rose-aurora-logo');
-    if(src) logo.setAttribute('src',src);
-    document.documentElement.classList.add('logo-ready');
-  }
-  document.addEventListener('DOMContentLoaded', function(){ pick(document.querySelector('.brand-logo')); });
-})();
-</script>
-
 <script>window.Intl=window.Intl||{};Intl.t=function(s){return(Intl._locale&&Intl._locale[s])||s;};</script>
-<script id="hearty-theme-bootstrap">
-(function(){
-  try {
-    var firstUse = localStorage.getItem('heartyCoreSetupDone') !== 'true';
-    var theme = firstUse ? 'clean_blue' : (localStorage.getItem('heartyTheme') || localStorage.getItem('hearty-theme') || 'clean_blue');
-    document.documentElement.setAttribute('data-theme', theme);
-    if(firstUse){
-      localStorage.setItem('heartyTheme', 'clean_blue');
-      localStorage.setItem('hearty-theme', 'clean_blue');
-    }
-    window.addEventListener('storage', function(e){
-      if(e.key === 'heartyTheme' || e.key === 'hearty-theme'){
-        var stillFirstUse = localStorage.getItem('heartyCoreSetupDone') !== 'true';
-        var t = stillFirstUse ? 'clean_blue' : (localStorage.getItem('heartyTheme') || localStorage.getItem('hearty-theme') || 'clean_blue');
-        document.documentElement.setAttribute('data-theme', t);
-      }
-    });
-  } catch (e) {}
-})();
-</script>
-<style id="critical-header-prepaint">
-/* Prevent early paint from using old Home blue header chrome */
-html[data-theme="clean_blue"] .topbar{
-  background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.68)) !important;
-  border-color:rgba(143,163,184,.22) !important;
-  box-shadow:0 8px 22px rgba(14,31,53,.05) !important;
-}
-html[data-theme="sunlit"] .topbar{
-  background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,249,238,.74)) !important;
-  border-color:rgba(196,172,112,.20) !important;
-  box-shadow:0 8px 22px rgba(50,48,33,.05) !important;
-}
-html[data-theme="sunlit"] .icon-btn{
-  background:rgba(255,255,255,.94) !important;
-  border-color:rgba(156,170,146,.22) !important;
-  color:#5d6c7d !important;
-  box-shadow:0 8px 22px rgba(50,48,33,.05) !important;
-}
-html[data-theme="sunlit"] .brand-logo{
-  filter:none !important;
-  box-shadow:none !important;
-}
-html[data-theme="midnight"] .topbar,
-html[data-theme="rose_aurora"] .topbar{
-  background:linear-gradient(180deg, var(--surface-top), var(--surface-bottom)) !important;
-}
-</style>
-
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Hearty — Home</title>
-<script src="./js/hearty-data-layer.v1.js"></script>
+<script src="/js/hearty-data-layer.v1.js"></script>
 <style>
     
     /* ===== HEARTY THEME SYSTEM - 4 THEMES ===== */
@@ -6399,54 +6301,12 @@ html[data-theme="rose_aurora"] .hydration-add-text{
   #statusMedLayout.home-grid > #todaysRhythmCard{grid-column:auto !important;}
 }
 </style>
-<style id="hearty-layer-2-container-normalization">
-/* Layer 2: outer container only. No body cards, nav, icons, or logic changed. */
-.shell{
-  max-width:1280px !important;
-  margin:0 auto !important;
-  padding:20px 20px 32px !important;
-}
-@media (max-width:760px){
-  .shell{padding:14px 14px 24px !important;}
-}
-</style>
 
-<style id="hearty-layer-4-footer-strip">
-/* Layer 4: Footer/page strip source of truth */
-.bottom-nav{margin-top:18px !important;display:grid !important;grid-template-columns:repeat(7,minmax(0,1fr)) !important;gap:10px !important;padding:10px !important;border-radius:26px !important;background:rgba(255,255,255,.74) !important;border:1px solid var(--line) !important;box-shadow:var(--shadow-soft) !important;backdrop-filter:blur(14px) !important;-webkit-backdrop-filter:blur(14px) !important;position:sticky !important;bottom:12px !important;z-index:40 !important;}
-.bottom-nav .nav-item{appearance:none !important;border:none !important;background:transparent !important;cursor:pointer !important;color:#627286 !important;display:grid !important;gap:6px !important;justify-items:center !important;align-items:center !important;align-content:center !important;min-height:56px !important;padding:12px 8px 10px !important;border-radius:18px !important;text-align:center !important;font:inherit !important;font-size:.78rem !important;font-weight:600 !important;line-height:1.05 !important;text-decoration:none !important;box-shadow:none !important;outline:none !important;transition:background .22s ease,color .22s ease,box-shadow .22s ease,transform .18s ease !important;}
-.bottom-nav .nav-item svg{width:22px !important;height:22px !important;stroke:currentColor !important;stroke-width:1.8 !important;fill:none !important;stroke-linecap:round !important;stroke-linejoin:round !important;vector-effect:non-scaling-stroke !important;display:block !important;}
-.bottom-nav .nav-item span{display:block !important;color:inherit !important;white-space:nowrap !important;}
-.bottom-nav .nav-item.active,.bottom-nav .nav-item[aria-current="page"]{color:var(--theme-accent,#1f4ec0) !important;background:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96)) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 18px rgba(47,109,246,.10) !important;}
-.bottom-nav .nav-item:hover{transform:translateY(-1px) !important;}
-.bottom-nav .nav-item:focus-visible{outline:2px solid rgba(47,109,246,.45) !important;outline-offset:2px !important;}
-@media (max-width:760px){.bottom-nav{gap:4px !important;padding:6px !important;border-radius:18px !important;}.bottom-nav .nav-item{min-height:50px !important;padding:7px 2px 6px !important;font-size:.62rem !important;}.bottom-nav .nav-item svg{width:18px !important;height:18px !important;}}
-</style>
-<script id="hearty-theme-bootstrap-layer5">
-(function(){try{var firstUse=localStorage.getItem('heartyCoreSetupDone')!=='true';var theme=firstUse?'clean_blue':(localStorage.getItem('heartyTheme')||localStorage.getItem('hearty-theme')||document.documentElement.getAttribute('data-theme')||'clean_blue');document.documentElement.setAttribute('data-theme',theme);if(firstUse){localStorage.setItem('heartyTheme','clean_blue');localStorage.setItem('hearty-theme','clean_blue');}window.addEventListener('storage',function(e){if(e.key==='heartyTheme'||e.key==='hearty-theme'){var stillFirstUse=localStorage.getItem('heartyCoreSetupDone')!=='true';var t=stillFirstUse?'clean_blue':(localStorage.getItem('heartyTheme')||localStorage.getItem('hearty-theme')||'clean_blue');document.documentElement.setAttribute('data-theme',t);}});}catch(e){}})();
-</script>
-<style id="hearty-theme-tokens-layer5">
-:root,html[data-theme="clean_blue"]{--bg-base:#f6f9fe;--bg-1:#eef4fb;--bg-2:#f8fbff;--ink:#132235;--muted:#6f7c8d;--line:rgba(143,163,184,.22);--card:rgba(255,255,255,.94);--shadow:0 18px 44px rgba(14,31,53,.08);--shadow-soft:0 8px 22px rgba(14,31,53,.05);--surface-top:rgba(255,255,255,.82);--surface-bottom:rgba(255,255,255,.68);--surface-button:rgba(255,255,255,.94);--surface-chip:rgba(255,255,255,.96);--theme-accent:#2f6df6;--blue:#2f6df6;--blue-soft:#eaf1ff;--teal:#22b8a7;--teal-soft:#e8fbf8;--violet:#8b5cf6;--violet-soft:#f2ebff;--amber:#f59e0b;--amber-soft:#fff7e8;--rose:#ef5da8;--rose-soft:#fff0f7;--success:#16a34a;--radius-card:28px;--radius-control:16px;}
-html[data-theme="sunlit"]{--bg-base:#fbfaf6;--bg-1:#f7f4ec;--bg-2:#fffdf9;--ink:#1f2a2d;--muted:#707a78;--line:rgba(156,170,146,.22);--card:rgba(255,255,255,.93);--shadow:0 18px 44px rgba(50,48,33,.08);--shadow-soft:0 8px 22px rgba(50,48,33,.05);--surface-top:rgba(255,255,255,.82);--surface-bottom:rgba(255,252,246,.68);--surface-button:rgba(255,255,255,.94);--surface-chip:rgba(255,255,255,.96);--theme-accent:#b7791f;--blue:#b7791f;--blue-soft:#fff7e8;--teal:#6f9f7b;--teal-soft:#eef7ee;--violet:#a07a52;--violet-soft:#faf1e6;--amber:#d99522;--amber-soft:#fff7e8;--rose:#c0707d;--rose-soft:#fff1f3;--success:#6f9f7b;}
-html[data-theme="midnight"]{--bg-base:#0a111b;--bg-1:#0b121b;--bg-2:#0f1722;--ink:#edf3fb;--muted:#9faec1;--line:rgba(124,148,180,.16);--card:rgba(16,24,36,.78);--shadow:0 18px 44px rgba(2,8,23,.30);--shadow-soft:0 8px 22px rgba(2,8,23,.20);--surface-top:rgba(18,27,39,.76);--surface-bottom:rgba(14,22,33,.64);--surface-button:rgba(21,30,43,.86);--surface-chip:rgba(21,30,43,.90);--theme-accent:#89a8ff;--blue:#89a8ff;--blue-soft:rgba(137,168,255,.14);--teal:#67d8ce;--teal-soft:rgba(103,216,206,.13);--violet:#b6a4ff;--violet-soft:rgba(182,164,255,.13);--amber:#e6b96b;--amber-soft:rgba(230,185,107,.14);--rose:#f0a5c7;--rose-soft:rgba(240,165,199,.13);--success:#67d8a7;}
-html[data-theme="rose_aurora"]{--bg-base:#0d0a10;--bg-1:#0e0b13;--bg-2:#130f18;--ink:#f8f0f5;--muted:#b89fac;--line:rgba(195,148,172,.14);--card:rgba(22,16,26,.82);--shadow:0 22px 52px rgba(6,2,10,.44);--shadow-soft:0 10px 26px rgba(6,2,10,.30);--surface-top:rgba(30,21,36,.80);--surface-bottom:rgba(20,15,24,.68);--surface-button:rgba(36,26,42,.88);--surface-chip:rgba(38,27,44,.92);--theme-accent:#c9955c;--blue:#c9955c;--blue-soft:rgba(201,149,92,.14);--teal:#c4afd6;--teal-soft:rgba(196,175,214,.12);--violet:#c4afd6;--violet-soft:rgba(196,175,214,.13);--amber:#c9955c;--amber-soft:rgba(201,149,92,.14);--rose:#db8fb0;--rose-soft:rgba(219,143,176,.13);--success:#c4afd6;}
-</style>
-
-<style id="hearty-layer-6-background">
-/* ===== LAYER 6: BACKGROUND RECIPE NORMALIZATION ONLY ===== */
-body{
-  background:
-    radial-gradient(1200px 500px at 0% -10%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 50%),
-    radial-gradient(1000px 450px at 100% 0%, color-mix(in srgb, var(--accent-2) 10%, transparent), transparent 45%),
-    linear-gradient(180deg, var(--bg-2), var(--bg-1)) !important;
-}
-body::before,
-body::after{
-  background:none !important;
-}
-</style>
+<!-- Shared Hearty theme system -->
+<link rel="stylesheet" href="/css/hearty-theme.css">
+<script src="/js/hearty-theme.js"></script>
 </head>
-<body data-mock-weekday="Thursday">
+<body data-page="home" data-mock-weekday="Thursday">
 <div class="shell" id="pageRoot">
 <header class="topbar">
 <div class="brand">
@@ -6808,7 +6668,7 @@ body::after{
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M15.8 10.2a2.7 2.7 0 1 0 0-5.4"/><path d="M3.8 20c.6-3.2 2.3-5 4.7-5s4.1 1.8 4.7 5"/><path d="M13.8 15.4c2.3.2 3.8 1.8 4.4 4.6"/></svg>
     <span>Social</span>
   </a>
-  <a class="nav-item" href="settings.html">
+  <a class="nav-item" href="Settings.html">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.05.05a2.1 2.1 0 0 1-2.97 2.97l-.05-.05a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.66V21.3a2.1 2.1 0 0 1-4.2 0v-.07a1.8 1.8 0 0 0-1.1-1.66 1.8 1.8 0 0 0-1.98.36l-.05.05a2.1 2.1 0 0 1-2.97-2.97l.05-.05A1.8 1.8 0 0 0 3.8 15a1.8 1.8 0 0 0-1.66-1.1H2.1a2.1 2.1 0 0 1 0-4.2h.07A1.8 1.8 0 0 0 3.8 8a1.8 1.8 0 0 0-.36-1.98l-.05-.05A2.1 2.1 0 1 1 6.36 3l.05.05A1.8 1.8 0 0 0 8.4 3.4 1.8 1.8 0 0 0 9.5 1.75V1.7a2.1 2.1 0 0 1 4.2 0v.07a1.8 1.8 0 0 0 1.1 1.66 1.8 1.8 0 0 0 1.98-.36l.05-.05A2.1 2.1 0 1 1 19.8 6l-.05.05A1.8 1.8 0 0 0 19.4 8c.24.68.86 1.1 1.58 1.1h.12a2.1 2.1 0 0 1 0 4.2h-.12A1.8 1.8 0 0 0 19.4 15Z"/></svg>
     <span>Settings</span>
   </a>
@@ -8960,8 +8820,6 @@ html[data-theme="sunlit"] .task-icon-btn.done{
   box-shadow: 0 10px 22px rgba(143,106,42,.10), inset 0 1px 0 rgba(255,255,255,.92) !important;
 }
 </style>
-
-
 
 <!-- PATCH: first-action / press-me treatment for Today's Protocol buttons -->
 <style id="hearty-press-me-button-patch">
