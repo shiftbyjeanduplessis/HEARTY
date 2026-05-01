@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="stylesheet" href="/css/hearty-theme.css">
-<script src="/js/hearty-theme.js"></script>
+  <link rel="stylesheet" href="/css/hearty-theme.css">
+  <script src="/js/hearty-theme.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Hearty Login</title>
@@ -17,13 +18,13 @@
 
   <style>
     :root{
-      --ink:#102033;
-      --muted:#5d6f7e;
-      --line:rgba(180,200,220,0.5);
-      --card:rgba(255,255,255,0.9);
-      --blue:#1167d8;
-      --blue-deep:#0756c8;
-      --shadow:0 24px 70px rgba(50,80,110,0.18);
+      --login-ink:#102033;
+      --login-muted:#5d6f7e;
+      --login-line:rgba(180,200,220,0.5);
+      --login-card:rgba(255,255,255,0.9);
+      --login-blue:#1167d8;
+      --login-blue-deep:#0756c8;
+      --login-shadow:0 24px 70px rgba(50,80,110,0.18);
     }
 
     *{box-sizing:border-box}
@@ -40,7 +41,7 @@
       align-items:center;
       justify-content:center;
       padding:24px;
-      color:var(--ink);
+      color:var(--login-ink);
     }
 
     body.auth-checking .auth-card{
@@ -48,14 +49,14 @@
       pointer-events:none;
     }
 
- #splash{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  background:#0057ff url("/hearty-splash.png") center center no-repeat;
-  background-size:cover;
-  transition:opacity .35s ease, visibility .35s ease;
-}
+    #splash{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:#0057ff url("/hearty-splash.png") center center no-repeat;
+      background-size:cover;
+      transition:opacity .35s ease, visibility .35s ease;
+    }
 
     #splash.hide{
       opacity:0;
@@ -66,14 +67,15 @@
     .auth-card{
       width:100%;
       max-width:430px;
-      background:var(--card);
-      border:1px solid var(--line);
+      background:var(--login-card);
+      border:1px solid var(--login-line);
       border-radius:30px;
-      box-shadow:var(--shadow);
+      box-shadow:var(--login-shadow);
       padding:34px 26px 30px;
       text-align:center;
       backdrop-filter:blur(16px);
       -webkit-backdrop-filter:blur(16px);
+      transition:opacity .25s ease;
     }
 
     .auth-logo-wrap{
@@ -95,7 +97,7 @@
     .auth-tagline{
       font-size:.98rem;
       font-weight:650;
-      color:var(--muted);
+      color:var(--login-muted);
     }
 
     .auth-title{
@@ -104,10 +106,11 @@
       line-height:1.05;
       font-weight:800;
       letter-spacing:-.04em;
+      color:var(--login-ink);
     }
 
     .subtitle{
-      color:var(--muted);
+      color:var(--login-muted);
       font-size:15px;
       margin-bottom:26px;
       line-height:1.5;
@@ -122,6 +125,7 @@
       margin-bottom:14px;
       outline:none;
       background:rgba(255,255,255,.96);
+      color:var(--login-ink);
     }
 
     input:focus{
@@ -146,7 +150,7 @@
     button:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
     .primary{
-      background:linear-gradient(180deg,var(--blue),var(--blue-deep));
+      background:linear-gradient(180deg,var(--login-blue),var(--login-blue-deep));
       color:white;
       box-shadow:0 12px 24px rgba(17,103,216,0.25);
     }
@@ -160,7 +164,7 @@
     .message{
       margin-top:18px;
       font-size:14px;
-      color:var(--muted);
+      color:var(--login-muted);
       min-height:22px;
       line-height:1.4;
     }
@@ -213,7 +217,7 @@
     let splashUnlocked = false;
 
     function setMessage(text) {
-      message.textContent = text || "";
+      if (message) message.textContent = text || "";
     }
 
     function hideSplash() {
@@ -232,9 +236,15 @@
     }
 
     function unlockLoginAfterSplashHold() {
-      window.addEventListener("load", () => {
-        setTimeout(unlockLogin, 800);
-      });
+      const run = () => setTimeout(unlockLogin, 900);
+
+      if (document.readyState === "complete") {
+        run();
+      } else {
+        window.addEventListener("load", run, { once:true });
+      }
+
+      setTimeout(unlockLogin, 2500);
     }
 
     async function ensureProfile() {
@@ -270,11 +280,12 @@
         window.location.search.includes("code=");
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
         if (window.location.search.includes("code=")) {
-  const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
-  if (error) console.warn("Code exchange failed:", error);
-}
+          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          if (error) console.warn("Code exchange failed:", error);
+        }
+
+        const { data: { session } } = await supabase.auth.getSession();
 
         if (session) {
           await sendToHome();
@@ -284,9 +295,8 @@
         console.warn("Session check failed:", error);
       }
 
-    if (isAuthCallback) {
-  setTimeout(unlockLogin, 1200);
-}
+      setTimeout(unlockLogin, isAuthCallback ? 1200 : 800);
+    }
 
     supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
