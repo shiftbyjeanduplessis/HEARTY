@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="/css/hearty-theme.css">
-  <script src="/js/hearty-theme.js"></script>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Hearty Login</title>
@@ -44,25 +41,6 @@
       color:var(--login-ink);
     }
 
-    body.auth-checking .auth-card{
-      opacity:0;
-      pointer-events:none;
-    }
-
-    #splash{
-      position:fixed;
-      inset:0;
-      z-index:9999;
-      background:#0057ff url("/hearty-splash.png") center center no-repeat;
-      background-size:cover;
-      transition:opacity .35s ease, visibility .35s ease;
-    }
-
-    #splash.hide{
-      opacity:0;
-      visibility:hidden;
-      pointer-events:none;
-    }
 
     .auth-card{
       width:100%;
@@ -178,32 +156,10 @@
   </style>
 </head>
 
-<body class="auth-checking">
-  <div id="splash" aria-hidden="true"></div>
-
-  <script>
-    /* Safety fallback: prevents the splash from hanging if the module import/auth check fails. */
-    (function () {
-      var forced = false;
-      window.heartyForceUnlockLogin = function () {
-        if (forced) return;
-        forced = true;
-        document.body.classList.remove("auth-checking");
-        var splash = document.getElementById("splash");
-        if (splash) {
-          splash.classList.add("hide");
-          setTimeout(function () {
-            if (splash && splash.parentNode) splash.parentNode.removeChild(splash);
-          }, 450);
-        }
-      };
-      setTimeout(window.heartyForceUnlockLogin, 3200);
-    })();
-  </script>
-
+<body>
   <main class="auth-card">
     <div class="auth-logo-wrap">
-      <img src="hearty-logo.png" alt="Hearty" class="auth-logo" onerror="this.onerror=null;this.src='/hearty-logo.png';">
+      <img src="./hearty-logo.png" alt="Hearty" class="auth-logo" onerror="this.onerror=null;this.src='/hearty-logo.png';">
       <div class="auth-tagline">Your GLP-1 Companion</div>
     </div>
 
