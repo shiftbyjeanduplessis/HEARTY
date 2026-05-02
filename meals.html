@@ -7,13 +7,7 @@
 
   <script>
     (function(){
-      try {
-        var theme = localStorage.getItem("heartyTheme") || localStorage.getItem("hearty-theme") || "clean_blue";
-        if (!/^(clean_blue|sunlit|midnight|rose_aurora)$/.test(theme)) theme = "clean_blue";
-        document.documentElement.setAttribute("data-theme", theme);
-      } catch(e) {
-        document.documentElement.setAttribute("data-theme", "clean_blue");
-      }
+      document.documentElement.setAttribute("data-theme", "clean_blue");
     })();
   </script>
 
@@ -39,74 +33,6 @@
       --shadow-soft:0 8px 22px rgba(14,31,53,.055);
       --nav-active-bg:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96));
       --nav-active-ink:#1f4ec0;
-    }
-
-    html[data-theme="sunlit"]{
-      --bg-1:#f6efe2;
-      --bg-2:#fffdf8;
-      --ink:#1f2a2d;
-      --muted:#707a78;
-      --line:rgba(164,145,105,.24);
-      --card:rgba(255,255,255,.93);
-      --surface-top:rgba(255,255,255,.86);
-      --surface-bottom:rgba(255,250,240,.70);
-      --surface-inner:linear-gradient(180deg,rgba(255,255,255,.98),rgba(255,250,240,.94));
-      --surface-button:rgba(255,255,255,.94);
-      --surface-chip:rgba(255,253,248,.90);
-      --theme-accent:#b7791f;
-      --theme-accent-2:#7f9f6e;
-      --theme-warning:#d9922e;
-      --theme-success:#5f8f5f;
-      --shadow:0 18px 44px rgba(50,48,33,.08);
-      --shadow-soft:0 8px 22px rgba(50,48,33,.05);
-      --nav-active-bg:linear-gradient(180deg,rgba(255,248,236,.98),rgba(255,255,255,.94));
-      --nav-active-ink:#9a6418;
-    }
-
-    html[data-theme="midnight"]{
-      color-scheme:dark;
-      --bg-1:#090f19;
-      --bg-2:#111827;
-      --ink:#edf3fb;
-      --muted:#a5b3c6;
-      --line:rgba(124,148,180,.18);
-      --card:rgba(16,24,36,.82);
-      --surface-top:rgba(18,27,39,.82);
-      --surface-bottom:rgba(14,22,33,.70);
-      --surface-inner:linear-gradient(180deg,rgba(24,35,50,.94),rgba(15,23,36,.90));
-      --surface-button:rgba(21,30,43,.92);
-      --surface-chip:rgba(21,30,43,.92);
-      --theme-accent:#89a8ff;
-      --theme-accent-2:#4fd1c5;
-      --theme-warning:#f6c15d;
-      --theme-success:#4ade80;
-      --shadow:0 18px 44px rgba(2,8,23,.34);
-      --shadow-soft:0 8px 22px rgba(2,8,23,.24);
-      --nav-active-bg:linear-gradient(180deg,rgba(42,58,84,.96),rgba(21,30,43,.94));
-      --nav-active-ink:#b8c9ff;
-    }
-
-    html[data-theme="rose_aurora"]{
-      color-scheme:dark;
-      --bg-1:#09070d;
-      --bg-2:#15101a;
-      --ink:#f8f0f5;
-      --muted:#c1a9b6;
-      --line:rgba(195,148,172,.16);
-      --card:rgba(22,16,26,.84);
-      --surface-top:rgba(30,21,36,.84);
-      --surface-bottom:rgba(20,15,24,.72);
-      --surface-inner:linear-gradient(180deg,rgba(34,24,40,.94),rgba(22,16,28,.90));
-      --surface-button:rgba(36,26,42,.92);
-      --surface-chip:rgba(38,27,44,.92);
-      --theme-accent:#c9955c;
-      --theme-accent-2:#d98caf;
-      --theme-warning:#e0a65d;
-      --theme-success:#d0b48a;
-      --shadow:0 22px 52px rgba(6,2,10,.46);
-      --shadow-soft:0 10px 26px rgba(6,2,10,.32);
-      --nav-active-bg:linear-gradient(180deg,rgba(55,38,60,.96),rgba(34,24,40,.94));
-      --nav-active-ink:#e3b97d;
     }
 
     *{box-sizing:border-box}
@@ -220,12 +146,15 @@
       border-color:color-mix(in srgb,var(--theme-success) 30%,var(--line));
     }
     .support-banner{padding:13px 14px;border-radius:18px;border:1px solid var(--line);background:var(--surface-inner);color:var(--muted);line-height:1.45;font-size:.9rem}
+    .support-toggle-row{display:flex;gap:10px;flex-wrap:wrap}
+    .support-toggle{flex:1;min-width:130px;appearance:none;border:1px solid var(--line);background:var(--surface-button);color:var(--ink);min-height:44px;padding:0 14px;border-radius:16px;font:inherit;font-size:.9rem;font-weight:760;cursor:pointer;box-shadow:var(--shadow-soft)}
+    .support-toggle.is-on{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 18%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-warning) 34%,var(--line))}
+    .support-toggle.is-off{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line))}
 
     .planner-card{display:grid;gap:14px}
     .planner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
     .planner-actions{display:flex;gap:10px;flex-wrap:wrap}
     .planner-action.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));color:#fff;border-color:transparent}
-    html[data-theme="midnight"] .planner-action.primary{color:#07111f}
     .planner-days,.day-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
     .planner-day,.day-tab{
       min-height:50px;
@@ -246,8 +175,6 @@
       color:#fff;
       border-color:transparent;
     }
-    html[data-theme="midnight"] .planner-day.is-active,
-    html[data-theme="midnight"] .day-tab.active{color:#07111f}
 
     .meal-list{display:grid;gap:14px}
     .meal-card{
@@ -382,16 +309,13 @@
     }
   </style>
 
-<!-- Shared Hearty theme system -->
-<link rel="stylesheet" href="/css/hearty-theme.css">
-<script src="/js/hearty-theme.js"></script>
 </head>
 
 <body data-page="meals">
   <div class="shell">
     <header class="topbar">
       <a class="brand" href="home.html" aria-label="Hearty Home">
-        <img data-default-logo="/hearty-logo.png" data-rose-aurora-logo="/hearty-logo-gold.png" class="brand-logo" src="hearty-logo.png" alt="Hearty" />
+        <img class="brand-logo" src="/hearty-logo.png" alt="Hearty" onerror="this.onerror=null;this.src='hearty-logo.png';" />
       </a>
       <a class="icon-btn" href="Settings.html" aria-label="Settings">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.91 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.66 0 1.27.39 1.51 1H21a2 2 0 1 1 0 4h-.09c-.24.61-.85 1-1.51 1z"></path></svg>
@@ -412,21 +336,18 @@
         <section class="card support-card" aria-label="Support mode">
           <div>
             <div class="section-label">SUPPORT MODE</div>
-            <h2 class="compact-title">Need gentler food today?</h2>
-            <p class="compact-copy">One global support mode adjusts meals automatically. No per-meal support toggles.</p>
+            <h2 class="compact-title">Support mode</h2>
+            <p class="compact-copy">This page only shows whether global support is on or off.</p>
           </div>
 
-          <div class="support-grid" id="supportGrid">
-            <button class="support-chip" type="button" data-support-mode="nausea" data-support="nausea">Nausea</button>
-            <button class="support-chip" type="button" data-support-mode="low_appetite" data-support="low_appetite">Low appetite</button>
-            <button class="support-chip" type="button" data-support-mode="exhaustion" data-support="exhaustion">Fatigue</button>
-            <button class="support-chip" type="button" data-support-mode="bloating" data-support="bloating">Bloating</button>
-            <button class="support-chip-off" type="button" data-support-off>Support off</button>
+          <div class="support-toggle-row" id="supportGrid">
+            <button class="support-toggle" type="button" data-support-toggle="on">Support On</button>
+            <button class="support-toggle" type="button" data-support-toggle="off">Support Off</button>
           </div>
 
           <div class="support-banner" id="supportBanner">
-            <strong id="supportBannerTitle">Support Mode Off</strong>
-            <div id="supportBannerCopy">Standard meals are active. Turn on support mode only when today needs to be lighter.</div>
+            <strong id="supportBannerTitle">Support Off</strong>
+            <div id="supportBannerCopy">Standard meals are active.</div>
           </div>
         </section>
 
@@ -489,7 +410,7 @@
                 <div>
                   <div class="meal-card__eyebrow">Loading</div>
                   <h3 class="meal-card__title">Loading your meals</h3>
-                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and meals-bridge.js are in the repo.</div>
+                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and hearty-meals-db-bridge.js are in the repo.</div>
                 </div>
                 <div class="meal-card__protein">—</div>
               </div>
@@ -557,13 +478,6 @@
     (function(){
       "use strict";
 
-      var supportCopy = {
-        nausea: ["Support Mode: Nausea", "Hydration first, gentle meals, softer textures and lower-friction choices."],
-        low_appetite: ["Support Mode: Low appetite", "Smaller protein-first meals. Consistency over volume today."],
-        exhaustion: ["Support Mode: Fatigue", "Low-prep meals, leftovers and simple protein options are prioritised."],
-        fatigue: ["Support Mode: Fatigue", "Low-prep meals, leftovers and simple protein options are prioritised."],
-        bloating: ["Support Mode: Bloating", "Simpler cooked meals, lighter portions and less heavy meal structure."]
-      };
 
       function safeGet(key, fallback){
         try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
@@ -607,17 +521,16 @@
       }
 
       function updateSupportBanner(reason){
+        var isOn = !!reason;
         var title = document.getElementById("supportBannerTitle");
         var copy = document.getElementById("supportBannerCopy");
-        var data = supportCopy[reason] || ["Support Mode Off", "Standard meals are active. Turn on support mode only when today needs to be lighter."];
-        if (title) title.textContent = data[0];
-        if (copy) copy.textContent = data[1];
+        if (title) title.textContent = isOn ? "Support On" : "Support Off";
+        if (copy) copy.textContent = isOn ? "Gentler meals are active." : "Standard meals are active.";
 
-        document.querySelectorAll("[data-support-mode]").forEach(function(btn){
-          btn.classList.toggle("is-active", btn.getAttribute("data-support-mode") === reason || btn.getAttribute("data-support") === reason);
-        });
-        document.querySelectorAll("[data-support-off]").forEach(function(btn){
-          btn.classList.toggle("is-active", !reason);
+        document.querySelectorAll("[data-support-toggle]").forEach(function(btn){
+          var mode = btn.getAttribute("data-support-toggle");
+          btn.classList.toggle("is-on", isOn && mode === "on");
+          btn.classList.toggle("is-off", !isOn && mode === "off");
         });
       }
 
@@ -654,7 +567,8 @@
       }
 
       function findEngine(){
-        return window.HeartyMealsEngine ||
+        return window.HeartyMealsEngineV6 ||
+          window.HeartyMealsEngine ||
           window.heartyMealsEngine ||
           window.MealsEngine ||
           window.mealsEngine ||
@@ -664,7 +578,10 @@
 
       function findBridgeFactory(){
         return window.createMealsBridge ||
+          window.createHeartyMealsBridge ||
+          window.createHeartyMealsDBBridge ||
           window.HeartyMealsBridge ||
+          window.HeartyMealsDBBridge ||
           window.heartyCreateMealsBridge ||
           null;
       }
@@ -676,29 +593,55 @@
         warn.classList.add("show");
       }
 
+      function readJsonStorage(key){
+        try {
+          var raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      function readMealProfile(){
+        var state = readJsonStorage("heartyMealsPageStateVFinal") ||
+          readJsonStorage("heartyMealsStateVFinal") ||
+          readJsonStorage("heartyMealsStateV1") ||
+          readJsonStorage("heartyMealProfile") ||
+          readJsonStorage("heartyMealsProfile");
+
+        if (!state) return null;
+
+        var profile = state.preferences || state.onboarding || state.profile || state.mealProfile || state;
+        var complete = state.profileComplete === true ||
+          state.onboardingComplete === true ||
+          state.mealsOnboardingComplete === true ||
+          profile.profileComplete === true ||
+          profile.onboardingComplete === true ||
+          Object.keys(profile || {}).length > 2;
+
+        return complete ? profile : null;
+      }
+
+      function redirectToMealsOnboarding(){
+        var current = (window.location.pathname || "").toLowerCase();
+        if (current.indexOf("meals-onboarding") !== -1) return;
+        window.location.href = "meals-onboarding.html";
+      }
+
       async function bootMeals(){
         syncTodayLabel();
         updateSupportBanner(readGlobalSupport());
 
         document.addEventListener("click", function(event){
-          var supportBtn = event.target.closest("[data-support-mode],[data-support]");
-          if (supportBtn) {
-            var reason = supportBtn.getAttribute("data-support-mode") || supportBtn.getAttribute("data-support");
+          var supportToggle = event.target.closest("[data-support-toggle]");
+          if (supportToggle) {
+            var mode = supportToggle.getAttribute("data-support-toggle");
+            var reason = mode === "on" ? "support" : "";
             writeGlobalSupport(reason);
             updateSupportBanner(reason);
             if (window.heartyMealsBridge && window.heartyMealsBridge.state) {
               window.heartyMealsBridge.state.adjustments = window.heartyMealsBridge.state.adjustments || {};
-              window.heartyMealsBridge.state.adjustments.supportMode = reason;
-              if (typeof window.heartyMealsBridge.regenerateWeek === "function") window.heartyMealsBridge.regenerateWeek();
-            }
-          }
-
-          if (event.target.closest("[data-support-off]")) {
-            writeGlobalSupport("");
-            updateSupportBanner("");
-            if (window.heartyMealsBridge && window.heartyMealsBridge.state) {
-              window.heartyMealsBridge.state.adjustments = window.heartyMealsBridge.state.adjustments || {};
-              window.heartyMealsBridge.state.adjustments.supportMode = null;
+              window.heartyMealsBridge.state.adjustments.supportMode = reason || null;
               if (typeof window.heartyMealsBridge.regenerateWeek === "function") window.heartyMealsBridge.regenerateWeek();
             }
           }
@@ -706,19 +649,33 @@
 
         try {
           await loadFirst([
-            "./js/meals-engine.js",
             "./meals-engine.js",
-            "./hearty-meals-engine.js"
+            "./js/meals-engine.js",
+            "./hearty-meals-engine.js",
+            "./js/hearty-meals-engine.js"
           ]);
 
           await loadFirst([
+            "./hearty-meals-db-bridge.js",
+            "./js/hearty-meals-db-bridge.js",
             "./js/meals-bridge.js",
             "./meals-bridge.js",
-            "./hearty-meals-bridge.js"
+            "./hearty-meals-bridge.js",
+            "./js/hearty-meals-bridge.js"
           ]);
+
+          var mealProfile = readMealProfile();
+          if (!mealProfile) {
+            redirectToMealsOnboarding();
+            return;
+          }
 
           var engine = findEngine();
           var factory = findBridgeFactory();
+
+          if (factory && typeof factory !== "function" && typeof factory.create === "function") {
+            factory = factory.create.bind(factory);
+          }
 
           if (!engine || typeof factory !== "function") {
             throw new Error("Meal engine or bridge factory was not found on window.");
@@ -727,7 +684,7 @@
           var supportMode = readGlobalSupport();
           var bridge = factory({
             engine: engine,
-            initialProfile: null,
+            initialProfile: mealProfile,
             ui: {
               dayTabs: document.getElementById("plannerDays"),
               mealList: document.getElementById("mealList"),
@@ -745,7 +702,7 @@
 
         } catch(error) {
           console.warn("[Hearty Meals] Boot failed:", error);
-          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine.js and meals-bridge.js exist and expose the expected window globals.");
+          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine.js and hearty-meals-db-bridge.js exist and expose the expected window globals.");
         }
       }
 
