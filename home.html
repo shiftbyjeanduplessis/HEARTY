@@ -5571,6 +5571,46 @@ html[data-theme="rose_aurora"] .hydration-add-text{
 <!-- Shared Hearty theme system -->
 <link rel="stylesheet" href="/css/hearty-theme.css">
 <script src="/js/hearty-theme.js"></script>
+<style>
+/* HOME onboarding modal input fix only */
+#onboardingModal input,
+#onboardingModal select,
+#personaliseModal input,
+#personaliseModal select,
+.onboarding-box input,
+.onboarding-box select,
+.onboarding-modal input,
+.onboarding-modal select,
+.task-sheet input,
+.task-sheet select {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(143,163,184,.35);
+  background: rgba(255,255,255,.96);
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #102033;
+  outline: none;
+}
+
+#onboardingModal input:focus,
+#onboardingModal select:focus,
+#personaliseModal input:focus,
+#personaliseModal select:focus,
+.onboarding-box input:focus,
+.onboarding-box select:focus,
+.onboarding-modal input:focus,
+.onboarding-modal select:focus,
+.task-sheet input:focus,
+.task-sheet select:focus {
+  border-color: rgba(47,109,246,.45);
+  box-shadow: 0 0 0 4px rgba(47,109,246,.10);
+}
+</style>
+
+</head>
 </head>
 <body data-page="home" data-mock-weekday="Thursday">
 <div class="shell" id="pageRoot">
