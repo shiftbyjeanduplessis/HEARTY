@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hearty Login</title>
+  <script>if(location.search.includes("code=")||location.hash.includes("access_token")){document.documentElement.classList.add("auth-callback");}</script>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#f7fbff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hearty">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <style>
+    :root{--login-ink:#102033;--login-muted:#5d6f7e;--login-line:rgba(180,200,220,.5);--login-card:rgba(255,255,255,.9);--login-blue:#1167d8;--login-blue-deep:#0756c8;--login-shadow:0 24px 70px rgba(50,80,110,.18)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100vh}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(900px 420px at 0% 0%,rgba(47,109,246,.10),transparent 55%),radial-gradient(900px 460px at 100% 100%,rgba(20,184,166,.09),transparent 55%),linear-gradient(180deg,#f7fbff,#eef5fb);display:flex;align-items:center;justify-content:center;padding:24px;color:var(--login-ink)}
+    html.auth-callback .auth-card{opacity:0;pointer-events:none;transform:translateY(8px)}
+    .auth-card{width:100%;max-width:430px;background:var(--login-card);border:1px solid var(--login-line);border-radius:30px;box-shadow:var(--login-shadow);padding:34px 26px 30px;text-align:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:opacity .25s ease,transform .25s ease}.auth-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px}.auth-logo{height:64px;width:auto;max-width:300px;object-fit:contain;display:block}.auth-tagline{font-size:.98rem;font-weight:650;color:var(--login-muted)}.auth-title{margin:8px 0 8px;font-size:1.9rem;line-height:1.05;font-weight:800;letter-spacing:-.04em;color:var(--login-ink)}.subtitle{color:var(--login-muted);font-size:15px;margin-bottom:26px;line-height:1.5}input{width:100%;border-radius:16px;border:1px solid #d7e2ec;padding:15px 16px;font-size:16px;margin-bottom:14px;outline:none;background:rgba(255,255,255,.96);color:var(--login-ink)}input:focus{border-color:rgba(17,103,216,.45);box-shadow:0 0 0 4px rgba(17,103,216,.10)}button{width:100%;border:0;border-radius:16px;padding:15px 16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease}button:hover{transform:translateY(-1px)}button:active{transform:scale(.985)}button:disabled{opacity:.55;cursor:not-allowed;transform:none}.primary{background:linear-gradient(180deg,var(--login-blue),var(--login-blue-deep));color:white;box-shadow:0 12px 24px rgba(17,103,216,.25)}.ghost{background:white;color:#123;border:1px solid #d7e2ec}.message{margin-top:18px;font-size:14px;color:var(--login-muted);min-height:22px;line-height:1.4}
+    .splash{position:fixed;inset:0;z-index:9999;display:none;place-items:center;background:radial-gradient(900px 420px at 0% 0%,rgba(47,109,246,.10),transparent 55%),radial-gradient(900px 460px at 100% 100%,rgba(20,184,166,.09),transparent 55%),linear-gradient(180deg,#f7fbff,#eef5fb);transition:opacity .35s ease,visibility .35s ease}html.auth-callback .splash{display:grid}.splash.hide{opacity:0;visibility:hidden}.splash-inner{display:grid;gap:14px;justify-items:center}.splash-logo{height:78px;max-width:320px;object-fit:contain}.splash-copy{font-weight:750;color:#5d6f7e}.splash-pulse{width:42px;height:42px;border-radius:999px;border:4px solid rgba(17,103,216,.16);border-top-color:#1167d8;animation:spin .9s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:560px){body{padding:18px}.auth-card{padding:30px 20px 26px;border-radius:28px}.auth-logo{height:56px}.auth-title{font-size:1.75rem}.splash-logo{height:64px}}
+  </style>
+</head>
+<body>
+  <div class="splash" id="splash" aria-hidden="true"><div class="splash-inner"><img src="/hearty-logo.png" alt="Hearty" class="splash-logo"><div class="splash-word" style="font-size:2.4rem;font-weight:900;letter-spacing:-.05em;color:#1167d8">Hearty</div><div class="splash-copy">Opening Hearty…</div><div class="splash-pulse"></div></div></div>
+  <main class="auth-card">
+    <div class="auth-logo-wrap"><img src="/hearty-logo.png" alt="Hearty" class="auth-logo" /><div class="auth-tagline">Your GLP-1 Companion</div></div>
+    <h1 class="auth-title">Welcome back</h1>
+    <div class="subtitle">Sign in to continue your journey with Hearty.</div>
+    <input id="email" type="email" placeholder="Email address" autocomplete="email" />
+    <button class="primary" id="sendBtn">Continue with email</button>
+    <button class="ghost" id="googleBtn">Continue with Google</button>
+    <div class="message" id="message"></div>
+  </main>
+  <script type="module">
+    import { supabase } from "./supabase-client.js";
+    window.supabaseClient=supabase;window.supabase=supabase;
+    const emailInput=document.getElementById("email"),sendBtn=document.getElementById("sendBtn"),googleBtn=document.getElementById("googleBtn"),message=document.getElementById("message"),splash=document.getElementById("splash");
+    let redirecting=false,splashUnlocked=false;
+    function setMessage(text){if(message)message.textContent=text||""}
+    function hideSplash(){if(!splash)return;splash.classList.add("hide");setTimeout(()=>{if(splash&&splash.parentNode)splash.parentNode.removeChild(splash)},450)}
+    function unlockLogin(){if(redirecting||splashUnlocked)return;splashUnlocked=true;document.documentElement.classList.remove("auth-callback");hideSplash()}
+    function unlockLoginAfterSplashHold(){
+      const isAuthCallback=window.location.hash.includes('access_token')||window.location.search.includes('code=');
+      if(isAuthCallback) return;
+      setTimeout(function(){ if(!redirecting) unlockLogin(); },2500);
+    }
+    async function ensureProfile(){try{const{data:{user}}=await supabase.auth.getUser();if(!user)return;const provider=user.app_metadata?.provider||"email";await supabase.from("profiles").upsert({user_id:user.id,account_email:user.email,user_name:user.user_metadata?.full_name||user.email||null,first_name:user.user_metadata?.full_name?.split(" ")?.[0]||null,auth_provider:provider,updated_at:new Date().toISOString()},{onConflict:"user_id"})}catch(error){console.warn("Profile save failed, continuing login:",error)}}
+    async function sendToHome(){if(redirecting)return;redirecting=true;await ensureProfile();window.location.replace("/home.html")}
+    async function goHomeIfLoggedIn(){
+      const isAuthCallback=window.location.hash.includes('access_token')||window.location.search.includes('code=');
+      const started=Date.now();
+      async function checkOnce(){
+        try{
+          if(window.location.search.includes('code=')){
+            const { error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+            if(error) console.warn('Code exchange failed:', error);
+          }
+          const { data:{ session } } = await supabase.auth.getSession();
+          if(session){ await sendToHome(); return true; }
+        }catch(error){ console.warn('Session check failed:', error); }
+        return false;
+      }
+      if(await checkOnce()) return;
+      if(isAuthCallback){
+        const timer=setInterval(async function(){
+          if(redirecting){ clearInterval(timer); return; }
+          if(await checkOnce()){ clearInterval(timer); return; }
+          if(Date.now()-started > 8000){ clearInterval(timer); unlockLogin(); }
+        }, 250);
+      } else {
+        setTimeout(unlockLogin,800);
+      }
+    }
+    supabase.auth.onAuthStateChange(async(event,session)=>{if(session)await sendToHome()});
+    sendBtn.addEventListener("click",async()=>{const email=emailInput.value.trim();if(!email){setMessage("Please enter your email address.");return}sendBtn.disabled=true;setMessage("Sending login link...");const{error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:`${window.location.origin}/login.html`}});if(error){setMessage(error.message);sendBtn.disabled=false;return}setMessage("Check your email and click the login link.");sendBtn.disabled=false});
+    googleBtn.addEventListener("click",async()=>{setMessage("Opening Google sign in...");const{error}=await supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:`${window.location.origin}/login.html`}});if(error)setMessage(error.message)});
+    emailInput.addEventListener("keydown",event=>{if(event.key==="Enter")sendBtn.click()});
+    if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("/service-worker.js").catch(console.warn)})}
+    unlockLoginAfterSplashHold();goHomeIfLoggedIn();
+  </script>
+</body>
+</html>
