@@ -1,44 +1,57 @@
 // Hearty Community Events v1
 
 (function () {
+  const SETTINGS_KEY = 'heartySettings';
+  const POSTS_KEY = 'heartyCommunityPosts';
+  const USER_KEY = 'heartyUserId';
+
+  function safeParse(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch {
+      return fallback;
+    }
+  }
 
   function getSettings() {
-    try {
-      return JSON.parse(localStorage.getItem('heartySettings') || '{}');
-    } catch {
-      return {};
-    }
+    return safeParse(SETTINGS_KEY, {});
   }
 
   function getPosts() {
-    try {
-      return JSON.parse(localStorage.getItem('heartyCommunityPosts') || '[]');
-    } catch {
-      return [];
-    }
+    return safeParse(POSTS_KEY, []);
   }
 
   function setPosts(posts) {
-    localStorage.setItem('heartyCommunityPosts', JSON.stringify(posts));
+    localStorage.setItem(POSTS_KEY, JSON.stringify(posts));
+    window.dispatchEvent(new CustomEvent('hearty:community-updated', { detail: posts }));
   }
 
-  function uid(prefix = 'id') {
-    return prefix + '_' + Math.random().toString(36).slice(2) + Date.now();
-  }
-
-  function now() {
-    return Date.now();
+  function uid(prefix = 'event') {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   }
 
   function getCurrentUserId() {
-    return localStorage.getItem('heartyUserId') || 'user';
+    return localStorage.getItem(USER_KEY) || 'local_user';
   }
 
-  window.heartyLogCommunityEvent = function (type, data = {}) {
-    const settings = getSettings();
+  function isCommunityEnabled() {
+    return getSettings().communityEnabled === true;
+  }
 
-    // Community OFF → do nothing
-    if (!settings.communityEnabled) return;
+  window.heartyCommunityIsEnabled = isCommunityEnabled;
+
+  window.heartyLogCommunityEvent = function (type, data = {}) {
+    if (!isCommunityEnabled()) return false;
+
+    const safeTypes = new Set([
+      'workout_complete',
+      'weigh_in_logged',
+      'meal_plan_generated',
+      'support_mode_on',
+      'lesson_complete'
+    ]);
+
+    if (!safeTypes.has(type)) return false;
 
     const posts = getPosts();
 
@@ -47,11 +60,11 @@
       userId: getCurrentUserId(),
       postType: 'system_event',
       eventType: type,
-      data,
-      createdAt: now()
+      data: {},
+      createdAt: Date.now()
     });
 
-    setPosts(posts);
+    setPosts(posts.slice(0, 100));
+    return true;
   };
-
 })();
