@@ -237,6 +237,48 @@
   .meta { margin-top:4px; color:var(--muted); font-size:13px; line-height:1.35; }
   .post-text { margin:15px 0 0; font-size:15px; line-height:1.6; color:#243045; }
   .post-actions { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+
+  .composer-card {
+    padding:18px;
+    display:grid;
+    gap:12px;
+    background:rgba(255,255,255,.94);
+    border:1px solid rgba(24,32,51,.06);
+    box-shadow:var(--shadow-soft);
+    border-radius:var(--radius-xl);
+  }
+  .composer-head {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+  .composer-head strong { font-size:16px; letter-spacing:-.01em; }
+  .composer-head span { color:var(--muted); font-size:13px; }
+  .composer-card textarea {
+    width:100%;
+    min-height:96px;
+    resize:vertical;
+    border:1px solid rgba(24,32,51,.08);
+    background:white;
+    border-radius:18px;
+    padding:14px;
+    color:var(--ink);
+    outline:none;
+  }
+  .composer-card textarea:focus {
+    border-color:rgba(47,109,246,.36);
+    box-shadow:0 0 0 4px rgba(47,109,246,.08);
+  }
+  .composer-actions {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .composer-hint { color:var(--muted); font-size:12px; line-height:1.4; }
+  .post-card.user-post { border-color:rgba(47,109,246,.12); }
   .reaction-btn { min-height:42px; padding:11px 15px; border-radius:999px; background:rgba(24,32,51,.055); color:#324055; display:inline-flex; gap:8px; align-items:center; font-weight:700; }
   .reaction-btn.active { background:var(--blue-soft); color:var(--blue); box-shadow:inset 0 0 0 1px rgba(29,78,216,.08); }
   .empty-card { padding:26px 16px; text-align:center; color:var(--muted); }
@@ -296,6 +338,19 @@
     .bottom-nav .nav-item { min-height:50px; padding:7px 2px 6px; font-size:.62rem; }
     .bottom-nav .nav-item svg { width:18px; height:18px; }
   }
+
+  .image-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .file-pill { display:inline-flex; align-items:center; gap:8px; min-height:42px; padding:10px 13px; border-radius:999px; background:rgba(47,109,246,.10); color:var(--blue); font-weight:750; cursor:pointer; }
+  .file-pill input { display:none; }
+  .image-preview { display:none; position:relative; width:100%; overflow:hidden; border-radius:20px; border:1px solid rgba(24,32,51,.08); background:white; }
+  .image-preview.active { display:block; }
+  .image-preview img { display:block; width:100%; max-height:320px; object-fit:cover; }
+  .image-preview button { position:absolute; right:10px; top:10px; border:0; min-height:36px; padding:8px 12px; border-radius:999px; background:rgba(15,23,42,.72); color:white; font-weight:800; cursor:pointer; }
+  .post-image { width:100%; max-height:360px; object-fit:cover; display:block; margin-top:14px; border-radius:20px; border:1px solid rgba(24,32,51,.08); }
+  .network-pill { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:8px 11px; border-radius:999px; background:rgba(24,32,51,.05); color:var(--muted); font-size:12px; font-weight:750; }
+  .network-pill.live { background:rgba(21,128,61,.12); color:var(--success); }
+  .network-pill.local { background:rgba(217,119,6,.12); color:var(--warning); }
+
 </style>
 </head>
 <body data-page="community">
@@ -314,9 +369,10 @@
       <div class="hero-copy">
         <div class="eyebrow">Community</div>
         <h1>Private accountability circle.</h1>
-        <p>Community is optional. When it is on, Hearty can turn safe app actions into simple encouragement updates. Weight numbers, photos, medication details, and side-effect details are never shared here.</p>
+        <p>Community is optional. When it is on, Hearty can turn safe app actions into simple encouragement updates. You can share a quick update, react with love, or post an image that disappears after 24 hours.</p>
       </div>
       <div class="hero-actions">
+        <span class="network-pill" id="networkPill">Checking Supabase…</span>
         <div class="toggle-wrap">
           <span class="toggle-label" id="communityToggleText">Off</span>
           <button class="toggle" id="communityToggle" type="button" aria-pressed="false" aria-label="Turn Community on or off"></button>
@@ -339,31 +395,21 @@
     </div>
 
     <section class="screen active" id="feedScreen">
-      <div class="feed-list" id="feedList"></div>
-    </section>
-
-    <section class="screen" id="privacyScreen">
-      <div class="card" style="padding:18px;">
-        <div class="privacy-list">
-          <div class="privacy-row"><strong>Default is off</strong><span>Community starts disabled. Events are ignored until the user turns it on.</span></div>
-          <div class="privacy-row"><strong>Safe events only</strong><span>Allowed events: workout complete, weigh-in logged, meal plan generated, support mode activated, and lesson complete.</span></div>
-          <div class="privacy-row"><strong>No private data</strong><span>No exact weight, photos, medication details, side-effect details, or open text posts are shared in v1.</span></div>
-          <div class="privacy-row"><strong>Local v1 storage</strong><span>This version stores Community events in localStorage. Supabase circle sharing can be added later when the product rules are final.</span></div>
+      <div class="composer-card" id="composerCard">
+        <div class="composer-head">
+          <div>
+            <strong>Share with your circle</strong>
+            <span id="composerStatus">Community is off</span>
+          </div>
         </div>
-      </div>
-    </section>
-  </main>
-
-  <nav class="bottom-nav" aria-label="Page selector" id="bottomNav"></nav>
-</div>
-
-<script>
+        <textarea id="communityPostInput" maxlength="280" placeholder="Share a quick update, encouragement, o<script>
 (function(){
   const SETTINGS_KEY = 'heartySettings';
   const POSTS_KEY = 'heartyCommunityPosts';
   const REACTIONS_KEY = 'heartyCommunityReactions';
   const USER_KEY = 'heartyUserId';
-  const SAFE_TYPES = new Set(['workout_complete','weigh_in_logged','meal_plan_generated','support_mode_on','lesson_complete']);
+  const IMAGE_BUCKET = 'community-images';
+  const SAFE_TYPES = new Set(['workout_complete','weigh_in_logged','meal_plan_generated','support_mode_on','lesson_complete','user_post']);
   const EVENT_COPY = {
     workout_complete: { icon:'💪', title:'Workout completed', text:'A workout was completed today.' },
     weigh_in_logged: { icon:'⚖️', title:'Weigh-in logged', text:'A daily weigh-in was completed.' },
@@ -372,25 +418,97 @@
     lesson_complete: { icon:'📘', title:'Lesson completed', text:'A daily lesson was completed.' }
   };
 
+  let selectedImageFile = null;
+  let sb = null;
+  let currentUser = null;
+  let usingSupabase = false;
+  let postsCache = [];
+  let reactionsCache = {};
+
   function load(key, fallback) {
     try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
     catch { return fallback; }
   }
   function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
-  function getSettings() { return load(SETTINGS_KEY, {}); }
-  function setSettings(next) { save(SETTINGS_KEY, next); }
-  function getPosts() { return load(POSTS_KEY, []); }
-  function setPosts(posts) {
-    save(POSTS_KEY, posts.slice(0,100));
-    window.dispatchEvent(new CustomEvent('hearty:community-updated', { detail: posts.slice(0,100) }));
-  }
-  function getReactions() { return load(REACTIONS_KEY, {}); }
-  function setReactions(reactions) { save(REACTIONS_KEY, reactions); }
-  function getCurrentUserId() { return localStorage.getItem(USER_KEY) || 'local_user'; }
+  function getLocalSettings() { return load(SETTINGS_KEY, {}); }
+  function setLocalSettings(next) { save(SETTINGS_KEY, next); }
+  function getLocalPosts() { return load(POSTS_KEY, []); }
+  function setLocalPosts(posts) { save(POSTS_KEY, posts.slice(0,100)); }
+  function getLocalReactions() { return load(REACTIONS_KEY, {}); }
+  function setLocalReactions(reactions) { save(REACTIONS_KEY, reactions); }
+  function getCurrentUserId() { return (currentUser && currentUser.id) || localStorage.getItem(USER_KEY) || 'local_user'; }
   function uid(prefix='event') { return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
-  function isEnabled() { return getSettings().communityEnabled === true; }
+
+  function findSupabaseClient() {
+    const candidates = [
+      window.heartySupabaseClient,
+      window.heartySupabase,
+      window.supabaseClient,
+      window.supabaseClientV1,
+      window.sb,
+      window._supabase
+    ];
+    return candidates.find(c => c && typeof c.from === 'function') || null;
+  }
+
+  async function initSupabase() {
+    sb = findSupabaseClient();
+    if (!sb) {
+      usingSupabase = false;
+      setNetwork('Local fallback', 'local');
+      return;
+    }
+    try {
+      const { data } = await sb.auth.getUser();
+      currentUser = data && data.user ? data.user : null;
+      usingSupabase = Boolean(currentUser);
+      setNetwork(usingSupabase ? 'Supabase live' : 'Sign in needed', usingSupabase ? 'live' : 'local');
+    } catch (err) {
+      usingSupabase = false;
+      setNetwork('Local fallback', 'local');
+    }
+  }
+
+  function setNetwork(text, mode) {
+    const pill = document.getElementById('networkPill');
+    if (!pill) return;
+    pill.textContent = text;
+    pill.classList.toggle('live', mode === 'live');
+    pill.classList.toggle('local', mode !== 'live');
+  }
+
+  async function isEnabled() {
+    if (usingSupabase) {
+      const { data, error } = await sb.from('community_user_settings').select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
+      if (error && error.code !== 'PGRST116') console.warn('Community settings read failed', error);
+      return data ? data.community_enabled === true : false;
+    }
+    return getLocalSettings().communityEnabled === true;
+  }
+
+  function isEnabledSync() {
+    return getLocalSettings().communityEnabled === true;
+  }
+
+  async function setEnabled(next) {
+    const local = getLocalSettings();
+    local.communityEnabled = next;
+    setLocalSettings(local);
+
+    if (usingSupabase) {
+      const { error } = await sb.from('community_user_settings').upsert({
+        user_id: currentUser.id,
+        community_enabled: next,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+      if (error) console.warn('Community settings save failed', error);
+    }
+    renderAll();
+  }
+
   function timeAgo(ts) {
-    const diff = Math.max(0, Date.now() - Number(ts || Date.now()));
+    const when = typeof ts === 'string' ? new Date(ts).getTime() : Number(ts || Date.now());
+    const diff = Math.max(0, Date.now() - when);
     const mins = Math.floor(diff / 60000);
     if (mins < 1) return 'Just now';
     if (mins < 60) return `${mins} min ago`;
@@ -398,22 +516,148 @@
     if (hrs < 24) return `${hrs} hr ago`;
     return 'Yesterday';
   }
-  function todayPosts() {
+
+  function escapeHTML(value) {
+    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  }
+
+  async function fetchPosts() {
+    if (!(await isEnabled())) { postsCache = []; return []; }
+    const nowIso = new Date().toISOString();
+
+    if (usingSupabase) {
+      const { data, error } = await sb
+        .from('community_posts')
+        .select('id,user_id,post_type,event_type,body,image_path,image_url,created_at,expires_at')
+        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+        .order('created_at', { ascending:false })
+        .limit(50);
+      if (error) {
+        console.warn('Community posts read failed', error);
+        postsCache = [];
+        return [];
+      }
+      postsCache = (data || []).map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        postType: row.post_type,
+        eventType: row.event_type,
+        data: { text: row.body || '', imageUrl: row.image_url || '', imagePath: row.image_path || '' },
+        createdAt: row.created_at,
+        expiresAt: row.expires_at
+      }));
+      await fetchReactions();
+      return postsCache;
+    }
+
     const day = 24 * 60 * 60 * 1000;
-    return getPosts()
-      .filter(p => p && p.postType === 'system_event' && SAFE_TYPES.has(p.eventType))
-      .filter(p => Date.now() - Number(p.createdAt || 0) <= day)
+    postsCache = getLocalPosts()
+      .filter(p => p && (p.postType === 'system_event' || p.postType === 'user_post') && SAFE_TYPES.has(p.eventType))
+      .filter(p => !p.expiresAt || Number(p.expiresAt) > Date.now())
+      .filter(p => Date.now() - Number(p.createdAt || 0) <= day || p.postType === 'user_post')
       .sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
+    reactionsCache = getLocalReactions();
+    return postsCache;
   }
-  function toggleCommunity(force) {
-    const settings = getSettings();
-    const next = typeof force === 'boolean' ? force : !isEnabled();
-    settings.communityEnabled = next;
-    setSettings(settings);
-    renderAll();
+
+  async function fetchReactions() {
+    if (!usingSupabase || !postsCache.length) { reactionsCache = getLocalReactions(); return; }
+    const ids = postsCache.map(p => p.id);
+    const { data, error } = await sb.from('community_reactions').select('post_id,user_id,reaction_type').in('post_id', ids);
+    if (error) { console.warn('Community reactions read failed', error); reactionsCache = {}; return; }
+    reactionsCache = {};
+    (data || []).forEach(r => {
+      reactionsCache[r.post_id] = reactionsCache[r.post_id] || {};
+      reactionsCache[r.post_id][r.user_id] = { type:r.reaction_type };
+    });
   }
-  function updateStatus() {
-    const enabled = isEnabled();
+
+  function reactionCount(postId) {
+    return reactionsCache[postId] ? Object.keys(reactionsCache[postId]).length : 0;
+  }
+  function hasReacted(postId) {
+    return Boolean(reactionsCache[postId] && reactionsCache[postId][getCurrentUserId()]);
+  }
+
+  async function toggleReaction(postId) {
+    if (!(await isEnabled())) return;
+    const userId = getCurrentUserId();
+    if (usingSupabase) {
+      if (hasReacted(postId)) {
+        const { error } = await sb.from('community_reactions').delete().eq('post_id', postId).eq('user_id', currentUser.id);
+        if (error) console.warn('Community unlike failed', error);
+      } else {
+        const { error } = await sb.from('community_reactions').upsert({ post_id: postId, user_id: currentUser.id, reaction_type:'love' }, { onConflict:'post_id,user_id' });
+        if (error) console.warn('Community love failed', error);
+      }
+    } else {
+      const reactions = getLocalReactions();
+      reactions[postId] = reactions[postId] || {};
+      if (reactions[postId][userId]) delete reactions[postId][userId];
+      else reactions[postId][userId] = { type:'love', createdAt:Date.now() };
+      setLocalReactions(reactions);
+    }
+    await renderFeed();
+  }
+
+  async function uploadImage(file) {
+    if (!file) return { imagePath:null, imageUrl:null };
+    if (!usingSupabase) {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      return { imagePath:null, imageUrl:dataUrl };
+    }
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+    const path = `${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const { error: uploadError } = await sb.storage.from(IMAGE_BUCKET).upload(path, file, { cacheControl:'86400', upsert:false, contentType:file.type || 'image/jpeg' });
+    if (uploadError) throw uploadError;
+    const { data } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);
+    return { imagePath:path, imageUrl:data && data.publicUrl ? data.publicUrl : null };
+  }
+
+  async function createCommunityPost({ text='', imageFile=null, eventType='user_post' }) {
+    if (!(await isEnabled())) { await setEnabled(true); return false; }
+    if (!SAFE_TYPES.has(eventType)) return false;
+    const cleanText = String(text || '').trim().slice(0,280);
+    if (eventType === 'user_post' && !cleanText && !imageFile) return false;
+
+    const image = await uploadImage(imageFile);
+    const expiresAt = image.imageUrl ? new Date(Date.now() + 24*60*60*1000).toISOString() : null;
+
+    if (usingSupabase) {
+      const { error } = await sb.from('community_posts').insert({
+        user_id: currentUser.id,
+        post_type: eventType === 'user_post' ? 'user_post' : 'system_event',
+        event_type: eventType,
+        body: eventType === 'user_post' ? cleanText : null,
+        image_path: image.imagePath,
+        image_url: image.imageUrl,
+        expires_at: expiresAt
+      });
+      if (error) { console.warn('Community post insert failed', error); return false; }
+    } else {
+      const posts = getLocalPosts();
+      posts.unshift({
+        id: uid(eventType === 'user_post' ? 'post' : 'event'),
+        userId:getCurrentUserId(),
+        postType:eventType === 'user_post' ? 'user_post' : 'system_event',
+        eventType,
+        data:{ text:cleanText, imageUrl:image.imageUrl || '' },
+        createdAt:Date.now(),
+        expiresAt: image.imageUrl ? Date.now() + 24*60*60*1000 : null
+      });
+      setLocalPosts(posts.slice(0,100));
+    }
+    await renderAll();
+    return true;
+  }
+
+  async function updateStatus() {
+    const enabled = await isEnabled();
     document.getElementById('communityToggle').classList.toggle('on', enabled);
     document.getElementById('communityToggle').setAttribute('aria-pressed', String(enabled));
     document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
@@ -422,27 +666,39 @@
     document.getElementById('communityStatusDot').classList.toggle('on', enabled);
     document.getElementById('communityStatusTitle').textContent = enabled ? 'Community is on' : 'Community is off';
     document.getElementById('communityStatusText').textContent = enabled
-      ? 'Safe app events can now appear here as private accountability updates.'
-      : 'No Community feed events will be created or shown. Turn it on when you want private accountability updates.';
+      ? 'Your posts, image posts, loves, and safe app milestones are now using Supabase when signed in.'
+      : 'No Community feed events or posts will be created or shown. Turn it on when you want private accountability updates.';
+    const input = document.getElementById('communityPostInput');
+    const imageInput = document.getElementById('communityImageInput');
+    const postBtn = document.getElementById('communityPostBtn');
+    const composerStatus = document.getElementById('composerStatus');
+    document.getElementById('composerCard').style.opacity = enabled ? '1' : '.62';
+    if (input) input.disabled = !enabled;
+    if (imageInput) imageInput.disabled = !enabled;
+    if (postBtn) postBtn.disabled = !enabled;
+    if (composerStatus) composerStatus.textContent = enabled ? (usingSupabase ? 'Live community' : 'Local fallback') : 'Community is off';
   }
-  function reactionCount(postId) {
-    const reactions = getReactions();
-    return reactions[postId] ? Object.keys(reactions[postId]).length : 0;
-  }
-  function hasReacted(postId) {
-    const reactions = getReactions();
-    return Boolean(reactions[postId] && reactions[postId][getCurrentUserId()]);
-  }
-  function toggleReaction(postId) {
-    const reactions = getReactions();
-    reactions[postId] = reactions[postId] || {};
-    const uid = getCurrentUserId();
-    if (reactions[postId][uid]) delete reactions[postId][uid];
-    else reactions[postId][uid] = { type:'support', createdAt:Date.now() };
-    setReactions(reactions);
-    renderFeed();
-  }
+
   function renderPost(post) {
+    if (post.postType === 'user_post') {
+      const text = escapeHTML(post.data && post.data.text);
+      const imageUrl = post.data && post.data.imageUrl;
+      return `
+      <article class="post-card user-post">
+        <div class="post-head">
+          <div class="event-icon">💬</div>
+          <div class="post-user">
+            <strong>Community post</strong>
+            <div class="meta">${timeAgo(post.createdAt)} • ${imageUrl ? 'Image expires after 24h' : 'Private circle post'}</div>
+          </div>
+        </div>
+        ${text ? `<div class="post-text">${text}</div>` : ''}
+        ${imageUrl ? `<img class="post-image" src="${escapeHTML(imageUrl)}" alt="Community image post" loading="lazy" />` : ''}
+        <div class="post-actions">
+          <button class="reaction-btn ${hasReacted(post.id) ? 'active' : ''}" data-react-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
+        </div>
+      </article>`;
+    }
     const copy = EVENT_COPY[post.eventType] || { icon:'✦', title:'Community update', text:'A safe app event was completed.' };
     return `
       <article class="post-card">
@@ -459,6 +715,7 @@
         </div>
       </article>`;
   }
+
   function renderEmpty(title, text, buttonText='') {
     return `
       <div class="empty-card">
@@ -468,17 +725,18 @@
         ${buttonText ? `<button class="action-btn" id="emptyToggleBtn" type="button">${buttonText}</button>` : ''}
       </div>`;
   }
-  function renderFeed() {
+
+  async function renderFeed() {
     const feed = document.getElementById('feedList');
-    if (!isEnabled()) {
-      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on to allow safe app milestones to appear here. Nothing is shared while this is off.', 'Turn Community On');
+    if (!(await isEnabled())) {
+      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on to post updates, images, loves, and safe app milestones. Nothing is shared while this is off.', 'Turn Community On');
       const btn = document.getElementById('emptyToggleBtn');
-      if (btn) btn.onclick = () => toggleCommunity(true);
+      if (btn) btn.onclick = () => setEnabled(true);
       return;
     }
-    const posts = todayPosts();
+    const posts = await fetchPosts();
     if (!posts.length) {
-      feed.innerHTML = renderEmpty('No updates yet today', 'When you complete a safe action, such as logging a weigh-in or finishing a workout, it can appear here.', 'Add Test Update');
+      feed.innerHTML = renderEmpty('No updates yet', 'Write a quick post above, add an image, or complete a safe action such as logging a weigh-in or finishing a workout.', 'Add Test Update');
       const btn = document.getElementById('emptyToggleBtn');
       if (btn) btn.onclick = () => window.heartyLogCommunityEvent('lesson_complete');
       return;
@@ -486,6 +744,7 @@
     feed.innerHTML = posts.map(renderPost).join('');
     document.querySelectorAll('[data-react-post]').forEach(btn => btn.onclick = () => toggleReaction(btn.dataset.reactPost));
   }
+
   function renderNav() {
     const pages = [
       ['home.html','Home','<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'],
@@ -502,8 +761,68 @@
       return `<a class="nav-item ${active ? 'active' : ''}" ${active ? 'aria-current="page"' : ''} href="./${item[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${item[2]}</svg><span>${item[1]}</span></a>`;
     }).join('');
   }
+
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+    document.querySelectorAll('.segmented-btn[data-screen]').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === id));
+  }
+
+  async function renderAll() { await updateStatus(); await renderFeed(); }
+
+  window.heartyCommunityIsEnabled = () => isEnabledSync();
+  window.heartyLogCommunityEvent = async function(type, data={}) {
+    if (!SAFE_TYPES.has(type)) return false;
+    if (!(await isEnabled())) return false;
+    return createCommunityPost({ text:'', eventType:type });
+  };
+
+  async function createManualPost() {
+    if (!(await isEnabled())) { await setEnabled(true); return; }
+    const input = document.getElementById('communityPostInput');
+    const text = input ? input.value.trim() : '';
+    if (!text && !selectedImageFile) return;
+    const ok = await createCommunityPost({ text, imageFile:selectedImageFile, eventType:'user_post' });
+    if (ok) {
+      if (input) input.value = '';
+      clearSelectedImage();
+    }
+  }
+
+  function clearSelectedImage() {
+    selectedImageFile = null;
+    const input = document.getElementById('communityImageInput');
+    const wrap = document.getElementById('imagePreviewWrap');
+    const img = document.getElementById('imagePreview');
+    if (input) input.value = '';
+    if (img) img.removeAttribute('src');
+    if (wrap) wrap.classList.remove('active');
+  }
+
+  function previewImage(file) {
+    selectedImageFile = file || null;
+    const wrap = document.getElementById('imagePreviewWrap');
+    const img = document.getElementById('imagePreview');
+    if (!file || !wrap || !img) { clearSelectedImage(); return; }
+    const reader = new FileReader();
+    reader.onload = () => { img.src = reader.result; wrap.classList.add('active'); };
+    reader.readAsDataURL(file);
+  }
+
+  document.addEventListener('DOMContentLoaded', async function(){
+    renderNav();
+    await initSupabase();
+    await renderAll();
+    document.getElementById('communityToggle').onclick = async () => setEnabled(!(await isEnabled()));
+    document.getElementById('communityMainBtn').onclick = async () => setEnabled(!(await isEnabled()));
+    document.getElementById('communityPostBtn').onclick = createManualPost;
+    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createManualPost(); });
+    document.getElementById('communityImageInput').addEventListener('change', e => previewImage(e.target.files && e.target.files[0]));
+    document.getElementById('clearImageBtn').onclick = clearSelectedImage;
+    document.querySelectorAll('[data-screen]').forEach(btn => btn.onclick = () => showScreen(btn.dataset.screen));
+    window.addEventListener('hearty:community-updated', renderAll);
+  });
+})();
+</script>ssList.toggle('active', s.id === id));
     document.querySelectorAll('.segmented-btn[data-screen]').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === id));
   }
   function renderAll() { updateStatus(); renderFeed(); }
@@ -512,21 +831,33 @@
   window.heartyLogCommunityEvent = function(type, data={}) {
     if (!isEnabled() || !SAFE_TYPES.has(type)) return false;
     const posts = getPosts();
-    posts.unshift({ id:uid('event'), userId:getCurrentUserId(), postType:'system_event', eventType:type, data:{}, createdAt:Date.now() });
+    posts.unshift({ id:uid(type === 'user_post' ? 'post' : 'event'), userId:getCurrentUserId(), postType:type === 'user_post' ? 'user_post' : 'system_event', eventType:type, data:type === 'user_post' ? { text:String(data.text || '').slice(0,280) } : {}, createdAt:Date.now() });
     setPosts(posts);
     renderAll();
     return true;
   };
+
+  function createManualPost() {
+    if (!isEnabled()) { toggleCommunity(true); return; }
+    const input = document.getElementById('communityPostInput');
+    const text = input ? input.value.trim() : '';
+    if (!text) return;
+    window.heartyLogCommunityEvent('user_post', { text });
+    input.value = '';
+  }
 
   document.addEventListener('DOMContentLoaded', function(){
     renderNav();
     renderAll();
     document.getElementById('communityToggle').onclick = () => toggleCommunity();
     document.getElementById('communityMainBtn').onclick = () => toggleCommunity();
+    document.getElementById('communityPostBtn').onclick = createManualPost;
+    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createManualPost(); });
     document.querySelectorAll('[data-screen]').forEach(btn => btn.onclick = () => showScreen(btn.dataset.screen));
     window.addEventListener('hearty:community-updated', renderAll);
   });
-})();
+})();        
 </script>
+<script src="/js/hearty-community-events.supabase.v1.js"></script>  
 </body>
 </html>
