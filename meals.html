@@ -89,6 +89,7 @@
     }
 
     .shell{max-width:1280px;margin:0 auto;padding:20px 20px 32px}
+
     .topbar{
       min-height:88px;
       display:flex;
@@ -104,8 +105,10 @@
       backdrop-filter:blur(12px);
       -webkit-backdrop-filter:blur(12px);
     }
+
     .brand{display:flex;align-items:center;gap:8px;min-width:0;padding-left:8px}
     .brand-logo{display:block;height:48px;width:auto;object-fit:contain;object-position:left center;max-width:min(72vw,300px)}
+
     .icon-btn{
       width:44px;
       height:44px;
@@ -118,7 +121,16 @@
       box-shadow:var(--shadow-soft);
       text-decoration:none;
     }
-    .icon-btn svg,.nav-item svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+    .icon-btn svg,.nav-item svg{
+      width:20px;
+      height:20px;
+      stroke:currentColor;
+      stroke-width:1.8;
+      fill:none;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
 
     .status-strip{
       display:flex;
@@ -128,6 +140,7 @@
       margin:4px 0 20px;
       flex-wrap:wrap;
     }
+
     .eyebrow,.section-label{
       font-size:.74rem;
       font-weight:760;
@@ -136,10 +149,32 @@
       text-transform:uppercase;
       margin-bottom:12px;
     }
-    .headline{font-size:clamp(1.55rem,2.4vw,2.15rem);line-height:1.05;margin:.22rem 0 .22rem;font-weight:760;letter-spacing:-.035em;color:var(--ink)}
+
+    .headline{
+      font-size:clamp(1.55rem,2.4vw,2.15rem);
+      line-height:1.05;
+      margin:.22rem 0 .22rem;
+      font-weight:760;
+      letter-spacing:-.035em;
+      color:var(--ink);
+    }
+
     .subline{color:var(--muted);font-size:.96rem;line-height:1.5;margin:0}
-    .day-pill{padding:10px 14px;border-radius:999px;background:var(--surface-chip);border:1px solid var(--line);color:var(--ink);font-size:.9rem;font-weight:650;box-shadow:var(--shadow-soft);white-space:nowrap}
+
+    .day-pill{
+      padding:10px 14px;
+      border-radius:999px;
+      background:var(--surface-chip);
+      border:1px solid var(--line);
+      color:var(--ink);
+      font-size:.9rem;
+      font-weight:650;
+      box-shadow:var(--shadow-soft);
+      white-space:nowrap;
+    }
+
     .status-pills{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
     .support-pill{
       display:inline-flex;
       align-items:center;
@@ -154,15 +189,53 @@
       font-weight:760;
       box-shadow:var(--shadow-soft);
       white-space:nowrap;
+      transition:.22s ease;
     }
-    .support-pill::before{content:"";width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--muted) 42%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 10%,transparent)}
-    .support-pill.is-on{color:var(--ink);background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 16%,var(--surface-chip)),var(--surface-chip));border-color:color-mix(in srgb,var(--theme-warning) 32%,var(--line))}
-    .support-pill.is-on::before{background:var(--theme-warning);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-warning) 14%,transparent),0 0 14px color-mix(in srgb,var(--theme-warning) 35%,transparent)}
-    .support-pill.is-off{color:var(--ink);background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 10%,var(--surface-chip)),var(--surface-chip));border-color:color-mix(in srgb,var(--theme-success) 22%,var(--line))}
-    .support-pill.is-off::before{background:var(--theme-success);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-success) 12%,transparent),0 0 12px color-mix(in srgb,var(--theme-success) 26%,transparent)}
+
+    .support-pill::before{
+      content:"";
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:color-mix(in srgb,var(--muted) 42%,transparent);
+      box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 10%,transparent);
+    }
+
+    .support-pill.is-on{
+      color:var(--ink);
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 16%,var(--surface-chip)),var(--surface-chip));
+      border-color:color-mix(in srgb,var(--theme-warning) 32%,var(--line));
+    }
+
+    .support-pill.is-on::before{
+      background:var(--theme-warning);
+      box-shadow:
+        0 0 0 4px color-mix(in srgb,var(--theme-warning) 14%,transparent),
+        0 0 14px color-mix(in srgb,var(--theme-warning) 40%,transparent);
+      animation:supportPulse 1.8s ease-in-out infinite;
+    }
+
+    .support-pill.is-off{
+      color:var(--muted);
+      background:var(--surface-chip);
+      border-color:var(--line);
+      opacity:.88;
+    }
+
+    .support-pill.is-off::before{
+      background:color-mix(in srgb,var(--muted) 38%,transparent);
+      box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 9%,transparent);
+      animation:none;
+    }
+
+    @keyframes supportPulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.16)}
+    }
 
     .layout{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(300px,.85fr);gap:24px;align-items:start}
     .stack{display:grid;gap:18px}
+
     .card{
       position:relative;
       background:var(--card);
@@ -174,13 +247,19 @@
       backdrop-filter:blur(12px);
       -webkit-backdrop-filter:blur(12px);
     }
-    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.72),rgba(255,255,255,0))}
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:1px;
+      background:linear-gradient(90deg,rgba(255,255,255,.72),rgba(255,255,255,0));
+    }
+
     .compact-title{font-size:1.05rem;font-weight:760;letter-spacing:-.02em;color:var(--ink);margin:0}
     .compact-copy{font-size:.92rem;color:var(--muted);line-height:1.5;margin:6px 0 0}
 
-    .support-card{display:grid;gap:12px}
-    .support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .support-chip,.support-chip-off,.planner-action,.meal-card__actions button{
+    .planner-action,.meal-card__actions button{
       appearance:none;
       border:1px solid var(--line);
       background:var(--surface-button);
@@ -195,28 +274,75 @@
       box-shadow:var(--shadow-soft);
       transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
     }
-    .support-chip:hover,.support-chip-off:hover,.planner-action:hover,.meal-card__actions button:hover{transform:translateY(-1px)}
-    .support-chip.is-active,
-    [data-support-mode].is-active{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 20%,var(--surface-button)),var(--surface-button));
-      border-color:color-mix(in srgb,var(--theme-warning) 34%,var(--line));
-      color:var(--ink);
+
+    .planner-action:hover,.meal-card__actions button:hover{transform:translateY(-1px)}
+
+    .meal-control-card{display:grid;gap:16px}
+
+    .control-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:12px 0;
+      border-top:1px solid var(--line);
     }
-    .support-chip-off.is-active,[data-support-off].is-active{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 16%,var(--surface-button)),var(--surface-button));
-      border-color:color-mix(in srgb,var(--theme-success) 30%,var(--line));
+
+    .control-row:first-of-type{border-top:none;padding-top:0}
+    .control-row strong{display:block;font-size:.95rem;letter-spacing:-.01em}
+    .control-row span{display:block;margin-top:3px;color:var(--muted);font-size:.84rem;font-weight:650}
+
+    .support-off-btn{
+      appearance:none;
+      border:none;
+      border-radius:999px;
+      padding:10px 14px;
+      font:inherit;
+      font-size:.83rem;
+      font-weight:820;
+      color:#8a3d00;
+      background:linear-gradient(180deg,#fff4df,#ffe2b3);
+      box-shadow:0 8px 18px rgba(245,158,11,.18);
+      cursor:pointer;
     }
-    .support-banner{padding:13px 14px;border-radius:18px;border:1px solid var(--line);background:var(--surface-inner);color:var(--muted);line-height:1.45;font-size:.9rem}
-    .support-toggle-row{display:flex;gap:10px;flex-wrap:wrap}
-    .support-toggle{flex:1;min-width:130px;appearance:none;border:1px solid var(--line);background:var(--surface-button);color:var(--ink);min-height:44px;padding:0 14px;border-radius:16px;font:inherit;font-size:.9rem;font-weight:760;cursor:pointer;box-shadow:var(--shadow-soft)}
-    .support-toggle.is-on{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 18%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-warning) 34%,var(--line))}
-    .support-toggle.is-off{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line))}
+
+    .switch-btn{
+      appearance:none;
+      width:54px;
+      height:31px;
+      border:none;
+      border-radius:999px;
+      background:#d6deea;
+      padding:4px;
+      box-shadow:inset 0 1px 4px rgba(15,35,55,.12);
+      cursor:pointer;
+    }
+
+    .switch-btn span{
+      display:block;
+      width:23px;
+      height:23px;
+      border-radius:50%;
+      background:#fff;
+      box-shadow:0 3px 9px rgba(15,35,55,.18);
+      transition:transform .2s ease;
+    }
+
+    .switch-btn.is-on{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2))}
+    .switch-btn.is-on span{transform:translateX(23px)}
 
     .planner-card{display:grid;gap:14px}
     .planner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
     .planner-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .planner-action.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));color:#fff;border-color:transparent}
+
+    .planner-action.primary{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));
+      color:#fff;
+      border-color:transparent;
+    }
+
     .planner-days,.day-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+
     .planner-day,.day-tab{
       min-height:50px;
       border-radius:15px;
@@ -229,6 +355,7 @@
       cursor:pointer;
       box-shadow:var(--shadow-soft);
     }
+
     .planner-day.is-active,
     .planner-day.active,
     .day-tab.active{
@@ -238,6 +365,7 @@
     }
 
     .meal-list{display:grid;gap:14px}
+
     .meal-card{
       border:1px solid var(--line);
       border-radius:24px;
@@ -247,56 +375,121 @@
       display:grid;
       gap:12px;
     }
+
     .meal-card[data-slot="breakfast"]{border-left:4px solid color-mix(in srgb,var(--theme-accent) 70%,transparent)}
     .meal-card[data-slot="lunch"]{border-left:4px solid color-mix(in srgb,var(--theme-accent-2) 70%,transparent)}
     .meal-card[data-slot="dinner"]{border-left:4px solid color-mix(in srgb,var(--theme-warning) 75%,transparent)}
     .meal-card[data-slot="snack"]{border-left:4px solid color-mix(in srgb,var(--muted) 45%,transparent)}
-    .meal-card.supported,.meal-card.is-support,.meal-card[data-support-adjusted="true"]{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 13%,var(--card)),var(--surface-inner));
-    }
+
     .meal-card__header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
     .meal-card__eyebrow{font-size:.74rem;font-weight:760;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
     .meal-card__title{margin:0;color:var(--ink);font-size:1.02rem;line-height:1.25;letter-spacing:-.02em}
     .meal-card__subtitle,.meal-card__desc{font-size:.88rem;color:var(--muted);line-height:1.5;margin-top:4px}
     .meal-card__protein{white-space:nowrap;border:1px solid var(--line);background:var(--surface-chip);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:.8rem;font-weight:760}
-    .meal-card__tags{display:flex;gap:8px;flex-wrap:wrap}
-    .meal-tag,.meta-pill{border:1px solid var(--line);background:var(--surface-chip);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:700}
     .meal-card__actions{display:flex;gap:8px;flex-wrap:wrap}
     .meal-card__actions button{min-height:36px;font-size:.82rem}
 
+    .meal-card__actions button[data-log-protein],
+    .meal-card__actions button.log-protein,
+    .meal-card__actions button.log-protein-btn{
+      background:linear-gradient(180deg,#3f7cff,#1856d6);
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 10px 20px rgba(47,109,246,.22);
+    }
+
     .protein-card{display:grid;gap:14px}
+
     .protein-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+
     .protein-meter{
       --protein-percent:0;
-      width:148px;
-      height:148px;
+      width:158px;
+      height:158px;
       border-radius:50%;
       display:grid;
       place-items:center;
       background:
-        radial-gradient(circle at center,var(--card) 0 54%,transparent 55%),
-        conic-gradient(var(--theme-accent) calc(var(--protein-percent) * 1%), color-mix(in srgb,var(--muted) 18%,transparent) 0);
-      box-shadow:var(--shadow-soft);
-      border:1px solid var(--line);
+        conic-gradient(
+          from -90deg,
+          var(--theme-accent) 0 calc(var(--protein-percent) * 1%),
+          color-mix(in srgb,var(--theme-accent) 10%,rgba(143,163,184,.20)) calc(var(--protein-percent) * 1%) 100%
+        );
+      box-shadow:
+        0 18px 38px rgba(47,109,246,.12),
+        inset 0 1px 0 rgba(255,255,255,.8);
+      border:1px solid color-mix(in srgb,var(--theme-accent) 18%,var(--line));
       flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
     }
-    .protein-center{width:110px;height:110px;border-radius:50%;display:grid;place-items:center;text-align:center;background:var(--surface-button);border:1px solid var(--line);box-shadow:var(--shadow-soft);padding:12px}
+
+    .protein-meter::before{
+      content:"";
+      position:absolute;
+      inset:13px;
+      border-radius:50%;
+      background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(246,250,255,.95));
+      border:1px solid rgba(255,255,255,.85);
+      box-shadow:inset 0 1px 4px rgba(14,31,53,.04);
+      z-index:0;
+    }
+
+    .protein-meter::after{
+      content:"";
+      position:absolute;
+      inset:5px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,.62);
+      pointer-events:none;
+      z-index:2;
+    }
+
+    .protein-center{
+      width:112px;
+      height:112px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      padding:12px;
+      position:relative;
+      z-index:3;
+    }
+
     .protein-center-title{font-size:.68rem;font-weight:760;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
     .protein-center-copy{margin-top:6px;font-size:.88rem;font-weight:760;color:var(--ink);line-height:1.2}
+
     .protein-mini{flex:1;min-width:220px;display:grid;gap:9px}
-    .protein-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:16px;background:var(--surface-inner);border:1px solid var(--line);box-shadow:var(--shadow-soft)}
-    .protein-chip.done{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-inner));border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line))}
+
+    .protein-chip{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:11px 14px;
+      border-radius:16px;
+      background:var(--surface-inner);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .protein-chip.done{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-inner));
+      border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line));
+    }
+
     .protein-chip-left{display:flex;align-items:center;gap:10px}
     .protein-dot{width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,var(--muted) 40%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 12%,transparent)}
     .protein-chip.done .protein-dot{background:var(--theme-success);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-success) 13%,transparent),0 0 14px color-mix(in srgb,var(--theme-success) 28%,transparent)}
     .protein-name{font-weight:700;color:var(--ink);font-size:.9rem}
     .protein-state{font-size:.83rem;color:var(--muted);font-weight:660}
-    .protein-pips{display:flex;gap:6px}
+    .protein-pips{display:flex;gap:6px;justify-content:center}
     .protein-pip{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--muted) 24%,transparent)}
     .protein-pip.is-filled{background:var(--theme-success)}
-
-    .shopping-list{display:grid;gap:8px;max-height:320px;overflow:auto;padding-right:2px}
-    .shopping-item{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface-inner);font-size:.88rem;color:var(--muted);line-height:1.35}
 
     .bottom-nav{
       margin-top:18px;
@@ -314,6 +507,7 @@
       bottom:12px;
       z-index:40;
     }
+
     .nav-item{
       appearance:none;
       border:none;
@@ -336,7 +530,13 @@
       font-weight:600;
       line-height:1.08;
     }
-    .nav-item.active,.nav-item[aria-current="page"]{color:var(--nav-active-ink);background:var(--nav-active-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 16px color-mix(in srgb,var(--theme-accent) 14%,transparent)}
+
+    .nav-item.active,.nav-item[aria-current="page"]{
+      color:var(--nav-active-ink);
+      background:var(--nav-active-bg);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 16px color-mix(in srgb,var(--theme-accent) 14%,transparent);
+    }
+
     .nav-item span{display:block;white-space:nowrap;color:inherit}
 
     .boot-warning{
@@ -350,9 +550,11 @@
       font-size:.9rem;
       line-height:1.45;
     }
+
     .boot-warning.show{display:block}
 
     @media(max-width:1080px){.layout{grid-template-columns:1fr}}
+
     @media(max-width:760px){
       .shell{padding:14px 14px 104px}
       .topbar{min-height:78px;padding:0 14px;border-radius:20px}
@@ -364,13 +566,11 @@
       .planner-day,.day-tab{font-size:.68rem;min-height:46px}
       .meal-card__header{grid-template-columns:1fr}
       .meal-card__protein{justify-self:start}
-      .support-grid{grid-template-columns:1fr}
       .bottom-nav{gap:4px;padding:6px;border-radius:18px}
       .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}
       .nav-item svg{width:18px;height:18px}
     }
   </style>
-
 </head>
 
 <body data-page="meals">
@@ -386,9 +586,9 @@
 
     <section class="status-strip" aria-label="Meals status">
       <div>
-        <div class="eyebrow">MEAL ENGINE</div>
+        <div class="eyebrow">MEAL PLANNER</div>
         <h1 class="headline">Your meals for today</h1>
-        <p class="subline">Plans are generated by the meal engine. This page only renders, logs and asks for a new meal.</p>
+        <p class="subline">Protein-forward meals based on your setup.</p>
       </div>
       <div class="status-pills">
         <div class="support-pill is-off" id="supportPill">Support Off</div>
@@ -433,7 +633,7 @@
             <div>
               <div class="section-label">7-DAY PLAN</div>
               <h2 class="compact-title">Generated week</h2>
-              <p class="compact-copy">Locked meals should be respected by the bridge/engine when supported.</p>
+              <p class="compact-copy">Your meals update from your preferences, support status and snack setting.</p>
             </div>
             <div class="planner-actions">
               <button class="planner-action" type="button" data-regenerate-day>Regenerate day</button>
@@ -457,7 +657,7 @@
                 <div>
                   <div class="meal-card__eyebrow">Loading</div>
                   <h3 class="meal-card__title">Loading your meals</h3>
-                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and hearty-meals-db-bridge.js are in the repo.</div>
+                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and meals-bridge.js are in the repo.</div>
                 </div>
                 <div class="meal-card__protein">—</div>
               </div>
@@ -465,25 +665,40 @@
           </div>
 
           <div class="boot-warning" id="bootWarning">
-            Meal engine did not boot. This page is ready, but it needs the repo’s meal engine and bridge scripts to be present.
+            Meal engine did not boot. Check that meals-engine.js and meals-bridge.js are present.
           </div>
         </section>
       </main>
 
       <aside class="stack">
-        <section class="card">
-          <div class="section-label">PLAN RULES</div>
-          <p class="compact-copy"><strong>Renderer only.</strong> Meal rules belong to the engine, not this page.</p>
-          <p class="compact-copy"><strong>Support-aware.</strong> Global support is shown as a simple on/off pill.</p>
-          <p class="compact-copy"><strong>Protein-first.</strong> Breakfast, lunch and dinner fill the meter.</p>
-          <p class="compact-copy"><strong>Regeneration safe.</strong> The page asks the engine for new meals instead of inventing them inline.</p>
+        <section class="card meal-control-card">
+          <div class="section-label">TODAY'S SETTINGS</div>
+
+          <div class="control-row">
+            <div>
+              <strong>Support mode</strong>
+              <span id="supportModeLabel">Off</span>
+            </div>
+            <button class="support-off-btn" id="supportOffBtn" type="button">Support Off</button>
+          </div>
+
+          <div class="control-row">
+            <div>
+              <strong>Snacks</strong>
+              <span id="snackToggleLabel">On</span>
+            </div>
+            <button class="switch-btn is-on" id="snackToggleBtn" type="button" aria-pressed="true">
+              <span></span>
+            </button>
+          </div>
         </section>
 
         <section class="card">
           <div class="section-label">SHOPPING LIST</div>
-          <p class="compact-copy">This list is rendered from the generated week.</p>
-          <div class="shopping-list" id="shoppingList">
-            <div class="shopping-item">Shopping list will appear after the engine boots.</div>
+          <h2 class="compact-title">Download shopping list</h2>
+          <p class="compact-copy">Create a print-ready shopping list with 7-day and 30-day quantities.</p>
+          <div class="planner-actions" style="margin-top:14px">
+            <button class="planner-action primary" type="button" id="shoppingPdfBtn">Create PDF</button>
           </div>
         </section>
       </aside>
@@ -525,13 +740,55 @@
     (function(){
       "use strict";
 
-
-      function safeGet(key, fallback){
-        try { return localStorage.getItem(key) || fallback; } catch(e) { return fallback; }
-      }
+      var SNACKS_KEY = "heartyMealsSnacksOn";
 
       function safeSet(key, value){
         try { localStorage.setItem(key, value); } catch(e) {}
+      }
+
+      function getSnacksOn(){
+        try { return localStorage.getItem(SNACKS_KEY) !== "false"; } catch(e) { return true; }
+      }
+
+      function setSnacksOn(value){
+        safeSet(SNACKS_KEY, value ? "true" : "false");
+
+        var bridge = window.heartyMealsBridge;
+        if (bridge && bridge.state) {
+          bridge.state.adjustments = bridge.state.adjustments || {};
+          bridge.state.adjustments.snacksOn = !!value;
+        }
+
+        if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
+        else if (bridge && typeof bridge.regenerateWeek === "function") bridge.regenerateWeek();
+        else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+        else if (bridge && typeof bridge.init === "function") bridge.init();
+      }
+
+      function syncSnackToggle(){
+        var btn = document.getElementById("snackToggleBtn");
+        var label = document.getElementById("snackToggleLabel");
+        var on = getSnacksOn();
+
+        if (btn) {
+          btn.classList.toggle("is-on", on);
+          btn.setAttribute("aria-pressed", String(on));
+        }
+
+        if (label) label.textContent = on ? "On" : "Off";
+      }
+
+      function bindSnackToggle(){
+        var btn = document.getElementById("snackToggleBtn");
+        if (!btn || btn.__bound) return;
+
+        btn.__bound = true;
+        syncSnackToggle();
+
+        btn.addEventListener("click", function(){
+          setSnacksOn(!getSnacksOn());
+          syncSnackToggle();
+        });
       }
 
       function readGlobalSupport(){
@@ -570,10 +827,37 @@
       function updateSupportBanner(reason){
         var isOn = !!reason;
         var pill = document.getElementById("supportPill");
-        if (!pill) return;
-        pill.textContent = isOn ? "Support On" : "Support Off";
-        pill.classList.toggle("is-on", isOn);
-        pill.classList.toggle("is-off", !isOn);
+        var label = document.getElementById("supportModeLabel");
+
+        if (pill) {
+          pill.textContent = isOn ? "Support On" : "Support Off";
+          pill.classList.toggle("is-on", isOn);
+          pill.classList.toggle("is-off", !isOn);
+        }
+
+        if (label) label.textContent = isOn ? "On" : "Off";
+      }
+
+      function bindSupportOffButton(){
+        var btn = document.getElementById("supportOffBtn");
+        if (!btn || btn.__bound) return;
+
+        btn.__bound = true;
+
+        btn.addEventListener("click", function(){
+          writeGlobalSupport("");
+          updateSupportBanner("");
+
+          var bridge = window.heartyMealsBridge;
+          if (bridge && bridge.state) {
+            bridge.state.adjustments = bridge.state.adjustments || {};
+            bridge.state.adjustments.supportMode = null;
+          }
+
+          if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
+          else if (bridge && typeof bridge.regenerateWeek === "function") bridge.regenerateWeek();
+          else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+        });
       }
 
       function syncTodayLabel(){
@@ -581,6 +865,65 @@
         if (!el) return;
         var d = new Date();
         el.textContent = d.toLocaleDateString(undefined, { weekday:"long", month:"short", day:"numeric" });
+      }
+
+      function escapeHtml(value){
+        return String(value == null ? "" : value).replace(/[&<>"]/g, function(ch){
+          return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch];
+        });
+      }
+
+      function collectShoppingItems(){
+        var bridge = window.heartyMealsBridge;
+
+        if (bridge && typeof bridge.getShoppingList === "function") {
+          return bridge.getShoppingList();
+        }
+
+        if (bridge && bridge.state && Array.isArray(bridge.state.shoppingList)) {
+          return bridge.state.shoppingList;
+        }
+
+        return [
+          { name:"Eggs", qty7:"12–14 eggs", qty30:"52–60 eggs" },
+          { name:"Chicken breast / strips", qty7:"1.2–1.5 kg", qty30:"5–6.5 kg" },
+          { name:"Fish / hake / salmon", qty7:"700–900 g", qty30:"3–4 kg" },
+          { name:"Canned tuna", qty7:"3–4 tins", qty30:"13–17 tins" },
+          { name:"Lean beef / mince", qty7:"700–900 g", qty30:"3–4 kg" },
+          { name:"Low-fat yoghurt", qty7:"1.5–2 kg", qty30:"6.5–8.5 kg" },
+          { name:"Vegetables / salad", qty7:"4–6 kg mixed", qty30:"17–26 kg mixed" },
+          { name:"Fruit", qty7:"7–10 portions", qty30:"30–43 portions" },
+          { name:"Rice / couscous / sweet potato", qty7:"7 portions", qty30:"30 portions" },
+          { name:"Low-calorie dressing", qty7:"1 bottle", qty30:"3–4 bottles" },
+          { name:"Optional snacks", qty7:getSnacksOn() ? "7 snack portions" : "Off", qty30:getSnacksOn() ? "30 snack portions" : "Off" }
+        ];
+      }
+
+      function openShoppingPdf(){
+        var items = collectShoppingItems();
+
+        var rows = items.map(function(item){
+          var name = item.name || item.item || item.label || item[0] || "";
+          var qty7 = item.qty7 || item.weekQty || item.quantity7 || item[1] || "";
+          var qty30 = item.qty30 || item.monthQty || item.quantity30 || item[2] || "";
+
+          if (!qty30 && qty7) qty30 = "≈ 4.3 × 7-day quantity";
+
+          return "<tr><td>" + escapeHtml(name) + "</td><td>" + escapeHtml(qty7) + "</td><td>" + escapeHtml(qty30) + "</td></tr>";
+        }).join("");
+
+        var win = window.open("", "_blank", "width=900,height=1100");
+        if (!win) return;
+
+        win.document.write("<!doctype html><html><head><title>Hearty Shopping List</title><style>body{font-family:Inter,Arial,sans-serif;padding:32px;color:#102033}h1{margin:0 0 8px;font-size:28px}p{color:#66788c}table{width:100%;border-collapse:collapse;margin-top:22px}th,td{border-bottom:1px solid #e3eaf3;padding:12px;text-align:left;vertical-align:top}th{background:#f4f7fb}.note{margin-top:18px;font-size:12px;color:#7a8798}</style></head><body><h1>Hearty Shopping List</h1><p>7-day and 30-day quantities generated from your current meal plan.</p><table><thead><tr><th>Item</th><th>7 days</th><th>30 days</th></tr></thead><tbody>" + rows + "</tbody></table><p class='note'>Use your browser print dialog and choose Save as PDF.</p><script>window.onload=function(){window.print()};<\/script></body></html>");
+        win.document.close();
+      }
+
+      function bindShoppingPdf(){
+        var btn = document.getElementById("shoppingPdfBtn");
+        if (!btn || btn.__bound) return;
+        btn.__bound = true;
+        btn.addEventListener("click", openShoppingPdf);
       }
 
       function loadScript(src){
@@ -597,6 +940,7 @@
 
       async function loadFirst(paths){
         var lastError = null;
+
         for (var i = 0; i < paths.length; i++) {
           try {
             await loadScript(paths[i]);
@@ -605,6 +949,7 @@
             lastError = e;
           }
         }
+
         throw lastError || new Error("No scripts loaded");
       }
 
@@ -673,10 +1018,13 @@
       async function bootMeals(){
         syncTodayLabel();
         updateSupportBanner(readGlobalSupport());
-
+        bindSnackToggle();
+        bindSupportOffButton();
+        bindShoppingPdf();
 
         try {
           var mealProfile = readMealProfile();
+
           if (!mealProfile) {
             redirectToMealsOnboarding();
             return;
@@ -691,10 +1039,6 @@
             "./js/hearty-meals-engine.js"
           ]);
 
-          // IMPORTANT: hearty-meals-db-bridge.js is the Supabase/database bridge,
-          // not the UI bridge factory. Loading it here first can make boot stop
-          // before window.createMealsBridge exists. The UI bridge must be loaded
-          // from meals-bridge.js.
           await loadFirst([
             "./meals-bridge.js",
             "./js/meals-bridge.js",
@@ -702,7 +1046,6 @@
             "./js/hearty-meals-bridge.js"
           ]);
 
-          // Optional DB bridge. Do not fail page boot if this is missing.
           try {
             await loadFirst([
               "./hearty-meals-db-bridge.js",
@@ -724,27 +1067,30 @@
           }
 
           var supportMode = readGlobalSupport();
+
           var bridge = factory({
             engine: engine,
             initialProfile: mealProfile,
             ui: {
               dayTabs: document.getElementById("plannerDays"),
               mealList: document.getElementById("mealList"),
-              shoppingList: document.getElementById("shoppingList")
+              shoppingList: null
             }
           });
 
           if (bridge && bridge.state) {
             bridge.state.adjustments = bridge.state.adjustments || {};
             bridge.state.adjustments.supportMode = supportMode || bridge.state.adjustments.supportMode || null;
+            bridge.state.adjustments.snacksOn = getSnacksOn();
           }
 
           window.heartyMealsBridge = bridge;
+
           if (bridge && typeof bridge.init === "function") bridge.init();
 
         } catch(error) {
           console.warn("[Hearty Meals] Boot failed:", error);
-          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine-v6.5.js or meals-engine.js exists, and that meals-bridge.js exposes window.createMealsBridge.");
+          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine.js and meals-bridge.js exist.");
         }
       }
 
