@@ -1,277 +1,861 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="clean_blue">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Hearty — Meals</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Hearty — Meals</title>
 
-<script>
-(function(){
-  function read(key){
-    try{ return JSON.parse(localStorage.getItem(key)); }catch(e){ return null;}
-  }
+  <script>
+    (function(){
+      document.documentElement.setAttribute("data-theme", "clean_blue");
+    })();
+  </script>
 
-  function hasProfile(){
-    var s =
-      read("heartyMealsPageStateVFinal") ||
-      read("heartyMealsStateVFinal") ||
-      read("heartyMealsStateV1");
 
-    if(!s) return false;
-    var p = s.preferences || s.profile || s;
-    return Object.keys(p||{}).length > 2;
-  }
+  <script>
+    /* Immediate meals-onboarding gate.
+       This runs in <head> before the meals UI paints or the meal engine boots. */
+    (function(){
+      function readJsonStorage(key){
+        try {
+          var raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch(e) {
+          return null;
+        }
+      }
 
-  if(!hasProfile()){
-    window.location.replace("meals-onboarding.html");
-  }
-})();
-</script>
+      function hasMealProfile(){
+        var state = readJsonStorage("heartyMealsPageStateVFinal") ||
+          readJsonStorage("heartyMealsStateVFinal") ||
+          readJsonStorage("heartyMealsStateV1") ||
+          readJsonStorage("heartyMealProfile") ||
+          readJsonStorage("heartyMealsProfile");
 
-<style>
-:root{
-  --bg:#f4f7fb;
-  --card:#fff;
-  --ink:#132235;
-  --muted:#6f7c8d;
-  --line:#e3eaf3;
-  --blue:#2f6df6;
-  --teal:#22b8a7;
-  --orange:#f59e0b;
-}
+        if (!state) return false;
 
-/* layout */
-body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--ink);}
-.shell{max-width:1100px;margin:auto;padding:20px}
+        var profile = state.preferences || state.onboarding || state.profile || state.mealProfile || state;
+        if (!profile || typeof profile !== "object") return false;
 
-/* header */
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.brand-logo{height:40px}
+        return state.profileComplete === true ||
+          state.onboardingComplete === true ||
+          state.mealsOnboardingComplete === true ||
+          profile.profileComplete === true ||
+          profile.onboardingComplete === true ||
+          Object.keys(profile).length > 2;
+      }
 
-/* header text */
-.eyebrow{font-size:12px;color:var(--muted);letter-spacing:.2em}
-.headline{font-size:28px;font-weight:800;margin:6px 0}
-.subline{color:var(--muted)}
+      try {
+        var path = (window.location.pathname || "").toLowerCase();
+        if (path.indexOf("meals-onboarding") === -1 && !hasMealProfile()) {
+          window.location.replace("meals-onboarding.html");
+        }
+      } catch(e) {}
+    })();
+  </script>
 
-/* support pill */
-.support-pill{
-  padding:8px 14px;
-  border-radius:999px;
-  font-weight:700;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  border:1px solid var(--line);
-}
+  <style>
+    :root,
+    html[data-theme="clean_blue"]{
+      --bg-1:#eef4fb;
+      --bg-2:#fbfdff;
+      --ink:#132235;
+      --muted:#6f7c8d;
+      --line:rgba(143,163,184,.22);
+      --card:rgba(255,255,255,.94);
+      --surface-top:rgba(255,255,255,.82);
+      --surface-bottom:rgba(255,255,255,.68);
+      --surface-inner:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
+      --surface-button:rgba(255,255,255,.94);
+      --surface-chip:rgba(255,255,255,.90);
+      --theme-accent:#2f6df6;
+      --theme-accent-2:#22b8a7;
+      --theme-warning:#f59e0b;
+      --theme-success:#16a34a;
+      --shadow:0 18px 44px rgba(14,31,53,.08);
+      --shadow-soft:0 8px 22px rgba(14,31,53,.055);
+      --nav-active-bg:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96));
+      --nav-active-ink:#1f4ec0;
+    }
 
-.support-pill::before{
-  content:"";
-  width:8px;height:8px;border-radius:50%;
-}
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      min-height:100vh;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 500px at 0% -10%, color-mix(in srgb, var(--theme-accent) 16%, transparent), transparent 50%),
+        radial-gradient(1000px 450px at 100% 0%, color-mix(in srgb, var(--theme-accent-2) 10%, transparent), transparent 45%),
+        linear-gradient(180deg,var(--bg-2),var(--bg-1));
+      overflow-x:hidden;
+    }
 
-/* ON = ORANGE GLOW */
-.support-pill.is-on{
-  background:#fff6e6;
-  color:#8a3d00;
-}
-.support-pill.is-on::before{
-  background:var(--orange);
-  box-shadow:0 0 12px var(--orange);
-  animation:pulse 1.5s infinite;
-}
+    .shell{max-width:1280px;margin:0 auto;padding:20px 20px 32px}
+    .topbar{
+      min-height:88px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      padding:0 18px;
+      border:1px solid var(--line);
+      border-radius:22px;
+      background:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));
+      box-shadow:var(--shadow-soft);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .brand{display:flex;align-items:center;gap:8px;min-width:0;padding-left:8px}
+    .brand-logo{display:block;height:48px;width:auto;object-fit:contain;object-position:left center;max-width:min(72vw,300px)}
+    .icon-btn{
+      width:44px;
+      height:44px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:var(--surface-button);
+      color:var(--muted);
+      display:grid;
+      place-items:center;
+      box-shadow:var(--shadow-soft);
+      text-decoration:none;
+    }
+    .icon-btn svg,.nav-item svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
 
-/* OFF = GREY */
-.support-pill.is-off{
-  background:#fff;
-  color:var(--muted);
-}
-.support-pill.is-off::before{
-  background:#bbb;
-}
+    .status-strip{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:18px;
+      margin:4px 0 20px;
+      flex-wrap:wrap;
+    }
+    .eyebrow,.section-label{
+      font-size:.74rem;
+      font-weight:760;
+      letter-spacing:.17em;
+      color:var(--muted);
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .headline{font-size:clamp(1.55rem,2.4vw,2.15rem);line-height:1.05;margin:.22rem 0 .22rem;font-weight:760;letter-spacing:-.035em;color:var(--ink)}
+    .subline{color:var(--muted);font-size:.96rem;line-height:1.5;margin:0}
+    .day-pill{padding:10px 14px;border-radius:999px;background:var(--surface-chip);border:1px solid var(--line);color:var(--ink);font-size:.9rem;font-weight:650;box-shadow:var(--shadow-soft);white-space:nowrap}
+    .status-pills{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .support-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:38px;
+      padding:9px 13px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:var(--surface-chip);
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:760;
+      box-shadow:var(--shadow-soft);
+      white-space:nowrap;
+    }
+    .support-pill::before{content:"";width:9px;height:9px;border-radius:50%;background:color-mix(in srgb,var(--muted) 42%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 10%,transparent)}
+    .support-pill.is-on{color:var(--ink);background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 16%,var(--surface-chip)),var(--surface-chip));border-color:color-mix(in srgb,var(--theme-warning) 32%,var(--line))}
+    .support-pill.is-on::before{background:var(--theme-warning);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-warning) 14%,transparent),0 0 14px color-mix(in srgb,var(--theme-warning) 35%,transparent);animation:supportPulse 1.8s ease-in-out infinite}
+    .support-pill.is-off{color:var(--muted);background:var(--surface-chip);border-color:var(--line);box-shadow:var(--shadow-soft);opacity:.86}
+    .support-pill.is-off::before{background:color-mix(in srgb,var(--muted) 38%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 9%,transparent);animation:none}
 
-/* animation */
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.3)}
-  100%{transform:scale(1)}
-}
+    @keyframes supportPulse{
+      0%,100%{transform:scale(1)}
+      50%{transform:scale(1.14)}
+    }
 
-/* cards */
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:20px;
-  margin-bottom:16px;
-}
+    @media (prefers-reduced-motion: reduce){
+      .support-pill.is-on::before{animation:none}
+    }
 
-/* controls */
-.control-row{
-  display:flex;
-  justify-content:space-between;
-  margin:12px 0;
-}
+    .layout{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(300px,.85fr);gap:24px;align-items:start}
+    .stack{display:grid;gap:18px}
+    .card{
+      position:relative;
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      padding:22px;
+      overflow:hidden;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .card::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.72),rgba(255,255,255,0))}
+    .compact-title{font-size:1.05rem;font-weight:760;letter-spacing:-.02em;color:var(--ink);margin:0}
+    .compact-copy{font-size:.92rem;color:var(--muted);line-height:1.5;margin:6px 0 0}
 
-.switch{
-  width:50px;height:28px;
-  border-radius:999px;
-  background:#ccc;
-  position:relative;
-  cursor:pointer;
-}
-.switch span{
-  position:absolute;
-  top:3px;left:3px;
-  width:22px;height:22px;
-  background:#fff;border-radius:50%;
-  transition:.2s;
-}
-.switch.on{
-  background:linear-gradient(45deg,var(--blue),var(--teal));
-}
-.switch.on span{
-  left:25px;
-}
+    .support-card{display:grid;gap:12px}
+    .support-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .support-chip,.support-chip-off,.planner-action,.meal-card__actions button{
+      appearance:none;
+      border:1px solid var(--line);
+      background:var(--surface-button);
+      color:var(--ink);
+      min-height:42px;
+      padding:0 13px;
+      border-radius:14px;
+      font:inherit;
+      font-size:.88rem;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .support-chip:hover,.support-chip-off:hover,.planner-action:hover,.meal-card__actions button:hover{transform:translateY(-1px)}
+    .support-chip.is-active,
+    [data-support-mode].is-active{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 20%,var(--surface-button)),var(--surface-button));
+      border-color:color-mix(in srgb,var(--theme-warning) 34%,var(--line));
+      color:var(--ink);
+    }
+    .support-chip-off.is-active,[data-support-off].is-active{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 16%,var(--surface-button)),var(--surface-button));
+      border-color:color-mix(in srgb,var(--theme-success) 30%,var(--line));
+    }
+    .support-banner{padding:13px 14px;border-radius:18px;border:1px solid var(--line);background:var(--surface-inner);color:var(--muted);line-height:1.45;font-size:.9rem}
+    .support-toggle-row{display:flex;gap:10px;flex-wrap:wrap}
+    .support-toggle{flex:1;min-width:130px;appearance:none;border:1px solid var(--line);background:var(--surface-button);color:var(--ink);min-height:44px;padding:0 14px;border-radius:16px;font:inherit;font-size:.9rem;font-weight:760;cursor:pointer;box-shadow:var(--shadow-soft)}
+    .support-toggle.is-on{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 18%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-warning) 34%,var(--line))}
+    .support-toggle.is-off{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-button));border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line))}
 
-/* buttons */
-.btn{
-  padding:10px 14px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  font-weight:700;
-}
+    .meal-control-card{display:grid;gap:16px}
+    .control-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+    .control-row:first-of-type{border-top:none;padding-top:0}
+    .control-row strong{display:block;font-size:.95rem;letter-spacing:-.01em}
+    .control-row span{display:block;margin-top:3px;color:var(--muted);font-size:.84rem;font-weight:650}
+        .support-off-btn{appearance:none;border:none;border-radius:999px;padding:10px 14px;font:inherit;font-size:.83rem;font-weight:820;color:#8a3d00;background:linear-gradient(180deg,#fff4df,#ffe2b3);box-shadow:0 8px 18px rgba(245,158,11,.18);cursor:pointer}
+    .support-off-btn:hover{transform:translateY(-1px)}
+    .switch-btn{appearance:none;width:54px;height:31px;border:none;border-radius:999px;background:#d6deea;padding:4px;box-shadow:inset 0 1px 4px rgba(15,35,55,.12);cursor:pointer}
+    .switch-btn span{display:block;width:23px;height:23px;border-radius:50%;background:#fff;box-shadow:0 3px 9px rgba(15,35,55,.18);transition:transform .2s ease}
+    .switch-btn.is-on{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2))}
+    .switch-btn.is-on span{transform:translateX(23px)}
 
-.btn-blue{
-  background:var(--blue);
-  color:#fff;
-}
+    .planner-card{display:grid;gap:14px}
+    .planner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .planner-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .planner-action.primary{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));color:#fff;border-color:transparent}
+    .planner-days,.day-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+    .planner-day,.day-tab{
+      min-height:50px;
+      border-radius:15px;
+      border:1px solid var(--line);
+      background:var(--surface-inner);
+      color:var(--muted);
+      font:inherit;
+      font-size:.8rem;
+      font-weight:760;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+    }
+    .planner-day.is-active,
+    .planner-day.active,
+    .day-tab.active{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));
+      color:#fff;
+      border-color:transparent;
+    }
 
-.btn-orange{
-  background:#ffe2b3;
-  color:#8a3d00;
-}
+    .meal-list{display:grid;gap:14px}
+    .meal-card{
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:18px;
+      background:var(--surface-inner);
+      box-shadow:var(--shadow-soft);
+      display:grid;
+      gap:12px;
+    }
+    .meal-card[data-slot="breakfast"]{border-left:4px solid color-mix(in srgb,var(--theme-accent) 70%,transparent)}
+    .meal-card[data-slot="lunch"]{border-left:4px solid color-mix(in srgb,var(--theme-accent-2) 70%,transparent)}
+    .meal-card[data-slot="dinner"]{border-left:4px solid color-mix(in srgb,var(--theme-warning) 75%,transparent)}
+    .meal-card[data-slot="snack"]{border-left:4px solid color-mix(in srgb,var(--muted) 45%,transparent)}
+    .meal-card.supported,.meal-card.is-support,.meal-card[data-support-adjusted="true"]{
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 13%,var(--card)),var(--surface-inner));
+    }
+    .meal-card__header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
+    .meal-card__eyebrow{font-size:.74rem;font-weight:760;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+    .meal-card__title{margin:0;color:var(--ink);font-size:1.02rem;line-height:1.25;letter-spacing:-.02em}
+    .meal-card__subtitle,.meal-card__desc{font-size:.88rem;color:var(--muted);line-height:1.5;margin-top:4px}
+    .meal-card__protein{white-space:nowrap;border:1px solid var(--line);background:var(--surface-chip);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:.8rem;font-weight:760}
+    .meal-card__tags{display:flex;gap:8px;flex-wrap:wrap}
+    .meal-tag,.meta-pill{border:1px solid var(--line);background:var(--surface-chip);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:.78rem;font-weight:700}
+    .meal-card__actions{display:flex;gap:8px;flex-wrap:wrap}
+    .meal-card__actions button{min-height:36px;font-size:.82rem}
+    .meal-card__actions button[data-log-protein],.meal-card__actions button.log-protein,.meal-card__actions button.log-protein-btn{background:linear-gradient(180deg,#3f7cff,#1856d6);color:#fff;border-color:transparent;box-shadow:0 10px 20px rgba(47,109,246,.22)}
 
-/* meals */
-.meal{
-  border-top:1px solid var(--line);
-  padding:12px 0;
-}
+    .protein-card{display:grid;gap:14px}
+    .protein-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+    .protein-meter{
+      --protein-percent:0;
+      width:158px;
+      height:158px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:
+        radial-gradient(circle at center,var(--card) 0 49%,transparent 50%),
+        conic-gradient(from -90deg,var(--theme-accent) 0 calc(var(--protein-percent) * 1%), color-mix(in srgb,var(--theme-accent) 10%,rgba(143,163,184,.20)) 0 100%);
+      box-shadow:0 20px 44px rgba(47,109,246,.12), inset 0 1px 0 rgba(255,255,255,.8);
+      border:1px solid color-mix(in srgb,var(--theme-accent) 18%,var(--line));
+      flex:0 0 auto;
+      position:relative;
+    }
+    .protein-meter::after{content:"";position:absolute;inset:10px;border-radius:50%;border:1px solid rgba(255,255,255,.7);pointer-events:none}
+    .protein-center{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(246,250,255,.94));border:1px solid var(--line);box-shadow:0 12px 26px rgba(14,31,53,.08);padding:12px}
+    .protein-center-title{font-size:.68rem;font-weight:760;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+    .protein-center-copy{margin-top:6px;font-size:.88rem;font-weight:760;color:var(--ink);line-height:1.2}
+    .protein-mini{flex:1;min-width:220px;display:grid;gap:9px}
+    .protein-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:16px;background:var(--surface-inner);border:1px solid var(--line);box-shadow:var(--shadow-soft)}
+    .protein-chip.done{background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-inner));border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line))}
+    .protein-chip-left{display:flex;align-items:center;gap:10px}
+    .protein-dot{width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,var(--muted) 40%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 12%,transparent)}
+    .protein-chip.done .protein-dot{background:var(--theme-success);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-success) 13%,transparent),0 0 14px color-mix(in srgb,var(--theme-success) 28%,transparent)}
+    .protein-name{font-weight:700;color:var(--ink);font-size:.9rem}
+    .protein-state{font-size:.83rem;color:var(--muted);font-weight:660}
+    .protein-pips{display:flex;gap:6px}
+    .protein-pip{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--muted) 24%,transparent)}
+    .protein-pip.is-filled{background:var(--theme-success)}
 
-/* protein */
-.protein{
-  text-align:center;
-  font-weight:800;
-  font-size:18px;
-}
+    .shopping-list{display:grid;gap:8px;max-height:320px;overflow:auto;padding-right:2px}
+    .shopping-item{padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface-inner);font-size:.88rem;color:var(--muted);line-height:1.35}
 
-</style>
+    .bottom-nav{
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:6px;
+      padding:8px;
+      border-radius:24px;
+      background:color-mix(in srgb,var(--card) 88%,transparent);
+      border:1px solid var(--line);
+      box-shadow:0 12px 28px rgba(14,31,53,.10);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      position:sticky;
+      bottom:12px;
+      z-index:40;
+    }
+    .nav-item{
+      appearance:none;
+      border:none;
+      background:transparent;
+      text-decoration:none;
+      cursor:pointer;
+      display:grid;
+      gap:4px;
+      justify-items:center;
+      align-items:center;
+      align-content:center;
+      width:100%;
+      min-height:54px;
+      padding:9px 4px 7px;
+      border-radius:16px;
+      color:var(--muted);
+      transition:all .22s ease;
+      text-align:center;
+      font-size:.72rem;
+      font-weight:600;
+      line-height:1.08;
+    }
+    .nav-item.active,.nav-item[aria-current="page"]{color:var(--nav-active-ink);background:var(--nav-active-bg);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 16px color-mix(in srgb,var(--theme-accent) 14%,transparent)}
+    .nav-item span{display:block;white-space:nowrap;color:inherit}
+
+    .boot-warning{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid color-mix(in srgb,var(--theme-warning) 32%,var(--line));
+      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 13%,var(--card)),var(--card));
+      color:var(--ink);
+      font-size:.9rem;
+      line-height:1.45;
+    }
+    .boot-warning.show{display:block}
+
+    @media(max-width:1080px){.layout{grid-template-columns:1fr}}
+    @media(max-width:760px){
+      .shell{padding:14px 14px 104px}
+      .topbar{min-height:78px;padding:0 14px;border-radius:20px}
+      .brand-logo{height:42px;max-width:min(68vw,230px)}
+      .layout{gap:16px}
+      .status-pills{justify-content:flex-start;width:100%}
+      .card{padding:18px;border-radius:22px}
+      .planner-days,.day-tabs{gap:5px}
+      .planner-day,.day-tab{font-size:.68rem;min-height:46px}
+      .meal-card__header{grid-template-columns:1fr}
+      .meal-card__protein{justify-self:start}
+      .support-grid{grid-template-columns:1fr}
+      .bottom-nav{gap:4px;padding:6px;border-radius:18px}
+      .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}
+      .nav-item svg{width:18px;height:18px}
+    }
+  </style>
+
 </head>
 
-<body>
-<div class="shell">
+<body data-page="meals">
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="home.html" aria-label="Hearty Home">
+        <img class="brand-logo" src="/hearty-logo.png" alt="Hearty" onerror="this.onerror=null;this.src='hearty-logo.png';" />
+      </a>
+      <a class="icon-btn" href="Settings.html" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.91 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.66 0 1.27.39 1.51 1H21a2 2 0 1 1 0 4h-.09c-.24.61-.85 1-1.51 1z"></path></svg>
+      </a>
+    </header>
 
-<!-- HEADER -->
-<div class="topbar">
-  <img src="hearty-logo.png" class="brand-logo">
-  <div class="support-pill is-off" id="supportPill">Support Off</div>
-</div>
+    <section class="status-strip" aria-label="Meals status">
+      <div>
+        <div class="eyebrow">MEAL PLANNER</div>
+        <h1 class="headline">Your meals for today</h1>
+        <p class="subline">Simple, protein-forward meals that adjust when you need extra support.</p>
+      </div>
+      <div class="status-pills">
+        <div class="support-pill is-off" id="supportPill">Support Off</div>
+        <div class="day-pill" id="todayLabel">Today</div>
+      </div>
+    </section>
+        <div class="layout">
+      <main class="stack">
+        <section class="card protein-card" aria-label="Protein meter">
+          <div class="section-label">PROTEIN METER</div>
+          <div class="protein-row">
+            <div class="protein-meter" id="proteinMeter" aria-hidden="true">
+              <div class="protein-center">
+                <div>
+                  <div class="protein-center-title">Today</div>
+                  <div class="protein-center-copy" id="proteinMeterText">0 / 3 protein meals</div>
+                  <div class="protein-pips" id="proteinMeterPips" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
 
-<div class="eyebrow">MEAL PLANNER</div>
-<div class="headline">Your meals for today</div>
-<div class="subline">Simple meals that adjust when you need support.</div>
+            <div class="protein-mini" aria-label="Protein meal status">
+              <div class="protein-chip">
+                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Breakfast</span></div>
+                <span class="protein-state">Pending</span>
+              </div>
+              <div class="protein-chip">
+                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Lunch</span></div>
+                <span class="protein-state">Pending</span>
+              </div>
+              <div class="protein-chip">
+                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Dinner</span></div>
+                <span class="protein-state">Pending</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
-<!-- PROTEIN -->
-<div class="card">
-  <div class="protein" id="proteinText">0 / 3 protein meals</div>
-</div>
+        <section class="card planner-card" aria-label="Meal plan">
+          <div class="planner-head">
+            <div>
+              <div class="section-label">7-DAY PLAN</div>
+              <h2 class="compact-title">Generated week</h2>
+              <p class="compact-copy">Your meal plan is generated from your preferences and support status.</p>
+            </div>
+            <div class="planner-actions">
+              <button class="planner-action" type="button" data-regenerate-day>Regenerate day</button>
+              <button class="planner-action primary" type="button" data-regenerate-week>Generate week</button>
+            </div>
+          </div>
 
-<!-- SETTINGS -->
-<div class="card">
-  <div class="control-row">
-    <div>Support Mode</div>
-    <button class="btn btn-orange" id="supportOffBtn">Turn Off</button>
+          <div class="planner-days" id="plannerDays" aria-label="Choose day">
+            <button class="planner-day is-active" type="button">Day 1</button>
+            <button class="planner-day" type="button">Day 2</button>
+            <button class="planner-day" type="button">Day 3</button>
+            <button class="planner-day" type="button">Day 4</button>
+            <button class="planner-day" type="button">Day 5</button>
+            <button class="planner-day" type="button">Day 6</button>
+            <button class="planner-day" type="button">Day 7</button>
+          </div>
+
+          <div class="meal-list" id="mealList">
+            <article class="meal-card">
+              <div class="meal-card__header">
+                <div>
+                  <div class="meal-card__eyebrow">Loading</div>
+                  <h3 class="meal-card__title">Loading your meals</h3>
+                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and hearty-meals-db-bridge.js are in the repo.</div>
+                </div>
+                <div class="meal-card__protein">—</div>
+              </div>
+            </article>
+          </div>
+
+          <div class="boot-warning" id="bootWarning">
+            Meal engine did not boot. This page is ready, but it needs the repo’s meal engine and bridge scripts to be present.
+          </div>
+        </section>
+      </main>
+
+      <aside class="stack">
+        <section class="card meal-control-card">
+          <div class="section-label">TODAY'S SETTINGS</div>
+          <div class="control-row">
+            <div>
+              <strong>Support mode</strong>
+              <span id="supportModeLabel">Off</span>
+            </div>
+            <button class="support-off-btn" id="supportOffBtn" type="button">Support Off</button>
+          </div>
+          <div class="control-row">
+            <div>
+              <strong>Snacks</strong>
+              <span id="snackToggleLabel">On</span>
+            </div>
+            <button class="switch-btn is-on" id="snackToggleBtn" type="button" aria-pressed="true"><span></span></button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="section-label">SHOPPING LIST</div>
+          <h2 class="compact-title">Download shopping list</h2>
+          <p class="compact-copy">Creates a print-ready PDF view with 7-day and 30-day quantities. The full list is not displayed on this page.</p>
+          <div class="planner-actions" style="margin-top:14px">
+            <button class="planner-action primary" type="button" id="shoppingPdfBtn">Create PDF</button>
+          </div>
+          <div class="shopping-list" id="shoppingList" hidden aria-hidden="true"></div>
+        </section>
+      </aside>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Page selector">
+      <a class="nav-item" href="home.html"><span>Home</span></a>
+      <a class="nav-item active" href="meals.html" aria-current="page"><span>Meals</span></a>
+      <a class="nav-item" href="exercise.html"><span>Exercise</span></a>
+      <a class="nav-item" href="progress.html"><span>Progress</span></a>
+      <a class="nav-item" href="support.html"><span>Support</span></a>
+      <a class="nav-item" href="social.html"><span>Social</span></a>
+      <a class="nav-item" href="Settings.html"><span>Settings</span></a>
+    </nav>
   </div>
 
-  <div class="control-row">
-    <div>Snacks</div>
-    <div class="switch on" id="snackToggle"><span></span></div>
-  </div>
-</div>
+  <script>
+    (function(){
+      "use strict";
 
-<!-- MEALS -->
-<div class="card" id="meals">
-  <div class="meal">Breakfast (loading...)</div>
-  <div class="meal">Lunch (loading...)</div>
-  <div class="meal">Dinner (loading...)</div>
-</div>
+      function safeSet(key, value){
+        try { localStorage.setItem(key, value); } catch(e) {}
+      }
 
-<!-- SHOPPING -->
-<div class="card">
-  <button class="btn btn-blue" id="pdfBtn">Download Shopping PDF</button>
-</div>
+      var SNACKS_KEY = "heartyMealsSnacksOn";
 
-</div>
+      function getSnacksOn(){
+        try { return localStorage.getItem(SNACKS_KEY) !== "false"; } catch(e) { return true; }
+      }
 
-<script>
+      function setSnacksOn(value){
+        safeSet(SNACKS_KEY, value ? "true" : "false");
+        var bridge = window.heartyMealsBridge;
+        if (bridge && bridge.state) {
+          bridge.state.adjustments = bridge.state.adjustments || {};
+          bridge.state.adjustments.snacksOn = !!value;
+        }
+        if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
+        else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+        else if (bridge && typeof bridge.init === "function") bridge.init();
+      }
 
-/* SUPPORT */
-function getSupport(){
-  try{
-    var s = JSON.parse(localStorage.getItem("heartySupportMode"));
-    return s && s.isActive;
-  }catch(e){return false;}
-}
+      function syncSnackToggle(){
+        var btn = document.getElementById("snackToggleBtn");
+        var label = document.getElementById("snackToggleLabel");
+        var on = getSnacksOn();
+        if (btn) {
+          btn.classList.toggle("is-on", on);
+          btn.setAttribute("aria-pressed", String(on));
+        }
+        if (label) label.textContent = on ? "On" : "Off";
+      }
 
-function setSupport(off){
-  localStorage.setItem("heartySupportMode", JSON.stringify({
-    isActive:!off
-  }));
-  updateSupport();
-}
+      function bindSnackToggle(){
+        var btn = document.getElementById("snackToggleBtn");
+        if (!btn) return;
+        syncSnackToggle();
+        btn.addEventListener("click", function(){
+          setSnacksOn(!getSnacksOn());
+          syncSnackToggle();
+        });
+      }
 
-function updateSupport(){
-  const pill = document.getElementById("supportPill");
-  const on = getSupport();
+      function readGlobalSupport(){
+        try {
+          var raw = localStorage.getItem("heartySupportMode") || localStorage.getItem("supportMode") || "";
+          if (raw && raw.charAt(0) === "{") {
+            var parsed = JSON.parse(raw);
+            if (parsed && parsed.isActive && parsed.reason) return parsed.reason;
+          }
+          return raw || localStorage.getItem("meals_support_mode") || "";
+        } catch(e) {
+          return "";
+        }
+      }
 
-  pill.classList.toggle("is-on", on);
-  pill.classList.toggle("is-off", !on);
-  pill.innerText = on ? "Support On" : "Support Off";
-}
+      function writeGlobalSupport(reason){
+        if (reason) {
+          safeSet("meals_support_mode", reason);
+          safeSet("heartySupportMode", JSON.stringify({
+            isActive:true,
+            reason:reason,
+            sourcePage:"meals",
+            startedAt:new Date().toISOString()
+          }));
+        } else {
+          safeSet("meals_support_mode", "");
+          safeSet("heartySupportMode", JSON.stringify({
+            isActive:false,
+            reason:null,
+            sourcePage:"meals",
+            endedAt:new Date().toISOString()
+          }));
+        }
+      }
 
-document.getElementById("supportOffBtn").onclick = () => setSupport(true);
+      function updateSupportBanner(reason){
+        var isOn = !!reason;
+        var pill = document.getElementById("supportPill");
+        if (!pill) return;
+        pill.textContent = isOn ? "Support On" : "Support Off";
+        pill.classList.toggle("is-on", isOn);
+        pill.classList.toggle("is-off", !isOn);
+        var label = document.getElementById("supportModeLabel");
+        if (label) label.textContent = isOn ? "On" : "Off";
+      }
 
-/* SNACK TOGGLE */
-const snackToggle = document.getElementById("snackToggle");
+      function bindSupportOffButton(){
+        var btn = document.getElementById("supportOffBtn");
+        if (!btn) return;
+        btn.addEventListener("click", function(){
+          writeGlobalSupport("");
+          updateSupportBanner("");
+          var bridge = window.heartyMealsBridge;
+          if (bridge && bridge.state) {
+            bridge.state.adjustments = bridge.state.adjustments || {};
+            bridge.state.adjustments.supportMode = null;
+          }
+          if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
+          else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
+        });
+      }
 
-function getSnacks(){
-  return localStorage.getItem("snacks") !== "off";
-}
+      function escapeHtml(value){
+        return String(value == null ? "" : value).replace(/[&<>"]/g, function(ch){
+          return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch];
+        });
+      }
 
-function setSnacks(v){
-  localStorage.setItem("snacks", v ? "on" : "off");
-}
+      function collectShoppingItems(){
+        var bridge = window.heartyMealsBridge;
+        if (bridge && typeof bridge.getShoppingList === "function") return bridge.getShoppingList();
+        if (bridge && bridge.state && Array.isArray(bridge.state.shoppingList)) return bridge.state.shoppingList;
+        var nodes = Array.prototype.slice.call(document.querySelectorAll("#shoppingList .shopping-item"));
+        return nodes.map(function(node){ return { name: node.textContent.trim(), qty7: "", qty30: "" }; }).filter(function(x){ return x.name; });
+      }
 
-function syncSnack(){
-  const on = getSnacks();
-  snackToggle.classList.toggle("on", on);
-}
+      function openShoppingPdf(){
+        var items = collectShoppingItems();
+        if (!items.length) items = [{ name:"Generate a meal week first, then create the shopping PDF.", qty7:"—", qty30:"—" }];
+        var rows = items.map(function(item){
+          var name = item.name || item.item || item.label || item[0] || "";
+          var qty7 = item.qty7 || item.weekQty || item.quantity7 || item[1] || "";
+          var qty30 = item.qty30 || item.monthQty || item.quantity30 || item[2] || "";
+          if (!qty30 && qty7) qty30 = "≈ 4.3 × 7-day quantity";
+          return "<tr><td>" + escapeHtml(name) + "</td><td>" + escapeHtml(qty7) + "</td><td>" + escapeHtml(qty30) + "</td></tr>";
+        }).join("");
+        var win = window.open("", "_blank", "width=900,height=1100");
+        if (!win) return;
+        win.document.write("<!doctype html><html><head><title>Hearty Shopping List</title><style>body{font-family:Inter,Arial,sans-serif;padding:32px;color:#102033}h1{margin:0 0 8px;font-size:28px}p{color:#66788c}table{width:100%;border-collapse:collapse;margin-top:22px}th,td{border-bottom:1px solid #e3eaf3;padding:12px;text-align:left;vertical-align:top}th{background:#f4f7fb}.note{margin-top:18px;font-size:12px;color:#7a8798}</style></head><body><h1>Hearty Shopping List</h1><p>7-day and 30-day quantities generated from your current meal plan.</p><table><thead><tr><th>Item</th><th>7 days</th><th>30 days</th></tr></thead><tbody>" + rows + "</tbody></table><p class='note'>Use your browser print dialog and choose Save as PDF.</p><script>window.onload=function(){window.print()};<\/script></body></html>");
+        win.document.close();
+      }
 
-snackToggle.onclick = () => {
-  setSnacks(!getSnacks());
-  syncSnack();
-};
+      function bindShoppingPdf(){
+        var btn = document.getElementById("shoppingPdfBtn");
+        if (btn) btn.addEventListener("click", openShoppingPdf);
+      }
 
-/* PDF */
-document.getElementById("pdfBtn").onclick = () => {
-  window.print();
-};
+      function syncTodayLabel(){
+        var el = document.getElementById("todayLabel");
+        if (!el) return;
+        var d = new Date();
+        el.textContent = d.toLocaleDateString(undefined, { weekday:"long", month:"short", day:"numeric" });
+      }
 
-/* INIT */
-updateSupport();
-syncSnack();
+      function loadScript(src){
+        return new Promise(function(resolve, reject){
+          if (document.querySelector('script[src="'+src+'"]')) return resolve();
+          var s = document.createElement("script");
+          s.src = src;
+          s.async = false;
+          s.onload = resolve;
+          s.onerror = function(){ reject(new Error("Could not load " + src)); };
+          document.body.appendChild(s);
+        });
+      }
 
-</script>
+      async function loadFirst(paths){
+        var lastError = null;
+        for (var i = 0; i < paths.length; i++) {
+          try {
+            await loadScript(paths[i]);
+            return paths[i];
+          } catch(e) {
+            lastError = e;
+          }
+        }
+        throw lastError || new Error("No scripts loaded");
+      }
 
+      function findEngine(){
+        return window.HeartyMealsEngineV6 ||
+          window.HeartyMealsEngine ||
+          window.heartyMealsEngine ||
+          window.MealsEngine ||
+          window.mealsEngine ||
+          window.HEARTY_MEALS_ENGINE ||
+          null;
+      }
+
+      function findBridgeFactory(){
+        return window.createMealsBridge ||
+          window.createHeartyMealsBridge ||
+          window.createHeartyMealsDBBridge ||
+          window.HeartyMealsBridge ||
+          window.HeartyMealsDBBridge ||
+          window.heartyCreateMealsBridge ||
+          null;
+      }
+
+      function showBootWarning(message){
+        var warn = document.getElementById("bootWarning");
+        if (!warn) return;
+        warn.textContent = message || warn.textContent;
+        warn.classList.add("show");
+      }
+
+      function readJsonStorage(key){
+        try {
+          var raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : null;
+        } catch(e) {
+          return null;
+        }
+      }
+
+      function readMealProfile(){
+        var state = readJsonStorage("heartyMealsPageStateVFinal") ||
+          readJsonStorage("heartyMealsStateVFinal") ||
+          readJsonStorage("heartyMealsStateV1") ||
+          readJsonStorage("heartyMealProfile") ||
+          readJsonStorage("heartyMealsProfile");
+
+        if (!state) return null;
+
+        var profile = state.preferences || state.onboarding || state.profile || state.mealProfile || state;
+        var complete = state.profileComplete === true ||
+          state.onboardingComplete === true ||
+          state.mealsOnboardingComplete === true ||
+          profile.profileComplete === true ||
+          profile.onboardingComplete === true ||
+          Object.keys(profile || {}).length > 2;
+
+        return complete ? profile : null;
+      }
+
+      function redirectToMealsOnboarding(){
+        var current = (window.location.pathname || "").toLowerCase();
+        if (current.indexOf("meals-onboarding") !== -1) return;
+        window.location.href = "meals-onboarding.html";
+      }
+
+      async function bootMeals(){
+        syncTodayLabel();
+        updateSupportBanner(readGlobalSupport());
+        bindSupportOffButton();
+        bindSnackToggle();
+        bindShoppingPdf();
+
+        try {
+          var mealProfile = readMealProfile();
+          if (!mealProfile) {
+            redirectToMealsOnboarding();
+            return;
+          }
+
+          await loadFirst([
+            "./meals-engine-v6.5.js",
+            "./js/meals-engine-v6.5.js",
+            "./meals-engine.js",
+            "./js/meals-engine.js",
+            "./hearty-meals-engine.js",
+            "./js/hearty-meals-engine.js"
+          ]);
+
+          await loadFirst([
+            "./meals-bridge.js",
+            "./js/meals-bridge.js",
+            "./hearty-meals-bridge.js",
+            "./js/hearty-meals-bridge.js"
+          ]);
+
+          try {
+            await loadFirst([
+              "./hearty-meals-db-bridge.js",
+              "./js/hearty-meals-db-bridge.js"
+            ]);
+          } catch(dbBridgeError) {
+            console.info("[Hearty Meals] DB bridge not loaded; continuing with local meals bridge.", dbBridgeError);
+          }
+
+          var engine = findEngine();
+          var factory = findBridgeFactory();
+
+          if (factory && typeof factory !== "function" && typeof factory.create === "function") {
+            factory = factory.create.bind(factory);
+          }
+
+          if (!engine || typeof factory !== "function") {
+            throw new Error("Meal engine or bridge factory was not found on window.");
+          }
+
+          var supportMode = readGlobalSupport();
+          var bridge = factory({
+            engine: engine,
+            initialProfile: mealProfile,
+            ui: {
+              dayTabs: document.getElementById("plannerDays"),
+              mealList: document.getElementById("mealList"),
+              shoppingList: document.getElementById("shoppingList")
+            }
+          });
+
+          if (bridge && bridge.state) {
+            bridge.state.adjustments = bridge.state.adjustments || {};
+            bridge.state.adjustments.supportMode = supportMode || bridge.state.adjustments.supportMode || null;
+            bridge.state.adjustments.snacksOn = getSnacksOn();
+          }
+
+          window.heartyMealsBridge = bridge;
+          if (bridge && typeof bridge.init === "function") bridge.init();
+
+        } catch(error) {
+          console.warn("[Hearty Meals] Boot failed:", error);
+          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine-v6.5.js or meals-engine.js exists, and that meals-bridge.js exposes window.createMealsBridge.");
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", bootMeals);
+      } else {
+        bootMeals();
+      }
+    })();
+  </script>
 </body>
 </html>
