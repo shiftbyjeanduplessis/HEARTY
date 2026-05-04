@@ -6143,23 +6143,38 @@ html[data-theme="rose_aurora"] #todaysRhythmCard.first-use-mode .section-label{
       saveArrayStore(key, list);
     }
 
-    function upsertProgressPhotoSet(){
-      const allApproved = ['front','side'].every(key => photoDraftState[key] && photoDraftState[key].approved);
-      if(!allApproved) return;
-      const payload = {
-        date: todayKey,
-        createdAt: new Date().toISOString(),
-        dateLabel: new Date(todayKey + 'T00:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short' }),
-        fullLabel: todayKey,
-        tag: 'Check-in set',
-        note: photoDraftState.back && photoDraftState.back.approved ? 'Front, side, and back progress photos' : 'Front and side progress photos',
-        views: ['front','side','back'],
-        slots: {
-          front: { name: photoDraftState.front?.name || 'front-photo.jpg', previewUrl: photoDraftState.front?.previewUrl || '', approved: true },
-          side: { name: photoDraftState.side?.name || 'side-photo.jpg', previewUrl: photoDraftState.side?.previewUrl || '', approved: true },
-          back: photoDraftState.back && photoDraftState.back.approved ? { name: photoDraftState.back.name || 'back-photo.jpg', previewUrl: photoDraftState.back.previewUrl || '', approved: true } : null
-        }
-      };
+   function upsertProgressPhotoSet(){
+  const approvedKeys = ['front','side','back'].filter(key =>
+    photoDraftState[key] && photoDraftState[key].approved && photoDraftState[key].previewUrl
+  );
+
+  if(!approvedKeys.length) return;
+
+  const progressRows = approvedKeys.map(type => ({
+    date: todayKey,
+    type: type,
+    image: photoDraftState[type].previewUrl
+  }));
+
+  const existing = parseArrayStore('heartyPhotoLog')
+    .filter(item => item && item.date !== todayKey);
+
+  saveArrayStore('heartyPhotoLog', existing.concat(progressRows));
+
+  const sets = parseArrayStore('hearty_progress_photos')
+    .filter(item => item && item.date !== todayKey);
+
+  sets.push({
+    date: todayKey,
+    createdAt: new Date().toISOString(),
+    slots: {
+      front: photoDraftState.front || null,
+      side: photoDraftState.side || null,
+      back: photoDraftState.back || null
+    }
+  });
+  saveArrayStore('hearty_progress_photos', sets);
+}
       const sets = parseArrayStore('hearty_progress_photos').filter(item => item && item.date !== todayKey);
       sets.push(payload);
       sets.sort((a,b) => String(a.date).localeCompare(String(b.date)));
