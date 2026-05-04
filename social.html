@@ -68,7 +68,7 @@
   }
   .icon-btn svg,.nav-item svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
   main{padding:0 16px 8px}
-  .hero-card,.card,.composer-card,.post-card,.empty-card,.suggestions-card{
+  .hero-card,.card,.composer-card,.post-card,.empty-card{
     background:var(--card);border:1px solid rgba(255,255,255,.72);border-radius:var(--radius-xl);
     box-shadow:var(--shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   }
@@ -94,11 +94,11 @@
   .action-btn.off{background:var(--blue-soft);color:var(--blue);box-shadow:none}
   .ghost-btn{background:rgba(24,32,51,.06);color:var(--ink)}
   .ghost-btn.danger{color:var(--danger);background:rgba(220,38,38,.08)}
+  .status-card{display:none}
   .community-disabled{opacity:.48;filter:saturate(.82);pointer-events:none;user-select:none}
   .community-disabled input,.community-disabled textarea,.community-disabled button{cursor:not-allowed}
   .layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
-  .sidebar-column{display:grid;gap:16px;position:sticky;top:12px}
-  .profile-card{padding:18px}
+  .profile-card{padding:18px;position:sticky;top:12px}
   .profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
   .avatar-lg,.avatar{border-radius:24px;background:linear-gradient(180deg,#e8eefb,#fff);border:1px solid rgba(24,32,51,.06);display:grid;place-items:center;overflow:hidden;color:var(--blue);font-weight:800;flex:0 0 auto}
   .avatar-lg{width:82px;height:82px;font-size:24px}.avatar{width:46px;height:46px;border-radius:18px;font-size:14px}
@@ -120,28 +120,12 @@
   .post-text{margin:15px 0 0;font-size:15px;line-height:1.6;color:#243045;white-space:pre-wrap}.post-image{width:100%;max-height:420px;object-fit:cover;display:block;margin-top:14px;border-radius:20px;border:1px solid rgba(24,32,51,.08)}
   .post-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}.reaction-btn{min-height:42px;padding:11px 15px;border-radius:999px;background:rgba(24,32,51,.055);color:#324055;display:inline-flex;gap:8px;align-items:center}.reaction-btn.active{background:var(--blue-soft);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(29,78,216,.08)}
   .empty-card{padding:26px 16px;text-align:center;color:var(--muted)}.empty-icon{width:72px;height:72px;border-radius:24px;margin:0 auto 14px;display:grid;place-items:center;background:rgba(24,32,51,.05);font-size:28px}.empty-card h3{margin:0 0 8px;color:var(--ink);font-size:18px}.empty-card p{margin:0 auto 14px;max-width:340px;line-height:1.55}
-
-  /* Suggestions card */
-  .suggestions-card{padding:18px}
-  .suggestions-title{font-size:14px;font-weight:800;letter-spacing:-.01em;margin:0 0 14px;display:flex;align-items:center;gap:8px}
-  .suggestions-title span{color:var(--muted);font-weight:500;font-size:13px;margin-left:auto}
-  .suggestion-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
-  .suggestion-item:last-child{border-bottom:none;padding-bottom:0}
-  .suggestion-item:first-child{padding-top:0}
-  .suggestion-info{flex:1;min-width:0}
-  .suggestion-info strong{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .suggestion-info span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
-  .follow-btn{min-height:34px;padding:7px 14px;border-radius:999px;font-size:13px;font-weight:750;background:var(--blue-soft);color:var(--blue);flex:0 0 auto;border:1px solid rgba(47,109,246,.18)}
-  .follow-btn.following{background:rgba(24,32,51,.06);color:var(--muted);border-color:var(--line)}
-  .active-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;flex:0 0 auto}
-  .suggestions-empty{color:var(--muted);font-size:13px;text-align:center;padding:12px 0}
-
   .bottom-nav{margin-top:18px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:10px;border-radius:26px;background:rgba(255,255,255,.74);border:1px solid var(--line);box-shadow:var(--shadow-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;bottom:12px;z-index:40}
   .nav-item{display:grid;gap:6px;justify-items:center;align-items:center;padding:12px 8px 10px;border-radius:18px;color:#627286;text-align:center;font-size:.78rem;font-weight:650}.nav-item.active,.nav-item[aria-current=page]{color:#1f4ec0;background:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 18px rgba(47,109,246,.10)}.nav-item svg{width:22px;height:22px}
   .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:90;max-width:min(92vw,440px);padding:12px 14px;border-radius:16px;background:rgba(16,32,51,.94);color:white;box-shadow:0 16px 38px rgba(15,23,42,.24);font-size:13px;line-height:1.4;display:none}.toast.show{display:block}
   @media (min-width:760px){.shell{border-left:1px solid rgba(24,32,51,.06);border-right:1px solid rgba(24,32,51,.06);background:rgba(255,255,255,.24)}}
-  @media (max-width:860px){.layout{grid-template-columns:1fr}.sidebar-column{position:static}.hero-card{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}}
-  @media (max-width:760px){.shell{padding:14px 14px 24px}.topbar{min-height:78px;padding:0 14px;border-radius:20px}.brand-logo{height:40px}main{padding:0}.hero-copy h1{font-size:2rem}.post-card,.composer-card,.profile-card,.suggestions-card{padding:16px}.bottom-nav{gap:4px;padding:6px;border-radius:18px}.bottom-nav .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}.bottom-nav .nav-item svg{width:18px;height:18px}}
+  @media (max-width:860px){.layout{grid-template-columns:1fr}.profile-card{position:static}.hero-card{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}}
+  @media (max-width:760px){.shell{padding:14px 14px 24px}.topbar{min-height:78px;padding:0 14px;border-radius:20px}.brand-logo{height:40px}main{padding:0}.hero-copy h1{font-size:2rem}.post-card,.composer-card,.profile-card{padding:16px}.bottom-nav{gap:4px;padding:6px;border-radius:18px}.bottom-nav .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}.bottom-nav .nav-item svg{width:18px;height:18px}}
 </style>
 </head>
 <body data-page="community">
@@ -155,7 +139,6 @@
     </a>
   </header>
 
-  <div id="dbStatusBar" style="display:none;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;line-height:1.4"></div>
   <main>
     <section class="hero-card" aria-label="Community overview">
       <div class="hero-copy">
@@ -175,32 +158,21 @@
     </section>
 
     <div class="layout" id="communityContent">
-      <aside class="sidebar-column" aria-label="Sidebar">
-        <div class="profile-card card" aria-label="Community profile">
-          <div class="profile-top">
-            <div class="avatar-lg" id="profileAvatarLarge">H</div>
-            <div class="profile-info">
-              <strong id="profileDisplayName">Your profile</strong>
-              <span>Set the name and photo other people see in Community.</span>
-            </div>
-          </div>
-          <div class="field">
-            <label for="displayNameInput">Display name</label>
-            <input id="displayNameInput" maxlength="40" placeholder="Your name" autocomplete="name" />
-          </div>
-          <div class="profile-actions">
-            <label class="file-pill" for="profilePhotoInput">📷 Choose profile photo<input id="profilePhotoInput" type="file" accept="image/*" /></label>
-            <button class="action-btn" id="saveProfileBtn" type="button">Save Profile</button>
+      <aside class="profile-card card" aria-label="Community profile">
+        <div class="profile-top">
+          <div class="avatar-lg" id="profileAvatarLarge">H</div>
+          <div class="profile-info">
+            <strong id="profileDisplayName">Your profile</strong>
+            <span>Set the name and photo other people see in Community.</span>
           </div>
         </div>
-
-        <!-- Suggested people with active Community -->
-        <div class="suggestions-card card" aria-label="Suggested people">
-          <h2 class="suggestions-title">
-            People on Community
-            <span id="suggestionCount"></span>
-          </h2>
-          <div id="suggestionsList"><p class="suggestions-empty">Loading…</p></div>
+        <div class="field">
+          <label for="displayNameInput">Display name</label>
+          <input id="displayNameInput" maxlength="40" placeholder="Your name" autocomplete="name" />
+        </div>
+        <div class="profile-actions">
+          <label class="file-pill" for="profilePhotoInput">📷 Choose profile photo<input id="profilePhotoInput" type="file" accept="image/*" /></label>
+          <button class="action-btn" id="saveProfileBtn" type="button">Save Profile</button>
         </div>
       </aside>
 
@@ -209,7 +181,7 @@
           <div class="composer-head">
             <div>
               <strong>Post to Community</strong>
-              <span id="composerStatus">Turn Community on to post</span>
+              <span id="composerStatus">Community is off</span>
             </div>
           </div>
           <textarea id="communityPostInput" maxlength="280" placeholder="Share a quick update or encouragement..."></textarea>
@@ -235,241 +207,144 @@
 
 <script>
 (function(){
-  const SETTINGS_TABLE  = 'community_user_settings';
-  const POSTS_TABLE     = 'community_posts';
-  const LOVES_TABLE     = 'community_reactions';
-  const PROFILES_TABLE  = 'profiles';
+  const SETTINGS_TABLE = 'community_user_settings';
+  const POSTS_TABLE = 'community_posts';
+  const LOVES_TABLE = 'community_reactions';
+  const PROFILES_TABLE = 'profiles';
   const COMMUNITY_BUCKET = 'community-images';
-  const PROFILE_BUCKET   = 'profile-photos';
+  const PROFILE_BUCKET = 'profile-photos';
 
   let sb = null;
   let currentUser = null;
+  let usingSupabase = false;
   let selectedPostImage = null;
   let selectedProfileImage = null;
   let profile = null;
   let postsCache = [];
   let reactionsCache = {};
   let communityEnabledCache = false;
-  let followingCache = new Set();
 
-  /* ── Utilities ────────────────────────────────────────────── */
-  function showToast(msg){
+  function showToast(message){
     const el = document.getElementById('toast');
     if (!el) return;
-    el.textContent = msg;
+    el.textContent = message;
     el.classList.add('show');
     clearTimeout(showToast._t);
     showToast._t = setTimeout(() => el.classList.remove('show'), 2600);
   }
 
-  function escapeHTML(v){
-    return String(v||'').replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  function escapeHTML(value){
+    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   }
 
   function timeAgo(ts){
-    const diff = Math.max(0, Date.now() - (typeof ts==='string' ? new Date(ts).getTime() : Number(ts||Date.now())));
-    const mins = Math.floor(diff/60000);
-    if (mins < 1)  return 'Just now';
+    const when = typeof ts === 'string' ? new Date(ts).getTime() : Number(ts || Date.now());
+    const diff = Math.max(0, Date.now() - when);
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Just now';
     if (mins < 60) return `${mins} min ago`;
-    const hrs = Math.floor(mins/60);
-    if (hrs < 24)  return `${hrs} hr ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs} hr ago`;
     return 'Yesterday';
   }
 
-  function initials(name){
-    const src = String(name || currentUser?.email || 'H').trim();
-    const parts = src.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) return (parts[0][0]+parts[1][0]).toUpperCase();
-    return src[0] ? src[0].toUpperCase() : 'H';
-  }
-
-  function renderAvatar(container, url, name){
-    if (!container) return;
-    if (url) container.innerHTML = `<img src="${escapeHTML(url)}" alt="${escapeHTML(name||'Avatar')}" />`;
-    else container.textContent = initials(name);
-  }
-
-  /* ── Supabase bootstrap ───────────────────────────────────── */
-  // Strategy 1: window scan for an already-initialised client
-  // Strategy 2: extract URL+key from the data-layer script and create our own
-  // Strategy 3: extract URL+key from Supabase's own localStorage token
-
-  function isSupabaseClient(c){
-    return c && typeof c==='object' && typeof c.from==='function' && c.auth && typeof c.auth.getSession==='function';
-  }
-
-  function scanWindow(){
-    const named = [
-      window.heartySupabaseClient, window.heartySupabase,
-      window.heartyDataLayer?.supabase, window.heartyDataLayer?.client,
-      window.heartyData?.supabase, window.heartyData?.client,
-      window.HeartyData?.supabase, window.supabaseClient,
-      window.supabaseClientV1, window.sb, window._supabase,
-      window.__supabase, window.dbClient, window.heartyDb,
-      window.database, window.heartyDatabase
+  function findSupabaseClient(){
+    const candidates = [
+      window.heartySupabaseClient,
+      window.heartySupabase,
+      window.heartyDataLayer?.supabase,
+      window.heartyData?.supabase,
+      window.HeartyData?.supabase,
+      window.supabaseClient,
+      window.supabaseClientV1,
+      window.sb,
+      window._supabase
     ];
-    const hit = named.find(isSupabaseClient);
-    if (hit) return hit;
-    for (const key of Object.keys(window)){
-      try {
-        const v = window[key];
-        if (isSupabaseClient(v)) return v;
-        if (v && typeof v==='object' && !Array.isArray(v)){
-          for (const k2 of Object.keys(v)){
-            try { if (isSupabaseClient(v[k2])) return v[k2]; } catch(_){}
-          }
-        }
-      } catch(_){}
+    return candidates.find(c => c && typeof c.from === 'function' && c.auth) || null;
+  }
+
+  async function waitForSupabaseClient(){
+    for (let i = 0; i < 30; i++) {
+      const client = findSupabaseClient();
+      if (client) return client;
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
     return null;
-  }
-
-  // Extract supabaseUrl + anonKey from any JS source text
-  function extractCreds(src){
-    const urlMatch  = src.match(/https:\/\/[a-z0-9]+\.supabase\.co/);
-    // anon keys start with "eyJ" and are long JWT strings
-    const keyMatch  = src.match(/eyJ[A-Za-z0-9_\-]{40,}\.[A-Za-z0-9_\-]{6,}\.[A-Za-z0-9_\-]{6,}/);
-    if (urlMatch && keyMatch) return { url: urlMatch[0], key: keyMatch[0] };
-    return null;
-  }
-
-  // Pull project ref from any sb-* key in localStorage then infer URL
-  function credsFromLocalStorage(){
-    try {
-      for (let i = 0; i < localStorage.length; i++){
-        const k = localStorage.key(i);
-        // Supabase stores sessions as sb-<ref>-auth-token or supabase.auth.token
-        if (!k) continue;
-        const refMatch = k.match(/^sb-([a-z0-9]+)-auth-token$/);
-        if (refMatch){
-          const raw = localStorage.getItem(k);
-          if (!raw) continue;
-          const parsed = JSON.parse(raw);
-          // The value contains the access_token (JWT) — we need the anon key
-          // but at minimum we have the project ref for the URL
-          const url = `https://${refMatch[1]}.supabase.co`;
-          // Try to find anon key in other localStorage entries or the parsed token
-          const anonSearch = JSON.stringify(Object.fromEntries(
-            Array.from({length:localStorage.length},(_,j)=>[localStorage.key(j), localStorage.getItem(localStorage.key(j))])
-          ));
-          const keyMatch = anonSearch.match(/eyJ[A-Za-z0-9_\-]{40,}\.[A-Za-z0-9_\-]{6,}\.[A-Za-z0-9_\-]{6,}/g);
-          // The shortest matching token is most likely the anon key (access tokens are longer)
-          if (keyMatch){
-            const anon = keyMatch.sort((a,b)=>a.length-b.length)[0];
-            return { url, key: anon };
-          }
-        }
-      }
-    } catch(_){}
-    return null;
-  }
-
-  async function createOwnClient(url, key){
-    // Load Supabase JS from CDN if not already present
-    if (!window.supabase?.createClient){
-      await new Promise((res, rej) => {
-        const s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-        s.onload = res; s.onerror = rej;
-        document.head.appendChild(s);
-      });
-    }
-    return window.supabase.createClient(url, key);
   }
 
   async function initSupabase(){
-    showDbStatus('connecting');
-
-    // Strategy 1 – window scan (instant if data layer already ran)
-    let client = scanWindow();
-    if (!client){
-      // Give data layer up to 3 s to initialise
-      await new Promise(r => setTimeout(r, 3000));
-      client = scanWindow();
+    sb = await waitForSupabaseClient();
+    if (!sb) {
+      usingSupabase = false;
+      currentUser = null;
+      showToast('Community could not find the main app sign-in session.');
+      return;
     }
-
-    // Strategy 2 – fetch + parse the data-layer script
-    if (!client){
-      try {
-        const res = await fetch('/js/hearty-data-layer.v1.js');
-        if (res.ok){
-          const src = await res.text();
-          const creds = extractCreds(src);
-          if (creds) client = await createOwnClient(creds.url, creds.key);
-        }
-      } catch(e){ console.warn('[Community] data-layer fetch failed:', e); }
-    }
-
-    // Strategy 3 – derive from localStorage session keys
-    if (!client){
-      try {
-        const creds = credsFromLocalStorage();
-        if (creds) client = await createOwnClient(creds.url, creds.key);
-      } catch(e){ console.warn('[Community] localStorage strategy failed:', e); }
-    }
-
-    if (!client){ showDbStatus('failed'); return; }
-
-    sb = client;
-    showDbStatus('ok');
-
     try {
-      const sess = await sb.auth.getSession();
-      currentUser = sess?.data?.session?.user || null;
-      if (!currentUser){
-        const u = await sb.auth.getUser();
-        currentUser = u?.data?.user || null;
+      const sessionResult = await sb.auth.getSession();
+      currentUser = sessionResult?.data?.session?.user || null;
+      if (!currentUser) {
+        const userResult = await sb.auth.getUser();
+        currentUser = userResult?.data?.user || null;
       }
-    } catch(e){ console.warn('[Community] auth lookup:', e); }
-  }
-
-  function showDbStatus(state){
-    const bar = document.getElementById('dbStatusBar');
-    if (!bar) return;
-    if (state==='connecting'){
-      bar.textContent='⏳ Connecting…';
-      bar.style.cssText='display:block;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;background:rgba(217,119,6,.12);color:#92400e';
-    } else if (state==='ok'){
-      bar.style.display='none';
-    } else {
-      bar.innerHTML='⚠️ Could not connect to the database. <button onclick="window.retryInit()" style="margin-left:10px;padding:4px 14px;border-radius:8px;background:#2f6df6;color:white;border:none;cursor:pointer;font-weight:700;font-size:13px">Retry</button>';
-      bar.style.cssText='display:block;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;background:rgba(220,38,38,.10);color:#991b1b';
+      usingSupabase = Boolean(currentUser);
+      if (!usingSupabase) showToast('Please sign in to use Community.');
+    } catch (err) {
+      usingSupabase = false;
+      currentUser = null;
+      showToast('Please sign in to use Community.');
     }
   }
 
-  window.retryInit = async function(){
-    sb=null; currentUser=null;
-    await initSupabase();
-    if (sb) await renderAll();
-  };
+  async function requireUser(){
+    if (!usingSupabase || !currentUser) {
+      showToast('Please sign in to use Community.');
+      return false;
+    }
+    return true;
+  }
 
-  /* ── Community enabled state ──────────────────────────────── */
   async function isEnabled(){
-    if (!sb || !currentUser) return communityEnabledCache;
-    const { data } = await sb.from(SETTINGS_TABLE)
-      .select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
-    communityEnabledCache = data?.community_enabled === true;
+    if (!usingSupabase || !currentUser || !sb) return false;
+    const { data, error } = await sb.from(SETTINGS_TABLE).select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    communityEnabledCache = data ? data.community_enabled === true : false;
     return communityEnabledCache;
   }
 
   async function setEnabled(next){
-    if (!sb || !currentUser){ showDbStatus('failed'); return; }
+    if (!(await requireUser())) return;
     const { error } = await sb.from(SETTINGS_TABLE).upsert({
       user_id: currentUser.id,
       community_enabled: next,
       updated_at: new Date().toISOString()
-    }, { onConflict:'user_id' });
-    if (error){ console.warn(error); showToast('Could not update Community setting.'); return; }
-    communityEnabledCache = next;
+    }, { onConflict: 'user_id' });
+    if (error) {
+      console.warn(error);
+      showToast('Could not update Community setting.');
+      return;
+    }
     await renderAll();
   }
 
-  /* ── Profile ──────────────────────────────────────────────── */
+  function initials(name){
+    const source = String(name || currentUser?.email || 'H').trim();
+    const parts = source.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return source[0] ? source[0].toUpperCase() : 'H';
+  }
+
+  function renderAvatar(container, url, name){
+    if (!container) return;
+    if (url) container.innerHTML = `<img src="${escapeHTML(url)}" alt="${escapeHTML(name || 'Profile photo')}" />`;
+    else container.textContent = initials(name);
+  }
+
   async function loadProfile(){
-    if (!sb || !currentUser) return null;
-    const { data } = await sb.from(PROFILES_TABLE)
-      .select('id,display_name,avatar_url,avatar_path').eq('id', currentUser.id).maybeSingle();
-    profile = data || { id: currentUser?.id, display_name:'', avatar_url:'', avatar_path:'' };
+    if (!(await requireUser())) return null;
+    const { data, error } = await sb.from(PROFILES_TABLE).select('id,display_name,avatar_url,avatar_path').eq('id', currentUser.id).maybeSingle();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    profile = data || { id: currentUser.id, display_name: '', avatar_url: '', avatar_path: '' };
     const input = document.getElementById('displayNameInput');
     if (input && !input.value) input.value = profile.display_name || '';
     document.getElementById('profileDisplayName').textContent = profile.display_name || 'Your profile';
@@ -479,206 +354,157 @@
 
   async function uploadToBucket(bucket, path, file){
     const { error } = await sb.storage.from(bucket).upload(path, file, {
-      upsert:true, cacheControl:'86400', contentType:file.type||'image/jpeg'
+      upsert: true,
+      cacheControl: '86400',
+      contentType: file.type || 'image/jpeg'
     });
     if (error) throw error;
     const { data } = sb.storage.from(bucket).getPublicUrl(path);
-    return data?.publicUrl || '';
+    return data && data.publicUrl ? data.publicUrl : '';
   }
 
   async function saveProfile(){
-    if (!sb || !currentUser){ showToast('Database not ready.'); return; }
+    if (!(await requireUser())) return;
     const name = document.getElementById('displayNameInput').value.trim().slice(0,40) || 'Hearty member';
     let avatarUrl = profile?.avatar_url || '';
     let avatarPath = profile?.avatar_path || '';
     try {
-      if (selectedProfileImage){
-        const ext = (selectedProfileImage.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+      if (selectedProfileImage) {
+        const ext = (selectedProfileImage.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
         avatarPath = `${currentUser.id}/avatar.${ext}`;
         avatarUrl = await uploadToBucket(PROFILE_BUCKET, avatarPath, selectedProfileImage);
       }
       const { error } = await sb.from(PROFILES_TABLE).upsert({
-        id:currentUser.id, display_name:name,
-        avatar_url:avatarUrl, avatar_path:avatarPath,
-        updated_at:new Date().toISOString()
-      }, { onConflict:'id' });
+        id: currentUser.id,
+        display_name: name,
+        avatar_url: avatarUrl,
+        avatar_path: avatarPath,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
       if (error) throw error;
       selectedProfileImage = null;
       await loadProfile();
       await renderFeed();
       showToast('Profile saved.');
-    } catch(err){ console.warn(err); showToast('Profile could not be saved. Check bucket policies.'); }
-  }
-
-  /* ── Suggested users ──────────────────────────────────────── */
-  async function loadSuggestedUsers(){
-    const container = document.getElementById('suggestionsList');
-    const countEl   = document.getElementById('suggestionCount');
-    if (!sb){ container.innerHTML = '<p class="suggestions-empty">Database unavailable</p>'; return; }
-
-    // Fetch all users with community enabled, excluding self
-    const { data: settings, error } = await sb
-      .from(SETTINGS_TABLE)
-      .select('user_id')
-      .eq('community_enabled', true);
-
-    if (error){ console.warn(error); container.innerHTML = '<p class="suggestions-empty">Could not load suggestions</p>'; return; }
-
-    const userIds = (settings||[])
-      .map(s => s.user_id)
-      .filter(id => id !== currentUser?.id);
-
-    if (!userIds.length){
-      countEl.textContent = '0 active';
-      container.innerHTML = '<p class="suggestions-empty">No one else has Community on yet — you could be first!</p>';
-      return;
-    }
-
-    // Fetch profiles for those users
-    const { data: profiles } = await sb
-      .from(PROFILES_TABLE)
-      .select('id,display_name,avatar_url')
-      .in('id', userIds);
-
-    const people = (profiles||[]).filter(p => p.display_name);
-    countEl.textContent = `${people.length} active`;
-
-    if (!people.length){
-      container.innerHTML = '<p class="suggestions-empty">No profiles set up yet.</p>';
-      return;
-    }
-
-    container.innerHTML = people.map(p => {
-      const isFollowing = followingCache.has(p.id);
-      const avatarHtml = p.avatar_url
-        ? `<img src="${escapeHTML(p.avatar_url)}" alt="${escapeHTML(p.display_name)}" />`
-        : escapeHTML(initials(p.display_name));
-      return `
-        <div class="suggestion-item" data-user-id="${escapeHTML(p.id)}">
-          <div class="avatar">${avatarHtml}</div>
-          <div class="suggestion-info">
-            <strong>${escapeHTML(p.display_name)}</strong>
-            <span><span class="active-dot"></span> Active on Community</span>
-          </div>
-          <button class="follow-btn ${isFollowing ? 'following' : ''}" data-follow-id="${escapeHTML(p.id)}" type="button">
-            ${isFollowing ? 'Following' : 'Follow'}
-          </button>
-        </div>`;
-    }).join('');
-
-    // Wire follow buttons
-    container.querySelectorAll('[data-follow-id]').forEach(btn => {
-      btn.onclick = () => toggleFollow(btn.dataset.followId, btn);
-    });
-  }
-
-  function toggleFollow(userId, btn){
-    if (followingCache.has(userId)){
-      followingCache.delete(userId);
-      btn.textContent = 'Follow';
-      btn.classList.remove('following');
-    } else {
-      followingCache.add(userId);
-      btn.textContent = 'Following';
-      btn.classList.add('following');
-    }
-    // Persist to a follows table if it exists in your schema
-    if (sb && currentUser){
-      if (followingCache.has(userId)){
-        sb.from('community_follows').upsert({ follower_id:currentUser.id, following_id:userId }, { onConflict:'follower_id,following_id' }).then(({error}) => { if(error) console.warn('Follow upsert:', error); });
-      } else {
-        sb.from('community_follows').delete().eq('follower_id', currentUser.id).eq('following_id', userId).then(({error}) => { if(error) console.warn('Unfollow:', error); });
-      }
+    } catch (err) {
+      console.warn(err);
+      showToast('Profile photo could not be saved. Check the profile-photos bucket and policies.');
     }
   }
 
-  async function loadFollowing(){
-    if (!sb || !currentUser) return;
-    const { data } = await sb.from('community_follows').select('following_id').eq('follower_id', currentUser.id);
-    followingCache = new Set((data||[]).map(r => r.following_id));
-  }
-
-  /* ── Posts ────────────────────────────────────────────────── */
   async function uploadPostImage(file){
     if (!file) return { imagePath:null, imageUrl:null };
-    const ext = (file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
     const imagePath = `${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
     const imageUrl = await uploadToBucket(COMMUNITY_BUCKET, imagePath, file);
     return { imagePath, imageUrl };
   }
 
   async function createPost(){
-    if (!communityEnabledCache){ showToast('Turn Community on first.'); return; }
-    if (!sb || !currentUser){ showToast('Database not ready.'); return; }
+    if (!(await isEnabled())) return;
     const input = document.getElementById('communityPostInput');
     const body = input.value.trim().slice(0,280);
     if (!body && !selectedPostImage) return;
     try {
       const image = await uploadPostImage(selectedPostImage);
-      const expiresAt = image.imageUrl ? new Date(Date.now()+24*60*60*1000).toISOString() : null;
+      const expiresAt = image.imageUrl ? new Date(Date.now() + 24*60*60*1000).toISOString() : null;
       const { error } = await sb.from(POSTS_TABLE).insert({
-        user_id:currentUser.id, post_type:'user_post', event_type:'user_post',
-        body, image_path:image.imagePath, image_url:image.imageUrl,
-        expires_at:expiresAt, metadata:{}
+        user_id: currentUser.id,
+        post_type: 'user_post',
+        event_type: 'user_post',
+        body,
+        image_path: image.imagePath,
+        image_url: image.imageUrl,
+        expires_at: expiresAt,
+        metadata: {}
       });
       if (error) throw error;
-      input.value='';
+      input.value = '';
       clearPostImage();
       await renderAll();
-    } catch(err){ console.warn(err); showToast('Post could not be saved. Check storage and table policies.'); }
+    } catch (err) {
+      console.warn(err);
+      showToast('Post could not be saved. Check community-images storage and table policies.');
+    }
   }
 
   async function fetchPosts(){
-    if (!communityEnabledCache || !sb) { postsCache=[]; return []; }
+    if (!(await isEnabled())) { postsCache = []; return []; }
     const nowIso = new Date().toISOString();
     const { data, error } = await sb
       .from(POSTS_TABLE)
       .select('id,user_id,post_type,event_type,body,image_url,image_path,created_at,expires_at,profiles:profiles(display_name,avatar_url)')
       .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-      .order('created_at',{ascending:false})
+      .order('created_at', { ascending:false })
       .limit(50);
-    if (error){ console.warn(error); showToast('Could not load posts.'); postsCache=[]; return []; }
-    postsCache = data||[];
+    if (error) {
+      console.warn(error);
+      showToast('Could not load Community posts.');
+      postsCache = [];
+      return [];
+    }
+    postsCache = data || [];
     await fetchReactions();
     return postsCache;
   }
 
   async function fetchReactions(){
-    reactionsCache={};
-    if (!postsCache.length || !sb) return;
-    const ids = postsCache.map(p=>p.id);
-    const { data } = await sb.from(LOVES_TABLE).select('post_id,user_id,reaction_type').in('post_id',ids);
-    (data||[]).forEach(r=>{
-      reactionsCache[r.post_id] = reactionsCache[r.post_id]||{};
-      reactionsCache[r.post_id][r.user_id] = r.reaction_type||'love';
+    reactionsCache = {};
+    if (!postsCache.length) return;
+    const ids = postsCache.map(p => p.id);
+    const { data, error } = await sb.from(LOVES_TABLE).select('post_id,user_id,reaction_type').in('post_id', ids);
+    if (error) { console.warn(error); return; }
+    (data || []).forEach(r => {
+      reactionsCache[r.post_id] = reactionsCache[r.post_id] || {};
+      reactionsCache[r.post_id][r.user_id] = r.reaction_type || 'love';
     });
   }
 
   function reactionCount(postId){ return reactionsCache[postId] ? Object.keys(reactionsCache[postId]).length : 0; }
-  function hasReacted(postId){ return Boolean(currentUser && reactionsCache[postId]?.[currentUser.id]); }
+  function hasReacted(postId){ return Boolean(reactionsCache[postId] && reactionsCache[postId][currentUser.id]); }
 
   async function toggleLove(postId){
-    if (!communityEnabledCache || !sb || !currentUser) return;
+    if (!(await isEnabled())) return;
     try {
-      if (hasReacted(postId)){
-        const { error } = await sb.from(LOVES_TABLE).delete().eq('post_id',postId).eq('user_id',currentUser.id);
+      if (hasReacted(postId)) {
+        const { error } = await sb.from(LOVES_TABLE).delete().eq('post_id', postId).eq('user_id', currentUser.id);
         if (error) throw error;
       } else {
-        const { error } = await sb.from(LOVES_TABLE).upsert({ post_id:postId, user_id:currentUser.id, reaction_type:'love' },{ onConflict:'post_id,user_id' });
+        const { error } = await sb.from(LOVES_TABLE).upsert({ post_id: postId, user_id: currentUser.id, reaction_type:'love' }, { onConflict:'post_id,user_id' });
         if (error) throw error;
       }
       await renderFeed();
-    } catch(err){ console.warn(err); showToast('Could not update love.'); }
+    } catch (err) {
+      console.warn(err);
+      showToast('Could not update love.');
+    }
   }
 
-  /* ── Render helpers ───────────────────────────────────────── */
+  async function updateStatus(){
+    const signedIn = usingSupabase && currentUser;
+    const enabled = signedIn ? await isEnabled() : false;
+    const toggle = document.getElementById('communityToggle');
+    const content = document.getElementById('communityContent');
+    if (toggle) {
+      toggle.classList.toggle('on', enabled);
+      toggle.setAttribute('aria-pressed', String(enabled));
+    }
+    document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
+    document.getElementById('composerStatus').textContent = enabled ? 'Ready to post' : 'Community is off';
+    if (content) content.classList.toggle('community-disabled', !enabled);
+    ['displayNameInput','profilePhotoInput','saveProfileBtn','communityPostInput','communityImageInput','communityPostBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = !enabled;
+    });
+  }
+
   function renderPost(post){
-    const prof = post.profiles||{};
-    const name = prof.display_name || (post.user_id===currentUser?.id ? (profile?.display_name||'You') : 'Hearty member');
-    const avatar = prof.avatar_url||'';
-    const text   = escapeHTML(post.body||'');
-    const imgUrl = post.image_url||'';
-    const expiresText = imgUrl ? ' • Photo expires after 24h' : '';
+    const prof = post.profiles || {};
+    const name = prof.display_name || (post.user_id === currentUser?.id ? (profile?.display_name || 'You') : 'Hearty member');
+    const avatar = prof.avatar_url || '';
+    const text = escapeHTML(post.body || '');
+    const imageUrl = post.image_url || '';
+    const expiresText = imageUrl ? ' • Photo expires after 24h' : '';
     return `
       <article class="post-card">
         <div class="post-head">
@@ -689,42 +515,29 @@
           </div>
         </div>
         ${text ? `<div class="post-text">${text}</div>` : ''}
-        ${imgUrl ? `<img class="post-image" src="${escapeHTML(imgUrl)}" alt="Community photo" loading="lazy" />` : ''}
+        ${imageUrl ? `<img class="post-image" src="${escapeHTML(imageUrl)}" alt="Community photo post" loading="lazy" />` : ''}
         <div class="post-actions">
-          <button class="reaction-btn ${hasReacted(post.id)?'active':''}" data-love-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
+          <button class="reaction-btn ${hasReacted(post.id) ? 'active' : ''}" data-love-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
         </div>
       </article>`;
   }
 
-  function renderEmpty(title, text){
-    return `<div class="empty-card"><div class="empty-icon">✦</div><h3>${escapeHTML(title)}</h3><p>${escapeHTML(text)}</p></div>`;
-  }
-
-  async function updateStatus(){
-    const enabled = await isEnabled();
-    const toggle  = document.getElementById('communityToggle');
-    const content = document.getElementById('communityContent');
-    if (toggle){
-      toggle.classList.toggle('on', enabled);
-      toggle.setAttribute('aria-pressed', String(enabled));
-    }
-    document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
-    document.getElementById('composerStatus').textContent     = enabled ? 'Ready to post' : 'Turn Community on to post';
-    if (content) content.classList.toggle('community-disabled', !enabled);
-    ['displayNameInput','profilePhotoInput','saveProfileBtn','communityPostInput','communityImageInput','communityPostBtn'].forEach(id=>{
-      const el = document.getElementById(id);
-      if (el) el.disabled = !enabled;
-    });
+  function renderEmpty(title, text, buttonText=''){
+    return `<div class="empty-card"><div class="empty-icon">✦</div><h3>${escapeHTML(title)}</h3><p>${escapeHTML(text)}</p>${buttonText ? `<button class="action-btn" id="emptyActionBtn" type="button">${escapeHTML(buttonText)}</button>` : ''}</div>`;
   }
 
   async function renderFeed(){
     const feed = document.getElementById('feedList');
-    if (!communityEnabledCache){
-      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on at the top to see posts and interact with others.');
+    if (!usingSupabase || !currentUser) {
+      feed.innerHTML = renderEmpty('Sign in required', 'Community uses your account so posts, photos, and loves are visible to others.');
+      return;
+    }
+    if (!(await isEnabled())) {
+      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on at the top to unlock the profile, composer, feed, and photo posting.');
       return;
     }
     const posts = await fetchPosts();
-    if (!posts.length){
+    if (!posts.length) {
       feed.innerHTML = renderEmpty('No posts yet', 'Write a quick update or add a photo above.');
       return;
     }
@@ -732,43 +545,36 @@
     document.querySelectorAll('[data-love-post]').forEach(btn => btn.onclick = () => toggleLove(btn.dataset.lovePost));
   }
 
-  async function renderAll(){
-    await updateStatus();
-    await loadProfile();
-    await renderFeed();
-    await loadSuggestedUsers();
-  }
+  async function renderAll(){ await updateStatus(); await loadProfile(); await renderFeed(); }
 
-  /* ── Image helpers ────────────────────────────────────────── */
   function clearPostImage(){
     selectedPostImage = null;
     const input = document.getElementById('communityImageInput');
-    const wrap  = document.getElementById('imagePreviewWrap');
-    const img   = document.getElementById('imagePreview');
-    if (input) input.value='';
-    if (img)   img.removeAttribute('src');
-    if (wrap)  wrap.classList.remove('active');
+    const wrap = document.getElementById('imagePreviewWrap');
+    const img = document.getElementById('imagePreview');
+    if (input) input.value = '';
+    if (img) img.removeAttribute('src');
+    if (wrap) wrap.classList.remove('active');
   }
 
   function previewPostImage(file){
-    selectedPostImage = file||null;
+    selectedPostImage = file || null;
     const wrap = document.getElementById('imagePreviewWrap');
-    const img  = document.getElementById('imagePreview');
-    if (!file||!wrap||!img){ clearPostImage(); return; }
+    const img = document.getElementById('imagePreview');
+    if (!file || !wrap || !img) { clearPostImage(); return; }
     const reader = new FileReader();
-    reader.onload = () => { img.src=reader.result; wrap.classList.add('active'); };
+    reader.onload = () => { img.src = reader.result; wrap.classList.add('active'); };
     reader.readAsDataURL(file);
   }
 
   function previewProfileImage(file){
-    selectedProfileImage = file||null;
+    selectedProfileImage = file || null;
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => renderAvatar(document.getElementById('profileAvatarLarge'), reader.result, document.getElementById('displayNameInput').value);
     reader.readAsDataURL(file);
   }
 
-  /* ── Nav ──────────────────────────────────────────────────── */
   function renderNav(){
     const pages = [
       ['home.html','Home','<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'],
@@ -781,28 +587,25 @@
     ];
     const nav = document.getElementById('bottomNav');
     nav.innerHTML = pages.map(item => {
-      const active = item[0]==='social.html';
-      return `<a class="nav-item ${active?'active':''}" ${active?'aria-current="page"':''} href="./${item[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${item[2]}</svg><span>${item[1]}</span></a>`;
+      const active = item[0] === 'social.html';
+      return `<a class="nav-item ${active ? 'active' : ''}" ${active ? 'aria-current="page"' : ''} href="./${item[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${item[2]}</svg><span>${item[1]}</span></a>`;
     }).join('');
   }
 
-  /* ── Exposed globals ──────────────────────────────────────── */
   window.heartyCommunityIsEnabled = isEnabled;
-  window.heartyLogCommunityEvent  = async function(){ return false; };
+  window.heartyLogCommunityEvent = async function(){ return false; };
 
-  /* ── Boot ─────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', async function(){
     renderNav();
     await initSupabase();
-    await loadFollowing();
+    await loadProfile();
     await renderAll();
-
     document.getElementById('communityToggle').onclick = async () => setEnabled(!(await isEnabled()));
     document.getElementById('communityPostBtn').onclick = createPost;
-    document.getElementById('saveProfileBtn').onclick   = saveProfile;
-    document.getElementById('communityPostInput').addEventListener('keydown', e => { if ((e.ctrlKey||e.metaKey) && e.key==='Enter') createPost(); });
-    document.getElementById('communityImageInput').addEventListener('change', e => previewPostImage(e.target.files?.[0]));
-    document.getElementById('profilePhotoInput').addEventListener('change',   e => previewProfileImage(e.target.files?.[0]));
+    document.getElementById('saveProfileBtn').onclick = saveProfile;
+    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createPost(); });
+    document.getElementById('communityImageInput').addEventListener('change', e => previewPostImage(e.target.files && e.target.files[0]));
+    document.getElementById('profilePhotoInput').addEventListener('change', e => previewProfileImage(e.target.files && e.target.files[0]));
     document.getElementById('clearImageBtn').onclick = clearPostImage;
   });
 })();
