@@ -82,15 +82,6 @@ body::after{z-index:-1;opacity:.18;background:none}
 .slider::before{content:"";position:absolute;width:24px;height:24px;left:4px;top:4px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(15,23,42,.18);transition:.2s ease}
 .switch input:checked + .slider{background:linear-gradient(180deg,#2f6df6,#2356c4)}
 .switch input:checked + .slider::before{transform:translateX(20px)}
-.theme-grid{display:grid;grid-template-columns:1fr;gap:10px}
-.theme-option{display:flex;align-items:center;justify-content:space-between;gap:14px;border:1px solid rgba(143,163,184,.18);background:rgba(255,255,255,.72);border-radius:18px;padding:14px 16px;cursor:pointer;text-align:left;transition:border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease}
-.theme-option:hover{transform:translateY(-1px)}
-.theme-option.active{border-color:color-mix(in srgb, var(--theme-accent) 28%, rgba(143,163,184,.18));box-shadow:0 0 0 1px color-mix(in srgb, var(--theme-accent) 12%, transparent) inset;background:rgba(255,255,255,.9)}
-.theme-copy{display:grid;gap:3px;min-width:0}
-.theme-name{display:block;font-weight:800;font-size:.94rem;color:#20374f}
-.theme-desc{display:block;color:#6c7c90;font-size:.82rem;line-height:1.35}
-.theme-check{width:22px;height:22px;border-radius:999px;border:1.5px solid rgba(143,163,184,.34);display:grid;place-items:center;color:transparent;flex:0 0 auto;transition:border-color .18s ease, background .18s ease, color .18s ease}
-.theme-option.active .theme-check{border-color:var(--theme-accent);background:color-mix(in srgb, var(--theme-accent) 12%, white);color:var(--theme-accent)}
 .link-list{display:grid;gap:10px}
 .link-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--radius-control);text-decoration:none;color:var(--theme-accent);font-weight:800;background:var(--surface-chip);border:1px solid rgba(143,163,184,.18)}
 .bottom-nav{margin-top:18px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:10px;border-radius:26px;background:rgba(255,255,255,.74);border:1px solid var(--line);box-shadow:var(--shadow-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;bottom:12px;z-index:40}
@@ -200,16 +191,6 @@ document.addEventListener('DOMContentLoaded',function(){buildNav();wireTopbar();
     </section>
 
     <section class="settings-card">
-      <div class="settings-head"><div><h2 class="settings-title">Appearance</h2><p class="settings-copy">Pick the theme used across the app.</p></div></div>
-      <div id="theme-grid" class="theme-grid">
-        <button class="theme-option" type="button" data-theme="clean_blue"><span class="theme-copy"><span class="theme-name">Clean Blue</span><span class="theme-desc">Bright and clinical.</span></span><span class="theme-check">✓</span></button>
-        <button class="theme-option" type="button" data-theme="sunlit"><span class="theme-copy"><span class="theme-name">Sunlit</span><span class="theme-desc">Warm and soft.</span></span><span class="theme-check">✓</span></button>
-        <button class="theme-option" type="button" data-theme="midnight"><span class="theme-copy"><span class="theme-name">Midnight</span><span class="theme-desc">Dark and minimal.</span></span><span class="theme-check">✓</span></button>
-        <button class="theme-option" type="button" data-theme="rose_aurora"><span class="theme-copy"><span class="theme-name">Rose Aurora</span><span class="theme-desc">Soft evening mood.</span></span><span class="theme-check">✓</span></button>
-      </div>
-    </section>
-
-    <section class="settings-card">
       <div class="settings-head"><div><h2 class="settings-title">Units</h2><p class="settings-copy">Choose how values are displayed in the app.</p></div></div>
       <div class="field">
         <label class="label" for="units-system">Unit System</label>
@@ -280,14 +261,20 @@ const STORAGE = {
 };
 const defaults = {
   heartyAccountEmail:'Not connected', heartyLicenseStatus:'active', heartyLicenseExpiry:'31 Dec 2026',
-  heartyStartingWeightKg:'98.0', heartyCurrentWeightKg:'94.4', heartyTargetWeightKg:'75.0', heartyHeightCm:'165',
+  heartyStartingWeightKg:'', heartyCurrentWeightKg:'', heartyTargetWeightKg:'', heartyHeightCm:'',
   heartyInjectionName:'', heartyInjectionDose:'', heartyInjectionDay:'Monday', heartyInjectionReminderEnabled:'true',
   heartyWaterAuto:'true', heartyWaterTargetLitres:'3.0', heartyTheme:'clean_blue', heartyUnitsSystem:'metric', heartyAppVersion:'v1.0.0'
 };
 Object.keys(defaults).forEach(k => localStorage.getItem(k) === null && localStorage.setItem(k, defaults[k]));
+(function clearLegacyWeightPlaceholders(){
+  if(localStorage.getItem('heartySettingsPlaceholdersClearedV1')==='true') return;
+  const legacy = { heartyStartingWeightKg:'98.0', heartyCurrentWeightKg:'94.4', heartyTargetWeightKg:'75.0', heartyHeightCm:'165' };
+  Object.entries(legacy).forEach(([key,val]) => { if(localStorage.getItem(key) === val) localStorage.setItem(key, ''); });
+  localStorage.setItem('heartySettingsPlaceholdersClearedV1','true');
+})();
 const $ = id => document.getElementById(id);
 const showToast = (msg) => { const t=$('settings-toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(window.__toastTimer); window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1800); };
-const save = (key,val,msg='Saved') => { localStorage.setItem(key,String(val)); if(key===STORAGE.theme){ localStorage.setItem('hearty-theme',String(val)); if(window.heartyApplyTheme) window.heartyApplyTheme(String(val)); } render(); if(msg) showToast(msg); };
+const save = (key,val,msg='Saved') => { localStorage.setItem(key,String(val)); render(); if(msg) showToast(msg); };
 const clamp = (v,min,max)=>Math.min(max,Math.max(min,Number(v)||0));
 const weightKg = ()=> {
   const raw = Number(localStorage.getItem(STORAGE.currentWeight) || '');
@@ -303,8 +290,7 @@ const computeWaterLitres = ()=> {
   const manual = Number(localStorage.getItem(STORAGE.waterTargetLitres) || defaults.heartyWaterTargetLitres);
   return Number.isFinite(manual) && manual > 0 ? +manual.toFixed(1) : +Number(defaults.heartyWaterTargetLitres).toFixed(1);
 };
-const themeLabel = t => ({clean_blue:'Clean Blue',sunlit:'Sunlit',midnight:'Midnight',rose_aurora:'Rose Aurora'}[t] || 'Clean Blue');
-function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme); localStorage.setItem('heartyTheme', theme); localStorage.setItem('hearty-theme', theme); document.querySelectorAll('.theme-option').forEach(btn=>{ const on=btn.dataset.theme===theme; btn.classList.toggle('active', on); btn.setAttribute('aria-pressed', on?'true':'false'); }); }
+function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme || 'clean_blue'); localStorage.setItem('heartyTheme', theme || 'clean_blue'); localStorage.setItem('hearty-theme', theme || 'clean_blue'); }
 function updateLicenseUI(){ const status=localStorage.getItem(STORAGE.licenseStatus)||'active'; const pill=$('license-status-pill'); pill.textContent=status.charAt(0).toUpperCase()+status.slice(1); pill.className='status-pill'+(status==='grace'?' grace':status==='expired'?' expired':''); $('license-expiry').textContent=localStorage.getItem(STORAGE.licenseExpiry)||'—'; }
 function render(){
   const theme=localStorage.getItem(STORAGE.theme)||defaults.heartyTheme; applyTheme(theme); updateLicenseUI();
@@ -335,9 +321,95 @@ function render(){
     waterNote.textContent = 'This is the daily water target the app will use.';
   }
   $('units-system').value = localStorage.getItem(STORAGE.unitsSystem) || defaults.heartyUnitsSystem;
+  setTimeout(syncBodyMetricsToAppState, 0);
 }
-['starting-weight','current-weight','target-weight'].forEach(id => $(id).addEventListener('change', e => { const v=clamp(e.target.value,1,600).toFixed(1); e.target.value=v; save(STORAGE[id.replace('-', '')] || (id==='starting-weight'?STORAGE.startingWeight:id==='current-weight'?STORAGE.currentWeight:STORAGE.targetWeight), v); }));
-$('height-cm').addEventListener('change', e => { const v=Math.round(clamp(e.target.value,1,260)); e.target.value=v; save(STORAGE.heightCm, v); });
+function normalizeMetric(value, decimals){
+  const raw = String(value ?? '').trim();
+  if(raw === '') return '';
+  const n = Number(raw);
+  if(!Number.isFinite(n) || n <= 0) return '';
+  return decimals === 0 ? String(Math.round(n)) : n.toFixed(decimals);
+}
+function readProfileObject(){
+  try {
+    const profile = JSON.parse(localStorage.getItem('heartyProfileV1') || '{}');
+    return profile && typeof profile === 'object' ? profile : {};
+  } catch(err) {
+    return {};
+  }
+}
+function writeJSON(key, value){
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch(err) {}
+}
+function syncBodyMetricsToAppState(){
+  const starting = normalizeMetric($('starting-weight')?.value, 1);
+  const current = normalizeMetric($('current-weight')?.value, 1);
+  const target = normalizeMetric($('target-weight')?.value, 1);
+  const height = normalizeMetric($('height-cm')?.value, 0);
+  const updatedAt = new Date().toISOString();
+
+  const metrics = {
+    startingWeightKg: starting,
+    currentWeightKg: current,
+    targetWeightKg: target,
+    heightCm: height,
+    updatedAt
+  };
+
+  /* Canonical Settings/Profile keys. */
+  localStorage.setItem('heartyStartingWeightKg', starting);
+  localStorage.setItem('heartyCurrentWeightKg', current);
+  localStorage.setItem('heartyTargetWeightKg', target);
+  localStorage.setItem('heartyHeightCm', height);
+
+  /* Home / Progress compatibility aliases. */
+  localStorage.setItem('heartyWeightStartingKg', starting);
+  localStorage.setItem('heartyWeightCurrentKg', current);
+  localStorage.setItem('heartyWeightTargetKg', target);
+  localStorage.setItem('heartyProgressStartingWeightKg', starting);
+  localStorage.setItem('heartyProgressCurrentWeightKg', current);
+  localStorage.setItem('heartyProgressTargetWeightKg', target);
+
+  const profile = readProfileObject();
+  Object.assign(profile, metrics);
+  writeJSON('heartyProfileV1', profile);
+  writeJSON('heartyBodyMetricsV1', metrics);
+  writeJSON('heartySettingsBodyMetricsV1', metrics);
+
+  window.dispatchEvent(new CustomEvent('hearty:bodyMetricsUpdated', { detail: metrics }));
+  window.dispatchEvent(new CustomEvent('hearty:settings:bodyMetricsUpdated', { detail: metrics }));
+}
+
+['starting-weight','current-weight','target-weight'].forEach(id => {
+  $(id).addEventListener('change', e => {
+    const raw = String(e.target.value || '').trim();
+    const key = id === 'starting-weight' ? STORAGE.startingWeight : id === 'current-weight' ? STORAGE.currentWeight : STORAGE.targetWeight;
+    if(raw === ''){
+      e.target.value = '';
+      save(key, '', 'Saved');
+      syncBodyMetricsToAppState();
+      return;
+    }
+    const v = clamp(raw, 1, 600).toFixed(1);
+    e.target.value = v;
+    save(key, v, 'Saved');
+    syncBodyMetricsToAppState();
+  });
+});
+
+$('height-cm').addEventListener('change', e => {
+  const raw = String(e.target.value || '').trim();
+  if(raw === ''){
+    e.target.value = '';
+    save(STORAGE.heightCm, '', 'Saved');
+    syncBodyMetricsToAppState();
+    return;
+  }
+  const v = Math.round(clamp(raw, 1, 260));
+  e.target.value = v;
+  save(STORAGE.heightCm, v, 'Saved');
+  syncBodyMetricsToAppState();
+});
 $('injection-name').addEventListener('change', e => save(STORAGE.injectionName, e.target.value));
 $('injection-dose').addEventListener('change', e => save(STORAGE.injectionDose, e.target.value));
 $('injection-day').addEventListener('change', e => save(STORAGE.injectionDay, e.target.value));
@@ -345,15 +417,12 @@ $('injection-reminder-enabled').addEventListener('change', e => save(STORAGE.inj
 [['water-auto',STORAGE.waterAuto]].forEach(([id,key])=>$(id).addEventListener('change', e => save(key,e.target.checked)));
 $('water-target').addEventListener('change', e => { const v=clamp(e.target.value,0.5,10).toFixed(1); e.target.value=v; save(STORAGE.waterTargetLitres,v); });
 $('units-system').addEventListener('change', e => save(STORAGE.unitsSystem,e.target.value));
-document.querySelectorAll('.theme-option').forEach(btn => btn.addEventListener('click', ()=> save(STORAGE.theme, btn.dataset.theme, 'Theme updated')));
 $('export-data').addEventListener('click', ()=>{ const data={}; Object.values(STORAGE).forEach(k=>data[k]=localStorage.getItem(k)); const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='hearty-settings-export.json'; a.click(); URL.revokeObjectURL(a.href); showToast('Exported data'); });
 $('reset-data').addEventListener('click', ()=>{ if(confirm('Reset all Settings data on this device?')){ Object.keys(defaults).forEach(k=>localStorage.setItem(k, defaults[k])); render(); showToast('Settings reset'); } });
 ['privacy-link','terms-link','refund-link'].forEach(id => $(id).addEventListener('click', e => { e.preventDefault(); showToast('Public legal page link to be added'); }));
 render();
 </script>
-<script id="hearty-settings-theme-key-sync">
-(function(){function sync(){var t=document.documentElement.getAttribute('data-theme')||'clean_blue';try{localStorage.setItem('heartyTheme',t);localStorage.setItem('hearty-theme',t)}catch(e){}}document.addEventListener('click',function(e){var n=e.target&&e.target.closest?e.target.closest('[data-theme],.theme-option'):null;if(!n)return;var t=n.getAttribute('data-theme')||n.getAttribute('data-value')||n.value;if(t&&window.heartyApplyTheme)window.heartyApplyTheme(t);setTimeout(sync,0)},true);document.addEventListener('change',function(e){if(e.target&&(e.target.name==='theme'||e.target.id==='themeSelect'||e.target.matches('[data-theme-input],.theme-select'))){if(window.heartyApplyTheme)window.heartyApplyTheme(e.target.value);setTimeout(sync,0)}},true)})();
-</script><style id="hearty-phase1-settings-privacy-note-style">.hearty-privacy-note{margin:14px 0;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:650;line-height:1.45}</style>
+<style id="hearty-phase1-settings-privacy-note-style">.hearty-privacy-note{margin:14px 0;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--muted);font-weight:650;line-height:1.45}</style>
 <script id="hearty-phase1-settings-privacy-note">
 (function(){
   function run(){
