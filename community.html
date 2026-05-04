@@ -9,348 +9,123 @@
 <script src="/js/hearty-theme.js"></script>
 <style>
   :root {
-    --bg-1: #eef4fb;
-    --bg-2: #f8fbff;
-    --card: rgba(255,255,255,0.92);
-    --ink: #102033;
-    --muted: #6d7b8c;
-    --line: rgba(143,163,184,.24);
-    --shadow: 0 18px 44px rgba(14,31,53,.10);
-    --shadow-soft: 0 8px 22px rgba(14,31,53,.06);
-    --blue: #2f6df6;
-    --blue-soft: rgba(47,109,246,.10);
-    --success: #15803d;
-    --success-soft: rgba(21,128,61,.12);
-    --warning: #d97706;
-    --warning-soft: rgba(217,119,6,.12);
-    --radius-xl: 28px;
-    --max: 1280px;
+    --bg-1:#eef4fb;
+    --bg-2:#f8fbff;
+    --card:rgba(255,255,255,.92);
+    --card-solid:#fff;
+    --ink:#102033;
+    --muted:#6d7b8c;
+    --line:rgba(143,163,184,.24);
+    --shadow:0 18px 44px rgba(14,31,53,.10);
+    --shadow-soft:0 8px 22px rgba(14,31,53,.06);
+    --blue:#2f6df6;
+    --blue-soft:rgba(47,109,246,.10);
+    --success:#15803d;
+    --success-soft:rgba(21,128,61,.12);
+    --warning:#d97706;
+    --warning-soft:rgba(217,119,6,.12);
+    --danger:#dc2626;
+    --radius-xl:28px;
+    --radius-lg:22px;
+    --max:1280px;
   }
-  * { box-sizing: border-box; }
-  html, body { margin:0; padding:0; }
-  body {
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
     min-height:100vh;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: var(--ink);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);
     background:
-      radial-gradient(circle at top right, rgba(59,130,246,.10), transparent 24%),
-      linear-gradient(180deg, #f9fbff 0%, var(--bg-1) 55%, #eef3fa 100%);
+      radial-gradient(circle at top right,rgba(59,130,246,.10),transparent 24%),
+      linear-gradient(180deg,#f9fbff 0%,var(--bg-1) 55%,#eef3fa 100%);
     overflow-x:hidden;
   }
-  button, input { font: inherit; }
-  a { color: inherit; text-decoration:none; }
-  .shell {
-    width:min(100%, var(--max));
+  button,input,textarea{font:inherit}
+  button{border:none;cursor:pointer;transition:.18s ease}
+  button:active{transform:scale(.985)}
+  a{color:inherit;text-decoration:none}
+  .shell{
+    width:min(100%,var(--max));
     max-width:1280px;
     min-height:100vh;
     margin:0 auto;
     padding:20px 20px 32px;
     position:relative;
   }
-  .topbar {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:16px;
-    margin-bottom:18px;
-    min-height:88px;
-    padding:0 18px;
-    border:1px solid var(--line);
-    border-radius:22px;
-    background:linear-gradient(180deg, rgba(255,255,255,.78), rgba(255,255,255,.62));
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    min-height:88px;margin-bottom:18px;padding:0 18px;
+    border:1px solid var(--line);border-radius:22px;
+    background:linear-gradient(180deg,rgba(255,255,255,.78),rgba(255,255,255,.62));
     box-shadow:var(--shadow-soft);
-    backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   }
-  .brand { display:flex; align-items:center; gap:10px; min-width:0; }
-  .brand-logo { display:block; height:48px; max-width:min(72vw, 300px); object-fit:contain; }
-  .icon-btn {
-    width:44px;
-    height:44px;
-    border-radius:16px;
-    display:grid;
-    place-items:center;
-    background:rgba(255,255,255,.9);
-    color:#5d6c7d;
-    box-shadow:var(--shadow-soft);
-    border:1px solid var(--line);
-    cursor:pointer;
+  .brand{display:flex;align-items:center;gap:10px;min-width:0}
+  .brand-logo{display:block;height:48px;width:auto;max-width:min(72vw,300px);object-fit:contain;object-position:left center}
+  .icon-btn{
+    width:44px;height:44px;border-radius:16px;display:grid;place-items:center;
+    background:rgba(255,255,255,.9);color:#5d6c7d;box-shadow:var(--shadow-soft);border:1px solid var(--line);flex:0 0 auto;
   }
-  .icon-btn svg, .nav-item svg {
-    width:20px;
-    height:20px;
-    stroke:currentColor;
-    stroke-width:1.8;
-    fill:none;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    vector-effect:non-scaling-stroke;
+  .icon-btn svg,.nav-item svg{width:20px;height:20px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+  main{padding:0 16px 8px}
+  .hero-card,.card,.composer-card,.post-card,.empty-card{
+    background:var(--card);border:1px solid rgba(255,255,255,.72);border-radius:var(--radius-xl);
+    box-shadow:var(--shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   }
-  main { padding:0 16px 8px; }
-  .hero-card, .card, .post-card, .empty-card {
-    background:var(--card);
-    border:1px solid rgba(255,255,255,.72);
-    border-radius:var(--radius-xl);
-    box-shadow:var(--shadow);
-    backdrop-filter:blur(16px);
-    -webkit-backdrop-filter:blur(16px);
+  .hero-card{padding:18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:8px;color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+  .hero-copy h1{margin:0;font-size:clamp(2rem,3.6vw,2.7rem);line-height:1.08;letter-spacing:-.04em;font-weight:560}
+  .hero-copy p{margin:8px 0 0;max-width:760px;color:var(--muted);font-size:14px;line-height:1.55}
+  .hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+  .community-switch{min-width:172px;min-height:54px;border-radius:999px;padding:7px 9px 7px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:rgba(24,32,51,.08);border:1px solid var(--line);color:var(--muted);font-weight:850;box-shadow:var(--shadow-soft)}
+  .community-switch .switch-copy{display:grid;text-align:left;line-height:1.05}
+  .community-switch .switch-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.14em;opacity:.72}
+  .community-switch .switch-state{font-size:15px;color:var(--ink);margin-top:3px}
+  .switch-track{width:54px;height:32px;border-radius:999px;background:rgba(24,32,51,.14);position:relative;box-shadow:inset 0 0 0 1px rgba(24,32,51,.05);flex:0 0 auto}
+  .switch-track::after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;top:4px;left:4px;background:white;box-shadow:var(--shadow-soft);transition:.2s ease}
+  .community-switch.on{background:rgba(47,109,246,.13);border-color:rgba(47,109,246,.22);color:var(--blue)}
+  .community-switch.on .switch-track{background:rgba(47,109,246,.48)}
+  .community-switch.on .switch-track::after{left:26px}
+  .community-switch.on .switch-state{color:var(--blue)}
+  .action-btn,.ghost-btn,.reaction-btn,.file-pill{
+    min-height:46px;padding:12px 16px;border-radius:16px;font-weight:750;
   }
-  .hero-card {
-    padding:18px;
-    display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
-    gap:16px;
-    align-items:center;
-  }
-  .eyebrow {
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:8px;
-    color:var(--blue);
-    font-size:12px;
-    font-weight:750;
-    letter-spacing:.14em;
-    text-transform:uppercase;
-  }
-  .hero-copy h1 {
-    margin:0;
-    font-size:clamp(2rem, 3.6vw, 2.7rem);
-    line-height:1.08;
-    letter-spacing:-.04em;
-    font-weight:560;
-  }
-  .hero-copy p {
-    margin:8px 0 0;
-    max-width:760px;
-    color:var(--muted);
-    font-size:14px;
-    line-height:1.55;
-  }
-  .hero-actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center; }
-  .action-btn, .ghost-btn, .reaction-btn, .segmented-btn {
-    border:0;
-    cursor:pointer;
-    transition:.18s ease;
-    font:inherit;
-  }
-  .action-btn {
-    min-height:46px;
-    padding:12px 16px;
-    border-radius:16px;
-    background:linear-gradient(180deg, #3f7cff, var(--blue));
-    color:white;
-    box-shadow:0 10px 22px rgba(47,109,246,.18);
-    font-weight:700;
-  }
-  .action-btn.off { background:var(--blue-soft); color:var(--blue); box-shadow:none; }
-  .ghost-btn {
-    min-height:46px;
-    padding:12px 16px;
-    border-radius:16px;
-    background:rgba(24,32,51,.06);
-    color:var(--ink);
-    font-weight:700;
-  }
-  .toggle-wrap { display:flex; align-items:center; gap:10px; }
-  .toggle-label { font-size:13px; color:var(--muted); font-weight:650; }
-  .toggle {
-    width:62px;
-    height:36px;
-    border:none;
-    border-radius:999px;
-    background:rgba(24,32,51,.14);
-    position:relative;
-    cursor:pointer;
-    box-shadow:inset 0 0 0 1px rgba(24,32,51,.05);
-  }
-  .toggle::after {
-    content:"";
-    position:absolute;
-    width:28px;
-    height:28px;
-    border-radius:50%;
-    top:4px;
-    left:4px;
-    background:white;
-    box-shadow:var(--shadow-soft);
-    transition:.2s ease;
-  }
-  .toggle.on { background:rgba(47,109,246,.38); }
-  .toggle.on::after { left:30px; }
-  .status-card {
-    margin-top:14px;
-    padding:14px 16px;
-    display:flex;
-    gap:12px;
-    align-items:flex-start;
-    border-radius:22px;
-    background:rgba(255,255,255,.72);
-    border:1px solid var(--line);
-    box-shadow:var(--shadow-soft);
-  }
-  .status-dot {
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    margin-top:5px;
-    background:var(--warning);
-    box-shadow:0 0 0 6px var(--warning-soft);
-    flex:0 0 auto;
-  }
-  .status-dot.on { background:var(--success); box-shadow:0 0 0 6px var(--success-soft); }
-  .status-card strong { display:block; font-size:15px; }
-  .status-card span { display:block; margin-top:3px; color:var(--muted); font-size:13px; line-height:1.45; }
-  .segmented {
-    display:flex;
-    gap:8px;
-    padding:6px;
-    margin:14px 0 16px;
-    width:fit-content;
-    max-width:100%;
-    border-radius:18px;
-    background:rgba(255,255,255,.72);
-    border:1px solid var(--line);
-    box-shadow:var(--shadow-soft);
-  }
-  .segmented-btn {
-    min-height:44px;
-    padding:12px 16px;
-    border-radius:14px;
-    background:transparent;
-    color:#5f6d80;
-    font-weight:700;
-    white-space:nowrap;
-  }
-  .segmented-btn.active {
-    background:linear-gradient(180deg, rgba(233,242,255,.98), rgba(255,255,255,.96));
-    color:#1f4ec0;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 10px 18px rgba(47,109,246,.10);
-  }
-  .screen { display:none; gap:16px; padding-bottom:18px; }
-  .screen.active { display:grid; }
-  .feed-list, .stack { display:grid; gap:16px; }
-  .post-card { padding:18px; background:rgba(255,255,255,.94); border:1px solid rgba(24,32,51,.06); box-shadow:var(--shadow-soft); }
-  .post-head { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:center; }
-  .event-icon { width:46px; height:46px; border-radius:18px; display:grid; place-items:center; background:var(--blue-soft); color:var(--blue); font-size:22px; }
-  .post-user strong { display:block; font-size:16px; line-height:1.2; letter-spacing:-.01em; }
-  .meta { margin-top:4px; color:var(--muted); font-size:13px; line-height:1.35; }
-  .post-text { margin:15px 0 0; font-size:15px; line-height:1.6; color:#243045; }
-  .post-actions { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
-
-  .composer-card {
-    padding:18px;
-    display:grid;
-    gap:12px;
-    background:rgba(255,255,255,.94);
-    border:1px solid rgba(24,32,51,.06);
-    box-shadow:var(--shadow-soft);
-    border-radius:var(--radius-xl);
-  }
-  .composer-head {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-  }
-  .composer-head strong { font-size:16px; letter-spacing:-.01em; }
-  .composer-head span { color:var(--muted); font-size:13px; }
-  .composer-card textarea {
-    width:100%;
-    min-height:96px;
-    resize:vertical;
-    border:1px solid rgba(24,32,51,.08);
-    background:white;
-    border-radius:18px;
-    padding:14px;
-    color:var(--ink);
-    outline:none;
-  }
-  .composer-card textarea:focus {
-    border-color:rgba(47,109,246,.36);
-    box-shadow:0 0 0 4px rgba(47,109,246,.08);
-  }
-  .composer-actions {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    flex-wrap:wrap;
-  }
-  .composer-hint { color:var(--muted); font-size:12px; line-height:1.4; }
-  .post-card.user-post { border-color:rgba(47,109,246,.12); }
-  .reaction-btn { min-height:42px; padding:11px 15px; border-radius:999px; background:rgba(24,32,51,.055); color:#324055; display:inline-flex; gap:8px; align-items:center; font-weight:700; }
-  .reaction-btn.active { background:var(--blue-soft); color:var(--blue); box-shadow:inset 0 0 0 1px rgba(29,78,216,.08); }
-  .empty-card { padding:26px 16px; text-align:center; color:var(--muted); }
-  .empty-icon { width:72px; height:72px; border-radius:24px; margin:0 auto 14px; display:grid; place-items:center; background:rgba(24,32,51,.05); font-size:28px; }
-  .empty-card h3 { margin:0 0 8px; color:var(--ink); font-size:18px; }
-  .empty-card p { margin:0 auto 14px; max-width:340px; line-height:1.55; }
-  .privacy-list { display:grid; gap:10px; }
-  .privacy-row { padding:14px; border-radius:18px; background:rgba(24,32,51,.04); border:1px solid rgba(24,32,51,.05); }
-  .privacy-row strong { display:block; font-size:15px; }
-  .privacy-row span { display:block; margin-top:4px; color:var(--muted); font-size:13px; line-height:1.45; }
-  .bottom-nav {
-    margin-top:18px;
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    gap:10px;
-    padding:10px;
-    border-radius:26px;
-    background:rgba(255,255,255,.74);
-    border:1px solid var(--line);
-    box-shadow:var(--shadow-soft);
-    backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
-    position:sticky;
-    bottom:12px;
-    z-index:40;
-  }
-  .nav-item {
-    display:grid;
-    gap:6px;
-    justify-items:center;
-    align-items:center;
-    padding:12px 8px 10px;
-    border-radius:18px;
-    color:#627286;
-    text-align:center;
-    font-size:.78rem;
-    font-weight:650;
-  }
-  .nav-item.active, .nav-item[aria-current="page"] {
-    color:#1f4ec0;
-    background:linear-gradient(180deg, rgba(233,242,255,.98), rgba(255,255,255,.96));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 10px 18px rgba(47,109,246,.10);
-  }
-  @media (min-width:760px) {
-    .shell { border-left:1px solid rgba(24,32,51,.06); border-right:1px solid rgba(24,32,51,.06); background:rgba(255,255,255,.24); }
-  }
-  @media (max-width:760px) {
-    .shell { padding:14px 14px 24px; }
-    .topbar { min-height:78px; padding:0 14px; border-radius:20px; }
-    .brand-logo { height:40px; }
-    main { padding:0; }
-    .hero-card { grid-template-columns:1fr; align-items:stretch; }
-    .hero-actions { justify-content:flex-start; }
-    .segmented { width:100%; overflow:auto; }
-    .post-card { padding:16px; }
-    .bottom-nav { gap:4px; padding:6px; border-radius:18px; }
-    .bottom-nav .nav-item { min-height:50px; padding:7px 2px 6px; font-size:.62rem; }
-    .bottom-nav .nav-item svg { width:18px; height:18px; }
-  }
-
-  .image-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .file-pill { display:inline-flex; align-items:center; gap:8px; min-height:42px; padding:10px 13px; border-radius:999px; background:rgba(47,109,246,.10); color:var(--blue); font-weight:750; cursor:pointer; }
-  .file-pill input { display:none; }
-  .image-preview { display:none; position:relative; width:100%; overflow:hidden; border-radius:20px; border:1px solid rgba(24,32,51,.08); background:white; }
-  .image-preview.active { display:block; }
-  .image-preview img { display:block; width:100%; max-height:320px; object-fit:cover; }
-  .image-preview button { position:absolute; right:10px; top:10px; border:0; min-height:36px; padding:8px 12px; border-radius:999px; background:rgba(15,23,42,.72); color:white; font-weight:800; cursor:pointer; }
-  .post-image { width:100%; max-height:360px; object-fit:cover; display:block; margin-top:14px; border-radius:20px; border:1px solid rgba(24,32,51,.08); }
-  .network-pill { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:8px 11px; border-radius:999px; background:rgba(24,32,51,.05); color:var(--muted); font-size:12px; font-weight:750; }
-  .network-pill.live { background:rgba(21,128,61,.12); color:var(--success); }
-  .network-pill.local { background:rgba(217,119,6,.12); color:var(--warning); }
-
+  .action-btn{background:linear-gradient(180deg,#3f7cff,var(--blue));color:white;box-shadow:0 10px 22px rgba(47,109,246,.18)}
+  .action-btn.off{background:var(--blue-soft);color:var(--blue);box-shadow:none}
+  .ghost-btn{background:rgba(24,32,51,.06);color:var(--ink)}
+  .ghost-btn.danger{color:var(--danger);background:rgba(220,38,38,.08)}
+  .status-card{display:none}
+  .community-disabled{opacity:.48;filter:saturate(.82);pointer-events:none;user-select:none}
+  .community-disabled input,.community-disabled textarea,.community-disabled button{cursor:not-allowed}
+  .layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
+  .profile-card{padding:18px;position:sticky;top:12px}
+  .profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+  .avatar-lg,.avatar{border-radius:24px;background:linear-gradient(180deg,#e8eefb,#fff);border:1px solid rgba(24,32,51,.06);display:grid;place-items:center;overflow:hidden;color:var(--blue);font-weight:800;flex:0 0 auto}
+  .avatar-lg{width:82px;height:82px;font-size:24px}.avatar{width:46px;height:46px;border-radius:18px;font-size:14px}
+  .avatar-lg img,.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .profile-info strong{display:block;font-size:18px;letter-spacing:-.02em}.profile-info span{display:block;margin-top:5px;color:var(--muted);font-size:13px;line-height:1.4}
+  .profile-actions{display:grid;gap:10px;margin-top:16px}.profile-actions input[type=file]{display:none}
+  .field{display:grid;gap:8px;margin-top:14px}.field label{font-size:13px;font-weight:750}.field input{border:1px solid rgba(24,32,51,.08);background:white;border-radius:16px;padding:13px 14px;outline:none;color:var(--ink)}
+  .field input:focus,.composer-card textarea:focus{border-color:rgba(47,109,246,.36);box-shadow:0 0 0 4px rgba(47,109,246,.08)}
+  .feed-column{display:grid;gap:16px}
+  .composer-card{padding:18px;display:grid;gap:12px;background:rgba(255,255,255,.94);border:1px solid rgba(24,32,51,.06);box-shadow:var(--shadow-soft)}
+  .composer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.composer-head strong{display:block;font-size:16px;letter-spacing:-.01em}.composer-head span{display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.4}
+  .composer-card textarea{width:100%;min-height:104px;resize:vertical;border:1px solid rgba(24,32,51,.08);background:white;border-radius:18px;padding:14px;color:var(--ink);outline:none;line-height:1.5}
+  .composer-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.composer-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .file-pill{display:inline-flex;align-items:center;gap:8px;background:var(--blue-soft);color:var(--blue);cursor:pointer}.file-pill input{display:none}
+  .image-preview{display:none;position:relative;width:100%;overflow:hidden;border-radius:20px;border:1px solid rgba(24,32,51,.08);background:white}.image-preview.active{display:block}.image-preview img{display:block;width:100%;max-height:320px;object-fit:cover}.image-preview button{position:absolute;right:10px;top:10px;min-height:36px;padding:8px 12px;border-radius:999px;background:rgba(15,23,42,.72);color:white;font-weight:800}
+  .feed-list{display:grid;gap:16px}
+  .post-card{padding:18px;background:rgba(255,255,255,.94);border:1px solid rgba(24,32,51,.06);box-shadow:var(--shadow-soft)}
+  .post-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center}.post-user strong{display:block;font-size:16px;line-height:1.2;letter-spacing:-.01em}.meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.35}
+  .post-text{margin:15px 0 0;font-size:15px;line-height:1.6;color:#243045;white-space:pre-wrap}.post-image{width:100%;max-height:420px;object-fit:cover;display:block;margin-top:14px;border-radius:20px;border:1px solid rgba(24,32,51,.08)}
+  .post-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}.reaction-btn{min-height:42px;padding:11px 15px;border-radius:999px;background:rgba(24,32,51,.055);color:#324055;display:inline-flex;gap:8px;align-items:center}.reaction-btn.active{background:var(--blue-soft);color:var(--blue);box-shadow:inset 0 0 0 1px rgba(29,78,216,.08)}
+  .empty-card{padding:26px 16px;text-align:center;color:var(--muted)}.empty-icon{width:72px;height:72px;border-radius:24px;margin:0 auto 14px;display:grid;place-items:center;background:rgba(24,32,51,.05);font-size:28px}.empty-card h3{margin:0 0 8px;color:var(--ink);font-size:18px}.empty-card p{margin:0 auto 14px;max-width:340px;line-height:1.55}
+  .bottom-nav{margin-top:18px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:10px;border-radius:26px;background:rgba(255,255,255,.74);border:1px solid var(--line);box-shadow:var(--shadow-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;bottom:12px;z-index:40}
+  .nav-item{display:grid;gap:6px;justify-items:center;align-items:center;padding:12px 8px 10px;border-radius:18px;color:#627286;text-align:center;font-size:.78rem;font-weight:650}.nav-item.active,.nav-item[aria-current=page]{color:#1f4ec0;background:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 18px rgba(47,109,246,.10)}.nav-item svg{width:22px;height:22px}
+  .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);z-index:90;max-width:min(92vw,440px);padding:12px 14px;border-radius:16px;background:rgba(16,32,51,.94);color:white;box-shadow:0 16px 38px rgba(15,23,42,.24);font-size:13px;line-height:1.4;display:none}.toast.show{display:block}
+  @media (min-width:760px){.shell{border-left:1px solid rgba(24,32,51,.06);border-right:1px solid rgba(24,32,51,.06);background:rgba(255,255,255,.24)}}
+  @media (max-width:860px){.layout{grid-template-columns:1fr}.profile-card{position:static}.hero-card{grid-template-columns:1fr}.hero-actions{justify-content:flex-start}}
+  @media (max-width:760px){.shell{padding:14px 14px 24px}.topbar{min-height:78px;padding:0 14px;border-radius:20px}.brand-logo{height:40px}main{padding:0}.hero-copy h1{font-size:2rem}.post-card,.composer-card,.profile-card{padding:16px}.bottom-nav{gap:4px;padding:6px;border-radius:18px}.bottom-nav .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}.bottom-nav .nav-item svg{width:18px;height:18px}}
 </style>
 </head>
 <body data-page="community">
@@ -368,145 +143,101 @@
     <section class="hero-card" aria-label="Community overview">
       <div class="hero-copy">
         <div class="eyebrow">Community</div>
-        <h1>Private accountability circle.</h1>
-        <p>Community is optional. When it is on, Hearty can turn safe app actions into simple encouragement updates. You can share a quick update, react with love, or post an image that disappears after 24 hours.</p>
+        <h1>Share intentionally.</h1>
+        <p>Post a quick update or photo when you choose. Your Community can be turned off at any time. Photo posts expire after 24 hours.</p>
       </div>
       <div class="hero-actions">
-        <span class="network-pill" id="networkPill">Checking Supabase…</span>
-        <div class="toggle-wrap">
-          <span class="toggle-label" id="communityToggleText">Off</span>
-          <button class="toggle" id="communityToggle" type="button" aria-pressed="false" aria-label="Turn Community on or off"></button>
-        </div>
-        <button class="action-btn off" id="communityMainBtn" type="button">Turn Community On</button>
+        <button class="community-switch" id="communityToggle" type="button" aria-pressed="false" aria-label="Turn Community on or off">
+          <span class="switch-copy">
+            <span class="switch-kicker">Community</span>
+            <span class="switch-state" id="communityToggleText">Off</span>
+          </span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </button>
       </div>
     </section>
 
-    <div class="status-card" id="communityStatusCard">
-      <div class="status-dot" id="communityStatusDot"></div>
-      <div>
-        <strong id="communityStatusTitle">Community is off</strong>
-        <span id="communityStatusText">No Community feed events will be created or shown. Turn it on when you want private accountability updates.</span>
-      </div>
-    </div>
-
-    <div class="segmented" aria-label="Community sections">
-      <button class="segmented-btn active" data-screen="feedScreen" type="button">Today in Your Circle</button>
-      <button class="segmented-btn" data-screen="privacyScreen" type="button">Privacy</button>
-    </div>
-
-    <section class="screen active" id="feedScreen">
-      <div class="composer-card" id="composerCard">
-        <div class="composer-head">
-          <div>
-            <strong>Share with your circle</strong>
-            <span id="composerStatus">Community is off</span>
+    <div class="layout" id="communityContent">
+      <aside class="profile-card card" aria-label="Community profile">
+        <div class="profile-top">
+          <div class="avatar-lg" id="profileAvatarLarge">H</div>
+          <div class="profile-info">
+            <strong id="profileDisplayName">Your profile</strong>
+            <span>Set the name and photo other people see in Community.</span>
           </div>
         </div>
-        <textarea id="communityPostInput" maxlength="280" placeholder="Share a quick update, encouragement, o<script>
-(function(){
-  const SETTINGS_KEY = 'heartySettings';
-  const POSTS_KEY = 'heartyCommunityPosts';
-  const REACTIONS_KEY = 'heartyCommunityReactions';
-  const USER_KEY = 'heartyUserId';
-  const IMAGE_BUCKET = 'community-images';
-  const SAFE_TYPES = new Set(['workout_complete','weigh_in_logged','meal_plan_generated','support_mode_on','lesson_complete','user_post']);
-  const EVENT_COPY = {
-    workout_complete: { icon:'💪', title:'Workout completed', text:'A workout was completed today.' },
-    weigh_in_logged: { icon:'⚖️', title:'Weigh-in logged', text:'A daily weigh-in was completed.' },
-    meal_plan_generated: { icon:'🍽️', title:'Meal plan generated', text:'A meal plan was generated.' },
-    support_mode_on: { icon:'🧡', title:'Support mode activated', text:'Support mode was used today.' },
-    lesson_complete: { icon:'📘', title:'Lesson completed', text:'A daily lesson was completed.' }
-  };
+        <div class="field">
+          <label for="displayNameInput">Display name</label>
+          <input id="displayNameInput" maxlength="40" placeholder="Your name" autocomplete="name" />
+        </div>
+        <div class="profile-actions">
+          <label class="file-pill" for="profilePhotoInput">📷 Choose profile photo<input id="profilePhotoInput" type="file" accept="image/*" /></label>
+          <button class="action-btn" id="saveProfileBtn" type="button">Save Profile</button>
+        </div>
+      </aside>
 
-  let selectedImageFile = null;
+      <section class="feed-column" aria-label="Community feed">
+        <div class="composer-card" id="composerCard">
+          <div class="composer-head">
+            <div>
+              <strong>Post to Community</strong>
+              <span id="composerStatus">Community is off</span>
+            </div>
+          </div>
+          <textarea id="communityPostInput" maxlength="280" placeholder="Share a quick update or encouragement..."></textarea>
+          <div class="image-preview" id="imagePreviewWrap">
+            <img id="imagePreview" alt="Selected image preview" />
+            <button id="clearImageBtn" type="button">Remove</button>
+          </div>
+          <div class="composer-actions">
+            <div class="composer-left">
+              <label class="file-pill" for="communityImageInput">🖼️ Add photo<input id="communityImageInput" type="file" accept="image/*" /></label>
+            </div>
+            <button class="action-btn" id="communityPostBtn" type="button">Post</button>
+          </div>
+        </div>
+        <div class="feed-list" id="feedList"></div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav" aria-label="Hearty navigation"></nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  const SETTINGS_TABLE = 'community_user_settings';
+  const POSTS_TABLE = 'community_posts';
+  const LOVES_TABLE = 'community_reactions';
+  const PROFILES_TABLE = 'profiles';
+  const COMMUNITY_BUCKET = 'community-images';
+  const PROFILE_BUCKET = 'profile-photos';
+
   let sb = null;
   let currentUser = null;
   let usingSupabase = false;
+  let selectedPostImage = null;
+  let selectedProfileImage = null;
+  let profile = null;
   let postsCache = [];
   let reactionsCache = {};
+  let communityEnabledCache = false;
 
-  function load(key, fallback) {
-    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-    catch { return fallback; }
-  }
-  function save(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
-  function getLocalSettings() { return load(SETTINGS_KEY, {}); }
-  function setLocalSettings(next) { save(SETTINGS_KEY, next); }
-  function getLocalPosts() { return load(POSTS_KEY, []); }
-  function setLocalPosts(posts) { save(POSTS_KEY, posts.slice(0,100)); }
-  function getLocalReactions() { return load(REACTIONS_KEY, {}); }
-  function setLocalReactions(reactions) { save(REACTIONS_KEY, reactions); }
-  function getCurrentUserId() { return (currentUser && currentUser.id) || localStorage.getItem(USER_KEY) || 'local_user'; }
-  function uid(prefix='event') { return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`; }
-
-  function findSupabaseClient() {
-    const candidates = [
-      window.heartySupabaseClient,
-      window.heartySupabase,
-      window.supabaseClient,
-      window.supabaseClientV1,
-      window.sb,
-      window._supabase
-    ];
-    return candidates.find(c => c && typeof c.from === 'function') || null;
+  function showToast(message){
+    const el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el.classList.remove('show'), 2600);
   }
 
-  async function initSupabase() {
-    sb = findSupabaseClient();
-    if (!sb) {
-      usingSupabase = false;
-      setNetwork('Local fallback', 'local');
-      return;
-    }
-    try {
-      const { data } = await sb.auth.getUser();
-      currentUser = data && data.user ? data.user : null;
-      usingSupabase = Boolean(currentUser);
-      setNetwork(usingSupabase ? 'Supabase live' : 'Sign in needed', usingSupabase ? 'live' : 'local');
-    } catch (err) {
-      usingSupabase = false;
-      setNetwork('Local fallback', 'local');
-    }
+  function escapeHTML(value){
+    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
   }
 
-  function setNetwork(text, mode) {
-    const pill = document.getElementById('networkPill');
-    if (!pill) return;
-    pill.textContent = text;
-    pill.classList.toggle('live', mode === 'live');
-    pill.classList.toggle('local', mode !== 'live');
-  }
-
-  async function isEnabled() {
-    if (usingSupabase) {
-      const { data, error } = await sb.from('community_user_settings').select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
-      if (error && error.code !== 'PGRST116') console.warn('Community settings read failed', error);
-      return data ? data.community_enabled === true : false;
-    }
-    return getLocalSettings().communityEnabled === true;
-  }
-
-  function isEnabledSync() {
-    return getLocalSettings().communityEnabled === true;
-  }
-
-  async function setEnabled(next) {
-    const local = getLocalSettings();
-    local.communityEnabled = next;
-    setLocalSettings(local);
-
-    if (usingSupabase) {
-      const { error } = await sb.from('community_user_settings').upsert({
-        user_id: currentUser.id,
-        community_enabled: next,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id' });
-      if (error) console.warn('Community settings save failed', error);
-    }
-    renderAll();
-  }
-
-  function timeAgo(ts) {
+  function timeAgo(ts){
     const when = typeof ts === 'string' ? new Date(ts).getTime() : Number(ts || Date.now());
     const diff = Math.max(0, Date.now() - when);
     const mins = Math.floor(diff / 60000);
@@ -517,279 +248,307 @@
     return 'Yesterday';
   }
 
-  function escapeHTML(value) {
-    return String(value || '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+  function findSupabaseClient(){
+    const candidates = [
+      window.heartySupabaseClient,
+      window.heartySupabase,
+      window.heartyDataLayer?.supabase,
+      window.heartyData?.supabase,
+      window.HeartyData?.supabase,
+      window.supabaseClient,
+      window.supabaseClientV1,
+      window.sb,
+      window._supabase
+    ];
+    return candidates.find(c => c && typeof c.from === 'function' && c.auth) || null;
   }
 
-  async function fetchPosts() {
-    if (!(await isEnabled())) { postsCache = []; return []; }
-    const nowIso = new Date().toISOString();
+  async function waitForSupabaseClient(){
+    for (let i = 0; i < 30; i++) {
+      const client = findSupabaseClient();
+      if (client) return client;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    return null;
+  }
 
-    if (usingSupabase) {
-      const { data, error } = await sb
-        .from('community_posts')
-        .select('id,user_id,post_type,event_type,body,image_path,image_url,created_at,expires_at')
-        .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
-        .order('created_at', { ascending:false })
-        .limit(50);
-      if (error) {
-        console.warn('Community posts read failed', error);
-        postsCache = [];
-        return [];
+  async function initSupabase(){
+    sb = await waitForSupabaseClient();
+    if (!sb) {
+      usingSupabase = false;
+      currentUser = null;
+      showToast('Community could not find the main app sign-in session.');
+      return;
+    }
+    try {
+      const sessionResult = await sb.auth.getSession();
+      currentUser = sessionResult?.data?.session?.user || null;
+      if (!currentUser) {
+        const userResult = await sb.auth.getUser();
+        currentUser = userResult?.data?.user || null;
       }
-      postsCache = (data || []).map(row => ({
-        id: row.id,
-        userId: row.user_id,
-        postType: row.post_type,
-        eventType: row.event_type,
-        data: { text: row.body || '', imageUrl: row.image_url || '', imagePath: row.image_path || '' },
-        createdAt: row.created_at,
-        expiresAt: row.expires_at
-      }));
-      await fetchReactions();
-      return postsCache;
+      usingSupabase = Boolean(currentUser);
+      if (!usingSupabase) showToast('Please sign in to use Community.');
+    } catch (err) {
+      usingSupabase = false;
+      currentUser = null;
+      showToast('Please sign in to use Community.');
     }
-
-    const day = 24 * 60 * 60 * 1000;
-    postsCache = getLocalPosts()
-      .filter(p => p && (p.postType === 'system_event' || p.postType === 'user_post') && SAFE_TYPES.has(p.eventType))
-      .filter(p => !p.expiresAt || Number(p.expiresAt) > Date.now())
-      .filter(p => Date.now() - Number(p.createdAt || 0) <= day || p.postType === 'user_post')
-      .sort((a,b) => Number(b.createdAt || 0) - Number(a.createdAt || 0));
-    reactionsCache = getLocalReactions();
-    return postsCache;
   }
 
-  async function fetchReactions() {
-    if (!usingSupabase || !postsCache.length) { reactionsCache = getLocalReactions(); return; }
-    const ids = postsCache.map(p => p.id);
-    const { data, error } = await sb.from('community_reactions').select('post_id,user_id,reaction_type').in('post_id', ids);
-    if (error) { console.warn('Community reactions read failed', error); reactionsCache = {}; return; }
-    reactionsCache = {};
-    (data || []).forEach(r => {
-      reactionsCache[r.post_id] = reactionsCache[r.post_id] || {};
-      reactionsCache[r.post_id][r.user_id] = { type:r.reaction_type };
-    });
-  }
-
-  function reactionCount(postId) {
-    return reactionsCache[postId] ? Object.keys(reactionsCache[postId]).length : 0;
-  }
-  function hasReacted(postId) {
-    return Boolean(reactionsCache[postId] && reactionsCache[postId][getCurrentUserId()]);
-  }
-
-  async function toggleReaction(postId) {
-    if (!(await isEnabled())) return;
-    const userId = getCurrentUserId();
-    if (usingSupabase) {
-      if (hasReacted(postId)) {
-        const { error } = await sb.from('community_reactions').delete().eq('post_id', postId).eq('user_id', currentUser.id);
-        if (error) console.warn('Community unlike failed', error);
-      } else {
-        const { error } = await sb.from('community_reactions').upsert({ post_id: postId, user_id: currentUser.id, reaction_type:'love' }, { onConflict:'post_id,user_id' });
-        if (error) console.warn('Community love failed', error);
-      }
-    } else {
-      const reactions = getLocalReactions();
-      reactions[postId] = reactions[postId] || {};
-      if (reactions[postId][userId]) delete reactions[postId][userId];
-      else reactions[postId][userId] = { type:'love', createdAt:Date.now() };
-      setLocalReactions(reactions);
+  async function requireUser(){
+    if (!usingSupabase || !currentUser) {
+      showToast('Please sign in to use Community.');
+      return false;
     }
-    await renderFeed();
-  }
-
-  async function uploadImage(file) {
-    if (!file) return { imagePath:null, imageUrl:null };
-    if (!usingSupabase) {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      return { imagePath:null, imageUrl:dataUrl };
-    }
-    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-    const path = `${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
-    const { error: uploadError } = await sb.storage.from(IMAGE_BUCKET).upload(path, file, { cacheControl:'86400', upsert:false, contentType:file.type || 'image/jpeg' });
-    if (uploadError) throw uploadError;
-    const { data } = sb.storage.from(IMAGE_BUCKET).getPublicUrl(path);
-    return { imagePath:path, imageUrl:data && data.publicUrl ? data.publicUrl : null };
-  }
-
-  async function createCommunityPost({ text='', imageFile=null, eventType='user_post' }) {
-    if (!(await isEnabled())) { await setEnabled(true); return false; }
-    if (!SAFE_TYPES.has(eventType)) return false;
-    const cleanText = String(text || '').trim().slice(0,280);
-    if (eventType === 'user_post' && !cleanText && !imageFile) return false;
-
-    const image = await uploadImage(imageFile);
-    const expiresAt = image.imageUrl ? new Date(Date.now() + 24*60*60*1000).toISOString() : null;
-
-    if (usingSupabase) {
-      const { error } = await sb.from('community_posts').insert({
-        user_id: currentUser.id,
-        post_type: eventType === 'user_post' ? 'user_post' : 'system_event',
-        event_type: eventType,
-        body: eventType === 'user_post' ? cleanText : null,
-        image_path: image.imagePath,
-        image_url: image.imageUrl,
-        expires_at: expiresAt
-      });
-      if (error) { console.warn('Community post insert failed', error); return false; }
-    } else {
-      const posts = getLocalPosts();
-      posts.unshift({
-        id: uid(eventType === 'user_post' ? 'post' : 'event'),
-        userId:getCurrentUserId(),
-        postType:eventType === 'user_post' ? 'user_post' : 'system_event',
-        eventType,
-        data:{ text:cleanText, imageUrl:image.imageUrl || '' },
-        createdAt:Date.now(),
-        expiresAt: image.imageUrl ? Date.now() + 24*60*60*1000 : null
-      });
-      setLocalPosts(posts.slice(0,100));
-    }
-    await renderAll();
     return true;
   }
 
-  async function updateStatus() {
-    const enabled = await isEnabled();
-    document.getElementById('communityToggle').classList.toggle('on', enabled);
-    document.getElementById('communityToggle').setAttribute('aria-pressed', String(enabled));
-    document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
-    document.getElementById('communityMainBtn').textContent = enabled ? 'Turn Community Off' : 'Turn Community On';
-    document.getElementById('communityMainBtn').classList.toggle('off', !enabled);
-    document.getElementById('communityStatusDot').classList.toggle('on', enabled);
-    document.getElementById('communityStatusTitle').textContent = enabled ? 'Community is on' : 'Community is off';
-    document.getElementById('communityStatusText').textContent = enabled
-      ? 'Your posts, image posts, loves, and safe app milestones are now using Supabase when signed in.'
-      : 'No Community feed events or posts will be created or shown. Turn it on when you want private accountability updates.';
-    const input = document.getElementById('communityPostInput');
-    const imageInput = document.getElementById('communityImageInput');
-    const postBtn = document.getElementById('communityPostBtn');
-    const composerStatus = document.getElementById('composerStatus');
-    document.getElementById('composerCard').style.opacity = enabled ? '1' : '.62';
-    if (input) input.disabled = !enabled;
-    if (imageInput) imageInput.disabled = !enabled;
-    if (postBtn) postBtn.disabled = !enabled;
-    if (composerStatus) composerStatus.textContent = enabled ? (usingSupabase ? 'Live community' : 'Local fallback') : 'Community is off';
+  async function isEnabled(){
+    if (!usingSupabase || !currentUser || !sb) return false;
+    const { data, error } = await sb.from(SETTINGS_TABLE).select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    communityEnabledCache = data ? data.community_enabled === true : false;
+    return communityEnabledCache;
   }
 
-  function renderPost(post) {
-    if (post.postType === 'user_post') {
-      const text = escapeHTML(post.data && post.data.text);
-      const imageUrl = post.data && post.data.imageUrl;
-      return `
-      <article class="post-card user-post">
-        <div class="post-head">
-          <div class="event-icon">💬</div>
-          <div class="post-user">
-            <strong>Community post</strong>
-            <div class="meta">${timeAgo(post.createdAt)} • ${imageUrl ? 'Image expires after 24h' : 'Private circle post'}</div>
-          </div>
-        </div>
-        ${text ? `<div class="post-text">${text}</div>` : ''}
-        ${imageUrl ? `<img class="post-image" src="${escapeHTML(imageUrl)}" alt="Community image post" loading="lazy" />` : ''}
-        <div class="post-actions">
-          <button class="reaction-btn ${hasReacted(post.id) ? 'active' : ''}" data-react-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
-        </div>
-      </article>`;
+  async function setEnabled(next){
+    if (!(await requireUser())) return;
+    const { error } = await sb.from(SETTINGS_TABLE).upsert({
+      user_id: currentUser.id,
+      community_enabled: next,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' });
+    if (error) {
+      console.warn(error);
+      showToast('Could not update Community setting.');
+      return;
     }
-    const copy = EVENT_COPY[post.eventType] || { icon:'✦', title:'Community update', text:'A safe app event was completed.' };
+    await renderAll();
+  }
+
+  function initials(name){
+    const source = String(name || currentUser?.email || 'H').trim();
+    const parts = source.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return source[0] ? source[0].toUpperCase() : 'H';
+  }
+
+  function renderAvatar(container, url, name){
+    if (!container) return;
+    if (url) container.innerHTML = `<img src="${escapeHTML(url)}" alt="${escapeHTML(name || 'Profile photo')}" />`;
+    else container.textContent = initials(name);
+  }
+
+  async function loadProfile(){
+    if (!(await requireUser())) return null;
+    const { data, error } = await sb.from(PROFILES_TABLE).select('id,display_name,avatar_url,avatar_path').eq('id', currentUser.id).maybeSingle();
+    if (error && error.code !== 'PGRST116') console.warn(error);
+    profile = data || { id: currentUser.id, display_name: '', avatar_url: '', avatar_path: '' };
+    const input = document.getElementById('displayNameInput');
+    if (input && !input.value) input.value = profile.display_name || '';
+    document.getElementById('profileDisplayName').textContent = profile.display_name || 'Your profile';
+    renderAvatar(document.getElementById('profileAvatarLarge'), profile.avatar_url, profile.display_name);
+    return profile;
+  }
+
+  async function uploadToBucket(bucket, path, file){
+    const { error } = await sb.storage.from(bucket).upload(path, file, {
+      upsert: true,
+      cacheControl: '86400',
+      contentType: file.type || 'image/jpeg'
+    });
+    if (error) throw error;
+    const { data } = sb.storage.from(bucket).getPublicUrl(path);
+    return data && data.publicUrl ? data.publicUrl : '';
+  }
+
+  async function saveProfile(){
+    if (!(await requireUser())) return;
+    const name = document.getElementById('displayNameInput').value.trim().slice(0,40) || 'Hearty member';
+    let avatarUrl = profile?.avatar_url || '';
+    let avatarPath = profile?.avatar_path || '';
+    try {
+      if (selectedProfileImage) {
+        const ext = (selectedProfileImage.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+        avatarPath = `${currentUser.id}/avatar.${ext}`;
+        avatarUrl = await uploadToBucket(PROFILE_BUCKET, avatarPath, selectedProfileImage);
+      }
+      const { error } = await sb.from(PROFILES_TABLE).upsert({
+        id: currentUser.id,
+        display_name: name,
+        avatar_url: avatarUrl,
+        avatar_path: avatarPath,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+      if (error) throw error;
+      selectedProfileImage = null;
+      await loadProfile();
+      await renderFeed();
+      showToast('Profile saved.');
+    } catch (err) {
+      console.warn(err);
+      showToast('Profile photo could not be saved. Check the profile-photos bucket and policies.');
+    }
+  }
+
+  async function uploadPostImage(file){
+    if (!file) return { imagePath:null, imageUrl:null };
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g,'') || 'jpg';
+    const imagePath = `${currentUser.id}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const imageUrl = await uploadToBucket(COMMUNITY_BUCKET, imagePath, file);
+    return { imagePath, imageUrl };
+  }
+
+  async function createPost(){
+    if (!(await isEnabled())) return;
+    const input = document.getElementById('communityPostInput');
+    const body = input.value.trim().slice(0,280);
+    if (!body && !selectedPostImage) return;
+    try {
+      const image = await uploadPostImage(selectedPostImage);
+      const expiresAt = image.imageUrl ? new Date(Date.now() + 24*60*60*1000).toISOString() : null;
+      const { error } = await sb.from(POSTS_TABLE).insert({
+        user_id: currentUser.id,
+        post_type: 'user_post',
+        event_type: 'user_post',
+        body,
+        image_path: image.imagePath,
+        image_url: image.imageUrl,
+        expires_at: expiresAt,
+        metadata: {}
+      });
+      if (error) throw error;
+      input.value = '';
+      clearPostImage();
+      await renderAll();
+    } catch (err) {
+      console.warn(err);
+      showToast('Post could not be saved. Check community-images storage and table policies.');
+    }
+  }
+
+  async function fetchPosts(){
+    if (!(await isEnabled())) { postsCache = []; return []; }
+    const nowIso = new Date().toISOString();
+    const { data, error } = await sb
+      .from(POSTS_TABLE)
+      .select('id,user_id,post_type,event_type,body,image_url,image_path,created_at,expires_at,profiles:profiles(display_name,avatar_url)')
+      .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
+      .order('created_at', { ascending:false })
+      .limit(50);
+    if (error) {
+      console.warn(error);
+      showToast('Could not load Community posts.');
+      postsCache = [];
+      return [];
+    }
+    postsCache = data || [];
+    await fetchReactions();
+    return postsCache;
+  }
+
+  async function fetchReactions(){
+    reactionsCache = {};
+    if (!postsCache.length) return;
+    const ids = postsCache.map(p => p.id);
+    const { data, error } = await sb.from(LOVES_TABLE).select('post_id,user_id,reaction_type').in('post_id', ids);
+    if (error) { console.warn(error); return; }
+    (data || []).forEach(r => {
+      reactionsCache[r.post_id] = reactionsCache[r.post_id] || {};
+      reactionsCache[r.post_id][r.user_id] = r.reaction_type || 'love';
+    });
+  }
+
+  function reactionCount(postId){ return reactionsCache[postId] ? Object.keys(reactionsCache[postId]).length : 0; }
+  function hasReacted(postId){ return Boolean(reactionsCache[postId] && reactionsCache[postId][currentUser.id]); }
+
+  async function toggleLove(postId){
+    if (!(await isEnabled())) return;
+    try {
+      if (hasReacted(postId)) {
+        const { error } = await sb.from(LOVES_TABLE).delete().eq('post_id', postId).eq('user_id', currentUser.id);
+        if (error) throw error;
+      } else {
+        const { error } = await sb.from(LOVES_TABLE).upsert({ post_id: postId, user_id: currentUser.id, reaction_type:'love' }, { onConflict:'post_id,user_id' });
+        if (error) throw error;
+      }
+      await renderFeed();
+    } catch (err) {
+      console.warn(err);
+      showToast('Could not update love.');
+    }
+  }
+
+  async function updateStatus(){
+    const signedIn = usingSupabase && currentUser;
+    const enabled = signedIn ? await isEnabled() : false;
+    const toggle = document.getElementById('communityToggle');
+    const content = document.getElementById('communityContent');
+    if (toggle) {
+      toggle.classList.toggle('on', enabled);
+      toggle.setAttribute('aria-pressed', String(enabled));
+    }
+    document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
+    document.getElementById('composerStatus').textContent = enabled ? 'Ready to post' : 'Community is off';
+    if (content) content.classList.toggle('community-disabled', !enabled);
+    ['displayNameInput','profilePhotoInput','saveProfileBtn','communityPostInput','communityImageInput','communityPostBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = !enabled;
+    });
+  }
+
+  function renderPost(post){
+    const prof = post.profiles || {};
+    const name = prof.display_name || (post.user_id === currentUser?.id ? (profile?.display_name || 'You') : 'Hearty member');
+    const avatar = prof.avatar_url || '';
+    const text = escapeHTML(post.body || '');
+    const imageUrl = post.image_url || '';
+    const expiresText = imageUrl ? ' • Photo expires after 24h' : '';
     return `
       <article class="post-card">
         <div class="post-head">
-          <div class="event-icon">${copy.icon}</div>
+          <div class="avatar">${avatar ? `<img src="${escapeHTML(avatar)}" alt="${escapeHTML(name)}" />` : escapeHTML(initials(name))}</div>
           <div class="post-user">
-            <strong>${copy.title}</strong>
-            <div class="meta">${timeAgo(post.createdAt)} • Private circle update</div>
+            <strong>${escapeHTML(name)}</strong>
+            <div class="meta">${timeAgo(post.created_at)}${expiresText}</div>
           </div>
         </div>
-        <div class="post-text">${copy.text}</div>
+        ${text ? `<div class="post-text">${text}</div>` : ''}
+        ${imageUrl ? `<img class="post-image" src="${escapeHTML(imageUrl)}" alt="Community photo post" loading="lazy" />` : ''}
         <div class="post-actions">
-          <button class="reaction-btn ${hasReacted(post.id) ? 'active' : ''}" data-react-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
+          <button class="reaction-btn ${hasReacted(post.id) ? 'active' : ''}" data-love-post="${post.id}" type="button">❤️ <span>${reactionCount(post.id)}</span></button>
         </div>
       </article>`;
   }
 
-  function renderEmpty(title, text, buttonText='') {
-    return `
-      <div class="empty-card">
-        <div class="empty-icon">✦</div>
-        <h3>${title}</h3>
-        <p>${text}</p>
-        ${buttonText ? `<button class="action-btn" id="emptyToggleBtn" type="button">${buttonText}</button>` : ''}
-      </div>`;
+  function renderEmpty(title, text, buttonText=''){
+    return `<div class="empty-card"><div class="empty-icon">✦</div><h3>${escapeHTML(title)}</h3><p>${escapeHTML(text)}</p>${buttonText ? `<button class="action-btn" id="emptyActionBtn" type="button">${escapeHTML(buttonText)}</button>` : ''}</div>`;
   }
 
-  async function renderFeed() {
+  async function renderFeed(){
     const feed = document.getElementById('feedList');
+    if (!usingSupabase || !currentUser) {
+      feed.innerHTML = renderEmpty('Sign in required', 'Community uses your account so posts, photos, and loves are visible to others.');
+      return;
+    }
     if (!(await isEnabled())) {
-      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on to post updates, images, loves, and safe app milestones. Nothing is shared while this is off.', 'Turn Community On');
-      const btn = document.getElementById('emptyToggleBtn');
-      if (btn) btn.onclick = () => setEnabled(true);
+      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on at the top to unlock the profile, composer, feed, and photo posting.');
       return;
     }
     const posts = await fetchPosts();
     if (!posts.length) {
-      feed.innerHTML = renderEmpty('No updates yet', 'Write a quick post above, add an image, or complete a safe action such as logging a weigh-in or finishing a workout.', 'Add Test Update');
-      const btn = document.getElementById('emptyToggleBtn');
-      if (btn) btn.onclick = () => window.heartyLogCommunityEvent('lesson_complete');
+      feed.innerHTML = renderEmpty('No posts yet', 'Write a quick update or add a photo above.');
       return;
     }
     feed.innerHTML = posts.map(renderPost).join('');
-    document.querySelectorAll('[data-react-post]').forEach(btn => btn.onclick = () => toggleReaction(btn.dataset.reactPost));
+    document.querySelectorAll('[data-love-post]').forEach(btn => btn.onclick = () => toggleLove(btn.dataset.lovePost));
   }
 
-  function renderNav() {
-    const pages = [
-      ['home.html','Home','<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'],
-      ['meals.html','Meals','<path d="M4 3v8"></path><path d="M8 3v8"></path><path d="M6 3v18"></path><path d="M15 3v18"></path><path d="M15 3c3 2 4.5 5 4.5 8h-4.5"></path>'],
-      ['exercise.html','Exercise','<path d="M6 7v10"></path><path d="M18 7v10"></path><path d="M3 10v4"></path><path d="M21 10v4"></path><path d="M6 12h12"></path>'],
-      ['progress.html','Progress','<path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 5-7"></path>'],
-      ['support.html','Support','<path d="M12 21s-7-4.4-9-9a5 5 0 0 1 8-5 5 5 0 0 1 8 5c-2 4.6-9 9-9 9z"></path>'],
-      ['community.html','Community','<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M21 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'],
-      ['Settings.html','Settings','<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.92 3a1.65 1.65 0 0 0 1-1.51V1a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.4.55.72.67.17.07.35.1.53.1H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"></path>']
-    ];
-    const nav = document.getElementById('bottomNav');
-    nav.innerHTML = pages.map(item => {
-      const active = item[0].toLowerCase() === 'community.html';
-      return `<a class="nav-item ${active ? 'active' : ''}" ${active ? 'aria-current="page"' : ''} href="./${item[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${item[2]}</svg><span>${item[1]}</span></a>`;
-    }).join('');
-  }
+  async function renderAll(){ await updateStatus(); await loadProfile(); await renderFeed(); }
 
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
-    document.querySelectorAll('.segmented-btn[data-screen]').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === id));
-  }
-
-  async function renderAll() { await updateStatus(); await renderFeed(); }
-
-  window.heartyCommunityIsEnabled = () => isEnabledSync();
-  window.heartyLogCommunityEvent = async function(type, data={}) {
-    if (!SAFE_TYPES.has(type)) return false;
-    if (!(await isEnabled())) return false;
-    return createCommunityPost({ text:'', eventType:type });
-  };
-
-  async function createManualPost() {
-    if (!(await isEnabled())) { await setEnabled(true); return; }
-    const input = document.getElementById('communityPostInput');
-    const text = input ? input.value.trim() : '';
-    if (!text && !selectedImageFile) return;
-    const ok = await createCommunityPost({ text, imageFile:selectedImageFile, eventType:'user_post' });
-    if (ok) {
-      if (input) input.value = '';
-      clearSelectedImage();
-    }
-  }
-
-  function clearSelectedImage() {
-    selectedImageFile = null;
+  function clearPostImage(){
+    selectedPostImage = null;
     const input = document.getElementById('communityImageInput');
     const wrap = document.getElementById('imagePreviewWrap');
     const img = document.getElementById('imagePreview');
@@ -798,66 +557,58 @@
     if (wrap) wrap.classList.remove('active');
   }
 
-  function previewImage(file) {
-    selectedImageFile = file || null;
+  function previewPostImage(file){
+    selectedPostImage = file || null;
     const wrap = document.getElementById('imagePreviewWrap');
     const img = document.getElementById('imagePreview');
-    if (!file || !wrap || !img) { clearSelectedImage(); return; }
+    if (!file || !wrap || !img) { clearPostImage(); return; }
     const reader = new FileReader();
     reader.onload = () => { img.src = reader.result; wrap.classList.add('active'); };
     reader.readAsDataURL(file);
   }
 
+  function previewProfileImage(file){
+    selectedProfileImage = file || null;
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => renderAvatar(document.getElementById('profileAvatarLarge'), reader.result, document.getElementById('displayNameInput').value);
+    reader.readAsDataURL(file);
+  }
+
+  function renderNav(){
+    const pages = [
+      ['home.html','Home','<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'],
+      ['meals.html','Meals','<path d="M4 3v8"></path><path d="M8 3v8"></path><path d="M6 3v18"></path><path d="M15 3v18"></path><path d="M15 3c3 2 4.5 5 4.5 8h-4.5"></path>'],
+      ['exercise.html','Exercise','<path d="M6 7v10"></path><path d="M18 7v10"></path><path d="M3 10v4"></path><path d="M21 10v4"></path><path d="M6 12h12"></path>'],
+      ['progress.html','Progress','<path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 5-7"></path>'],
+      ['support.html','Support','<path d="M12 21s-7-4.4-9-9a5 5 0 0 1 8-5 5 5 0 0 1 8 5c-2 4.6-9 9-9 9z"></path>'],
+      ['social.html','Community','<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M21 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'],
+      ['Settings.html','Settings','<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.92 3a1.65 1.65 0 0 0 1-1.51V1a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.4.55.72.67.17.07.35.1.53.1H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"></path>']
+    ];
+    const nav = document.getElementById('bottomNav');
+    nav.innerHTML = pages.map(item => {
+      const active = item[0] === 'social.html';
+      return `<a class="nav-item ${active ? 'active' : ''}" ${active ? 'aria-current="page"' : ''} href="./${item[0]}"><svg viewBox="0 0 24 24" aria-hidden="true">${item[2]}</svg><span>${item[1]}</span></a>`;
+    }).join('');
+  }
+
+  window.heartyCommunityIsEnabled = isEnabled;
+  window.heartyLogCommunityEvent = async function(){ return false; };
+
   document.addEventListener('DOMContentLoaded', async function(){
     renderNav();
     await initSupabase();
+    await loadProfile();
     await renderAll();
     document.getElementById('communityToggle').onclick = async () => setEnabled(!(await isEnabled()));
-    document.getElementById('communityMainBtn').onclick = async () => setEnabled(!(await isEnabled()));
-    document.getElementById('communityPostBtn').onclick = createManualPost;
-    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createManualPost(); });
-    document.getElementById('communityImageInput').addEventListener('change', e => previewImage(e.target.files && e.target.files[0]));
-    document.getElementById('clearImageBtn').onclick = clearSelectedImage;
-    document.querySelectorAll('[data-screen]').forEach(btn => btn.onclick = () => showScreen(btn.dataset.screen));
-    window.addEventListener('hearty:community-updated', renderAll);
+    document.getElementById('communityPostBtn').onclick = createPost;
+    document.getElementById('saveProfileBtn').onclick = saveProfile;
+    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createPost(); });
+    document.getElementById('communityImageInput').addEventListener('change', e => previewPostImage(e.target.files && e.target.files[0]));
+    document.getElementById('profilePhotoInput').addEventListener('change', e => previewProfileImage(e.target.files && e.target.files[0]));
+    document.getElementById('clearImageBtn').onclick = clearPostImage;
   });
 })();
-</script>ssList.toggle('active', s.id === id));
-    document.querySelectorAll('.segmented-btn[data-screen]').forEach(btn => btn.classList.toggle('active', btn.dataset.screen === id));
-  }
-  function renderAll() { updateStatus(); renderFeed(); }
-
-  window.heartyCommunityIsEnabled = isEnabled;
-  window.heartyLogCommunityEvent = function(type, data={}) {
-    if (!isEnabled() || !SAFE_TYPES.has(type)) return false;
-    const posts = getPosts();
-    posts.unshift({ id:uid(type === 'user_post' ? 'post' : 'event'), userId:getCurrentUserId(), postType:type === 'user_post' ? 'user_post' : 'system_event', eventType:type, data:type === 'user_post' ? { text:String(data.text || '').slice(0,280) } : {}, createdAt:Date.now() });
-    setPosts(posts);
-    renderAll();
-    return true;
-  };
-
-  function createManualPost() {
-    if (!isEnabled()) { toggleCommunity(true); return; }
-    const input = document.getElementById('communityPostInput');
-    const text = input ? input.value.trim() : '';
-    if (!text) return;
-    window.heartyLogCommunityEvent('user_post', { text });
-    input.value = '';
-  }
-
-  document.addEventListener('DOMContentLoaded', function(){
-    renderNav();
-    renderAll();
-    document.getElementById('communityToggle').onclick = () => toggleCommunity();
-    document.getElementById('communityMainBtn').onclick = () => toggleCommunity();
-    document.getElementById('communityPostBtn').onclick = createManualPost;
-    document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createManualPost(); });
-    document.querySelectorAll('[data-screen]').forEach(btn => btn.onclick = () => showScreen(btn.dataset.screen));
-    window.addEventListener('hearty:community-updated', renderAll);
-  });
-})();        
 </script>
-<script src="/js/hearty-community-events.supabase.v1.js"></script>  
 </body>
 </html>
