@@ -6386,8 +6386,11 @@ function resetPhotoDraftState(){
       setTaskComplete(document.getElementById('weighInTask'), true);
       closeSheet(weightSheet);
     }
-
-
+function updatePhotoSubmitBtn(){
+  const hasPhoto = photoDraftState.front || photoDraftState.side || photoDraftState.back;
+  const btn = document.getElementById('completePhotoCheckInBtn');
+  if(btn) btn.disabled = !hasPhoto;
+}
 function loadStoredPhotoState(){
   const saved = safeJsonParse(localStorage.getItem('heartyPhotoCheckInDraft'), null);
   resetPhotoDraftState();
