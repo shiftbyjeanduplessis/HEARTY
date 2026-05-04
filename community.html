@@ -6,6 +6,8 @@
 <title>Hearty — Community</title>
 <link rel="stylesheet" href="/css/hearty-theme.css">
 <script src="/js/hearty-data-layer.v1.js"></script>
+<script src="/glp-supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/hearty-theme.js"></script>
 <style>
   :root {
@@ -207,7 +209,7 @@
 
 <script>
 (function(){
-  const SETTINGS_TABLE = 'community_user_settings';
+  const SETTINGS_TABLE = 'community_settings';
   const POSTS_TABLE = 'community_posts';
   const LOVES_TABLE = 'community_reactions';
   const PROFILES_TABLE = 'profiles';
@@ -248,57 +250,124 @@
     return 'Yesterday';
   }
 
+  function isSupabaseClient(c){
+    return c && typeof c === 'object' && typeof c.from === 'function' && c.auth && typeof c.auth.getSession === 'function';
+  }
+
   function findSupabaseClient(){
+    /*
+      IMPORTANT:
+      This must match /js/hearty-community-events.supabase.v1.js.
+      That file only looks for these shared app clients:
+      window.heartySupabase, window.supabaseClient, then safe fallbacks.
+    */
     const candidates = [
-      window.heartySupabaseClient,
       window.heartySupabase,
-      window.heartyDataLayer?.supabase,
-      window.heartyData?.supabase,
-      window.HeartyData?.supabase,
       window.supabaseClient,
+      window.heartySupabaseClient,
       window.supabaseClientV1,
       window.sb,
-      window._supabase
+      window._supabase,
+      window.__supabase
     ];
-    return candidates.find(c => c && typeof c.from === 'function' && c.auth) || null;
+    return candidates.find(isSupabaseClient) || null;
+  }
+
+  function getSupabaseConfig(){
+    const cfg = window.GLP_SUPABASE_CONFIG || window.HEARTY_SUPABASE_CONFIG || window.SUPABASE_CONFIG || {};
+    const url = cfg.url || cfg.supabaseUrl || cfg.SUPABASE_URL || cfg.projectUrl || '';
+    const anonKey = cfg.anonKey || cfg.anon_key || cfg.supabaseAnonKey || cfg.SUPABASE_ANON_KEY || cfg.key || '';
+    return { url, anonKey };
+  }
+
+  function createConfiguredSupabaseClient(){
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    const cfg = getSupabaseConfig();
+    if (!cfg.url || !cfg.anonKey) return null;
+    try {
+      const client = window.supabase.createClient(cfg.url, cfg.anonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      window.heartySupabaseClient = client;
+      window.sb = client;
+      return client;
+    } catch (err) {
+      console.warn('[Community] createConfiguredSupabaseClient failed:', err);
+      return null;
+    }
   }
 
   async function waitForSupabaseClient(){
-    for (let i = 0; i < 30; i++) {
-      const client = findSupabaseClient();
-      if (client) return client;
+    for (let i = 0; i < 20; i++) {
+      const existing = findSupabaseClient();
+      if (existing) return existing;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
+
+    // Main app pages do not always expose their client globally.
+    // In that case, create the same Supabase client from the shared config file.
+    // Because this is the same domain/project, Supabase will read the existing Hearty session from localStorage.
+    const configured = createConfiguredSupabaseClient();
+    if (configured) return configured;
+
     return null;
+  }
+
+  async function readCurrentUserFromClient(client){
+    if (!client || !client.auth) return null;
+
+    // getSession is the correct source because the user is already signed into Hearty.
+    for (let i = 0; i < 10; i++) {
+      try {
+        const sessionResult = await client.auth.getSession();
+        const sessionUser = sessionResult?.data?.session?.user || null;
+        if (sessionUser) return sessionUser;
+      } catch (err) {
+        console.warn('[Community] getSession failed:', err);
+      }
+      await new Promise(resolve => setTimeout(resolve, 150));
+    }
+
+    // Fallback for Supabase clients that hydrate slowly.
+    try {
+      const userResult = await client.auth.getUser();
+      return userResult?.data?.user || null;
+    } catch (err) {
+      console.warn('[Community] getUser failed:', err);
+      return null;
+    }
   }
 
   async function initSupabase(){
     sb = await waitForSupabaseClient();
+
     if (!sb) {
       usingSupabase = false;
       currentUser = null;
-      showToast('Community could not find the main app sign-in session.');
-      return;
+      showToast('App session bridge missing. Open Community from inside Hearty, then refresh.');
+      return false;
     }
-    try {
-      const sessionResult = await sb.auth.getSession();
-      currentUser = sessionResult?.data?.session?.user || null;
-      if (!currentUser) {
-        const userResult = await sb.auth.getUser();
-        currentUser = userResult?.data?.user || null;
-      }
-      usingSupabase = Boolean(currentUser);
-      if (!usingSupabase) showToast('Please sign in to use Community.');
-    } catch (err) {
-      usingSupabase = false;
-      currentUser = null;
-      showToast('Please sign in to use Community.');
+
+    currentUser = await readCurrentUserFromClient(sb);
+    usingSupabase = Boolean(currentUser);
+
+    if (!usingSupabase) {
+      showToast('Session not detected. Please refresh the app.');
+      return false;
     }
+
+    return true;
   }
 
   async function requireUser(){
-    if (!usingSupabase || !currentUser) {
-      showToast('Please sign in to use Community.');
+    if (usingSupabase && currentUser && sb) return true;
+    const recovered = await initSupabase();
+    if (!recovered) {
+      showToast('Session not detected. Please refresh the app.');
       return false;
     }
     return true;
@@ -529,7 +598,7 @@
   async function renderFeed(){
     const feed = document.getElementById('feedList');
     if (!usingSupabase || !currentUser) {
-      feed.innerHTML = renderEmpty('Sign in required', 'Community uses your account so posts, photos, and loves are visible to others.');
+      feed.innerHTML = renderEmpty('Session not detected', 'Refresh the app from inside Hearty so Community can see your existing session.');
       return;
     }
     if (!(await isEnabled())) {
@@ -598,6 +667,13 @@
   document.addEventListener('DOMContentLoaded', async function(){
     renderNav();
     await initSupabase();
+    if (sb?.auth?.onAuthStateChange) {
+      sb.auth.onAuthStateChange(async function(_event, session){
+        currentUser = session?.user || currentUser;
+        usingSupabase = Boolean(currentUser);
+        await renderAll();
+      });
+    }
     await loadProfile();
     await renderAll();
     document.getElementById('communityToggle').onclick = async () => setEnabled(!(await isEnabled()));
