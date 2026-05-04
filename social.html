@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Hearty — Community</title>
 <link rel="stylesheet" href="/css/hearty-theme.css">
-<script src="/js/hearty-data-layer.v1.js"></script>
-<script src="/glp-supabase-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/glp-supabase-config.js"></script>
+<script src="/js/hearty-data-layer.v1.js"></script>
+<script src="/js/hearty-supabase-sync.v1.js"></script>
 <script src="/js/hearty-theme.js"></script>
 <style>
   :root {
@@ -209,7 +210,7 @@
 
 <script>
 (function(){
-  const SETTINGS_TABLE = 'community_user_settings';
+  const SETTINGS_TABLE = 'social_settings';
   const POSTS_TABLE = 'community_posts';
   const LOVES_TABLE = 'community_reactions';
   const PROFILES_TABLE = 'profiles';
@@ -319,6 +320,8 @@
         }
       });
       window.heartySupabaseClient = client;
+      window.supabaseClient = client;
+      window.heartySupabase = client;
       window.sb = client;
       return client;
     } catch (err) {
@@ -346,8 +349,16 @@
   async function readCurrentUserFromClient(client){
     if (!client || !client.auth) return null;
 
-    // getSession is the correct source because the user is already signed into Hearty.
+    // Match the rest of Hearty: use getUser first.
     for (let i = 0; i < 10; i++) {
+      try {
+        const userResult = await client.auth.getUser();
+        const user = userResult?.data?.user || null;
+        if (user) return user;
+      } catch (err) {
+        console.warn('[Community] getUser failed:', err);
+      }
+
       try {
         const sessionResult = await client.auth.getSession();
         const sessionUser = sessionResult?.data?.session?.user || null;
@@ -355,17 +366,11 @@
       } catch (err) {
         console.warn('[Community] getSession failed:', err);
       }
+
       await new Promise(resolve => setTimeout(resolve, 150));
     }
 
-    // Fallback for Supabase clients that hydrate slowly.
-    try {
-      const userResult = await client.auth.getUser();
-      return userResult?.data?.user || null;
-    } catch (err) {
-      console.warn('[Community] getUser failed:', err);
-      return null;
-    }
+    return null;
   }
 
   async function initSupabase(){
@@ -401,9 +406,9 @@
 
   async function isEnabled(){
     if (!usingSupabase || !currentUser || !sb) return false;
-    const { data, error } = await sb.from(SETTINGS_TABLE).select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
+    const { data, error } = await sb.from(SETTINGS_TABLE).select('enabled').eq('user_id', currentUser.id).maybeSingle();
     if (error && error.code !== 'PGRST116') console.warn(error);
-    communityEnabledCache = data ? data.community_enabled === true : false;
+    communityEnabledCache = data ? data.enabled === true : false;
     return communityEnabledCache;
   }
 
@@ -411,7 +416,10 @@
     if (!(await requireUser())) return;
     const { error } = await sb.from(SETTINGS_TABLE).upsert({
       user_id: currentUser.id,
-      community_enabled: next,
+      enabled: next,
+      share_photos_updates: true,
+      share_water: false,
+      posts_local_only: true,
       updated_at: new Date().toISOString()
     }, { onConflict: 'user_id' });
     if (error) {
@@ -437,9 +445,10 @@
 
   async function loadProfile(){
     if (!(await requireUser())) return null;
-    const { data, error } = await sb.from(PROFILES_TABLE).select('id,display_name,avatar_url,avatar_path').eq('id', currentUser.id).maybeSingle();
+    const { data, error } = await sb.from(PROFILES_TABLE).select('user_id,first_name,user_name,account_email,avatar_url,avatar_path').eq('user_id', currentUser.id).maybeSingle();
     if (error && error.code !== 'PGRST116') console.warn(error);
-    profile = data || { id: currentUser.id, display_name: '', avatar_url: '', avatar_path: '' };
+    profile = data || { user_id: currentUser.id, first_name: '', user_name: '', avatar_url: '', avatar_path: '' };
+    profile.display_name = profile.user_name || profile.first_name || profile.account_email || ''; 
     const input = document.getElementById('displayNameInput');
     if (input && !input.value) input.value = profile.display_name || '';
     document.getElementById('profileDisplayName').textContent = profile.display_name || 'Your profile';
@@ -470,12 +479,13 @@
         avatarUrl = await uploadToBucket(PROFILE_BUCKET, avatarPath, selectedProfileImage);
       }
       const { error } = await sb.from(PROFILES_TABLE).upsert({
-        id: currentUser.id,
-        display_name: name,
+        user_id: currentUser.id,
+        user_name: name,
+        first_name: name,
         avatar_url: avatarUrl,
         avatar_path: avatarPath,
         updated_at: new Date().toISOString()
-      }, { onConflict: 'id' });
+      }, { onConflict: 'user_id' });
       if (error) throw error;
       selectedProfileImage = null;
       await loadProfile();
@@ -528,7 +538,7 @@
     const nowIso = new Date().toISOString();
     const { data, error } = await sb
       .from(POSTS_TABLE)
-      .select('id,user_id,post_type,event_type,body,image_url,image_path,created_at,expires_at,profiles:profiles(display_name,avatar_url)')
+      .select('id,user_id,post_type,event_type,body,image_url,image_path,created_at,expires_at,profiles:profiles(user_name,first_name,avatar_url)')
       .or(`expires_at.is.null,expires_at.gt.${nowIso}`)
       .order('created_at', { ascending:false })
       .limit(50);
@@ -595,7 +605,7 @@
 
   function renderPost(post){
     const prof = post.profiles || {};
-    const name = prof.display_name || (post.user_id === currentUser?.id ? (profile?.display_name || 'You') : 'Hearty member');
+    const name = (prof.user_name || prof.first_name) || (post.user_id === currentUser?.id ? (profile?.display_name || 'You') : 'Hearty member');
     const avatar = prof.avatar_url || '';
     const text = escapeHTML(post.body || '');
     const imageUrl = post.image_url || '';
