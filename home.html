@@ -10017,6 +10017,47 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
   window.heartyRenderHydration = renderHydration;
 })();
 </script>
+<script id="hearty-ring-visual-fix-v1">
+(function(){
+  const CIRC = 339.292;
 
+  function clamp(n){ return Math.max(0, Math.min(100, Number(n) || 0)); }
+
+  function setRing(circle, pct){
+    if(!circle) return;
+    const p = clamp(pct);
+    circle.style.strokeDasharray = CIRC;
+    circle.style.strokeDashoffset = CIRC - (CIRC * p / 100);
+  }
+
+  function updateRings(){
+    document.querySelectorAll('.ring-block').forEach(block => {
+      const circle = block.querySelector('.ring-progress');
+      const value = block.querySelector('.ring-value');
+      if(!circle || !value) return;
+
+      let txt = value.textContent.trim();
+      let pct = 0;
+
+      if(txt.includes('%')){
+        pct = parseFloat(txt);
+      } else if(txt.includes('/')){
+        const [a,b] = txt.split('/').map(x => parseFloat(x));
+        pct = b ? (a / b) * 100 : 0;
+      } else {
+        pct = parseFloat(txt);
+      }
+
+      setRing(circle, pct);
+    });
+  }
+
+  window.heartyUpdateRings = updateRings;
+
+  document.addEventListener('DOMContentLoaded', updateRings);
+  setTimeout(updateRings, 100);
+  setTimeout(updateRings, 500);
+})();
+</script>
 </body>
 </html>
