@@ -9977,3 +9977,356 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
 
 </body>
 </html>
+<style id="hearty-home-final-flow-ring-fix-v2">
+#waterValue{white-space:nowrap;}
+#waterProgressFill{width:0%;transition:width .25s ease;}
+
+.ring-wrap,
+.ring-block{
+  position:relative;
+}
+
+.ring-progress{
+  transition:stroke-dashoffset .35s ease;
+  transform:rotate(-90deg);
+  transform-origin:50% 50%;
+}
+
+.ring-value,
+.ring-center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1;
+  z-index:3;
+  pointer-events:none;
+  font-size:22px!important;
+  font-weight:800!important;
+  letter-spacing:-.04em;
+}
+
+body.hearty-first-tasks-complete .first-use-glow,
+body.hearty-first-tasks-complete .daily-protocol-card.glow,
+body.hearty-first-tasks-complete #photoTask.glow,
+body.hearty-first-tasks-complete .task-card.glow{
+  box-shadow:none!important;
+  animation:none!important;
+}
+
+#photoTask.completed .task-icon::after,
+#photoTask.done .task-icon::after{
+  content:"✓";
+  font-weight:900;
+}
+
+.hearty-first-complete-modal{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(15,23,42,.45);
+  backdrop-filter:blur(12px);
+}
+
+.hearty-first-complete-modal.show{display:flex;}
+
+.hearty-first-complete-card{
+  width:min(420px,100%);
+  border-radius:28px;
+  padding:24px;
+  background:#fff;
+  box-shadow:0 28px 80px rgba(15,23,42,.28);
+}
+
+.hearty-first-complete-card h2{
+  margin:0 0 8px;
+  font-size:24px;
+}
+
+.hearty-first-complete-card p{
+  margin:0 0 14px;
+  color:#64748b;
+  line-height:1.45;
+}
+
+.hearty-first-complete-actions{
+  display:grid;
+  gap:10px;
+  margin-top:18px;
+}
+
+.hearty-first-complete-actions a,
+.hearty-first-complete-actions button{
+  border:0;
+  border-radius:16px;
+  padding:14px 16px;
+  font-weight:800;
+  text-align:center;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.hearty-first-complete-actions a{
+  background:#16a34a;
+  color:#fff;
+}
+
+.hearty-first-complete-actions button{
+  background:#f1f5f9;
+  color:#334155;
+}
+</style>
+
+<script id="hearty-home-final-flow-ring-fix-v2">
+(function(){
+  const CIRC = 339.292;
+  const WATER_KEY = 'hearty_hydration_logs';
+  const TODAY = new Date().toISOString().slice(0,10);
+
+  function parseJSON(value, fallback){
+    try{return JSON.parse(value);}
+    catch(e){return fallback;}
+  }
+
+  function clamp(n){
+    return Math.max(0, Math.min(100, Number(n) || 0));
+  }
+
+  function setRing(circle, pct){
+    if(!circle) return;
+    const p = clamp(pct);
+    circle.style.strokeDasharray = String(CIRC);
+    circle.style.strokeDashoffset = String(CIRC - (CIRC * p / 100));
+  }
+
+  function getWeightKg(){
+    const keys = ['heartyProfile','heartyUserProfile','heartyHomeProfile','heartyProfileV1','hearty_profile'];
+    for(const key of keys){
+      const obj = parseJSON(localStorage.getItem(key), null);
+      if(!obj) continue;
+      const vals = [obj.currentWeightKg,obj.weightKg,obj.weight,obj.currentWeight,obj.startWeightKg,obj.profile?.currentWeightKg,obj.profile?.weightKg];
+      for(const v of vals){
+        const n = Number(v);
+        if(Number.isFinite(n) && n > 20 && n < 350) return n;
+      }
+    }
+    return null;
+  }
+
+  function waterTarget(){
+    const kg = getWeightKg();
+    if(!kg) return 2000;
+    return Math.min(3700, Math.max(1500, Math.round((kg * 35) / 250) * 250));
+  }
+
+  function readWater(){
+    const logs = parseJSON(localStorage.getItem(WATER_KEY), []);
+    const today = Array.isArray(logs) ? logs.find(x => x && x.date === TODAY) : null;
+    return today && Number.isFinite(Number(today.ml)) ? Math.max(0, Number(today.ml)) : 0;
+  }
+
+  function writeWater(ml){
+    const target = waterTarget();
+    const logs = parseJSON(localStorage.getItem(WATER_KEY), []);
+    const list = Array.isArray(logs) ? logs.filter(x => !(x && x.date === TODAY)) : [];
+    list.push({date:TODAY, ml, liters:Math.round((ml/1000)*100)/100, targetMl:target});
+    localStorage.setItem(WATER_KEY, JSON.stringify(list));
+  }
+
+  function pctFromText(txt){
+    txt = String(txt || '').trim();
+
+    if(txt.includes('%')) return parseFloat(txt);
+
+    if(txt.includes('/')){
+      const parts = txt.split('/').map(x => parseFloat(x));
+      return parts[1] ? (parts[0] / parts[1]) * 100 : 0;
+    }
+
+    if(txt.toLowerCase().includes('l')){
+      return (parseFloat(txt) / 2) * 100;
+    }
+
+    return parseFloat(txt) || 0;
+  }
+
+  function updateAllRings(){
+    document.querySelectorAll('.ring-block,.ring-wrap').forEach(block => {
+      const circle = block.querySelector('.ring-progress');
+      if(!circle) return;
+
+      const value =
+        block.querySelector('.ring-value') ||
+        block.querySelector('.ring-center') ||
+        block.querySelector('[data-ring-value]') ||
+        block.querySelector('#waterValue');
+
+      if(value) setRing(circle, pctFromText(value.textContent));
+    });
+  }
+
+  function renderWater(){
+    const ml = readWater();
+    const target = waterTarget();
+    const pct = target ? (ml / target) * 100 : 0;
+
+    const waterValue = document.getElementById('waterValue');
+    if(waterValue) waterValue.textContent = (ml/1000).toFixed(1) + 'L';
+
+    const waterCount = document.getElementById('waterGlassCount');
+    if(waterCount) waterCount.textContent = `${(ml/1000).toFixed(2).replace(/\.00$/,'')} L / ${(target/1000).toFixed(1)} L`;
+
+    const fill = document.getElementById('waterProgressFill');
+    if(fill) fill.style.width = clamp(pct).toFixed(1) + '%';
+
+    const wrap = waterValue ? waterValue.closest('.ring-wrap,.ring-block') : null;
+    const circle = wrap ? wrap.querySelector('.ring-progress') : null;
+    setRing(circle, pct);
+
+    const undo = document.getElementById('waterUndo');
+    if(undo) undo.disabled = ml <= 0;
+
+    updateAllRings();
+  }
+
+  function addWater(delta){
+    const target = waterTarget();
+    const next = Math.max(0, Math.min(target, readWater() + delta));
+    writeWater(next);
+    renderWater();
+  }
+
+  function markPhotoComplete(){
+    const photoTask = document.getElementById('photoTask');
+    if(photoTask){
+      photoTask.classList.add('completed','done');
+      photoTask.setAttribute('data-complete','true');
+      const status = photoTask.querySelector('.task-status,.task-state,.task-pill');
+      if(status) status.textContent = 'DONE';
+    }
+
+    document.body.classList.add('hearty-first-tasks-complete');
+    localStorage.setItem('heartyPhotoCheckInComplete_' + TODAY, 'true');
+    localStorage.setItem('heartyFirstUseGlowDismissed', 'true');
+  }
+
+  function openLesson(){
+    const sheet = document.getElementById('lessonSheet');
+    const card = document.getElementById('lessonCard');
+
+    if(sheet){
+      sheet.classList.add('show','open');
+      sheet.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+      return;
+    }
+
+    if(card){
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+      card.classList.add('pulse');
+      setTimeout(() => card.classList.remove('pulse'), 900);
+      return;
+    }
+  }
+
+  function showFirstCompletePopup(){
+    if(localStorage.getItem('heartyFirstDailyTasksPopupSeen') === 'true') return;
+    localStorage.setItem('heartyFirstDailyTasksPopupSeen', 'true');
+
+    let modal = document.getElementById('heartyFirstCompleteModal');
+    if(!modal){
+      modal = document.createElement('div');
+      modal.id = 'heartyFirstCompleteModal';
+      modal.className = 'hearty-first-complete-modal';
+      modal.innerHTML = `
+        <div class="hearty-first-complete-card">
+          <h2>Well done.</h2>
+          <p>You’ve completed your first daily Home tasks. Check this page every day to see what Hearty needs from you today.</p>
+          <p>You can now either do your first short lesson or create your customised eating plan.</p>
+          <div class="hearty-first-complete-actions">
+            <button type="button" data-open-lesson>Start first lesson</button>
+            <a href="MEALS.html">Create my meal plan</a>
+            <button type="button" id="heartyFirstCompleteClose">I’ll do this later</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+
+      modal.querySelector('#heartyFirstCompleteClose').addEventListener('click', function(){
+        modal.classList.remove('show');
+      });
+    }
+
+    modal.classList.add('show');
+  }
+
+  function bind(){
+    const add = document.getElementById('waterGlass');
+    if(add && add.dataset.finalHydrationBound !== '1'){
+      add.dataset.finalHydrationBound = '1';
+      add.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        addWater(250);
+      }, true);
+    }
+
+    const undo = document.getElementById('waterUndo');
+    if(undo && undo.dataset.finalHydrationBound !== '1'){
+      undo.dataset.finalHydrationBound = '1';
+      undo.addEventListener('click', function(e){
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        addWater(-250);
+      }, true);
+    }
+
+    document.addEventListener('click', function(e){
+      if(e.target.closest('[data-open-lesson],#openLessonBtn,.lesson-cta')){
+        e.preventDefault();
+        openLesson();
+        const modal = document.getElementById('heartyFirstCompleteModal');
+        if(modal) modal.classList.remove('show');
+      }
+
+      if(e.target.closest('#completePhotoCheckInBtn')){
+        setTimeout(function(){
+          markPhotoComplete();
+          showFirstCompletePopup();
+          updateAllRings();
+        }, 150);
+      }
+
+      if(e.target.closest('.task-action-btn')){
+        setTimeout(updateAllRings, 120);
+        setTimeout(updateAllRings, 500);
+      }
+    }, true);
+
+    if(localStorage.getItem('heartyPhotoCheckInComplete_' + TODAY) === 'true'){
+      markPhotoComplete();
+    }
+
+    renderWater();
+    updateAllRings();
+    setTimeout(renderWater, 150);
+    setTimeout(updateAllRings, 500);
+    setTimeout(updateAllRings, 1200);
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
+  else bind();
+
+  window.heartyUpdateRings = updateAllRings;
+  window.heartyRenderHydration = renderWater;
+})();
+</script>
+
+</body>
+</html>
