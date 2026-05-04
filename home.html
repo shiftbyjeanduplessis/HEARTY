@@ -10057,32 +10057,38 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
 <script>
 (function(){
   let promptEvt=null;
+<script id="hearty-pwa-install-fullscreen-fix-v1">
+(function(){
+  let promptEvt = null;
 
-  window.addEventListener('beforeinstallprompt',e=>{
+  window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
-    promptEvt=e;
+    promptEvt = e;
 
-    const btn=document.createElement('button');
-    btn.textContent='Install';
-    btn.style='position:fixed;bottom:80px;right:16px;z-index:9999;';
-    btn.onclick=async()=>{
+    if(document.getElementById('heartyInstallBtn')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'heartyInstallBtn';
+    btn.textContent = 'Install';
+    btn.style.cssText = 'position:fixed;bottom:80px;right:16px;z-index:9999;border:0;border-radius:999px;padding:12px 16px;font-weight:800;background:#16a34a;color:white;box-shadow:0 14px 34px rgba(15,23,42,.22);';
+
+    btn.onclick = async function(){
+      if(!promptEvt) return;
       promptEvt.prompt();
       await promptEvt.userChoice;
+      promptEvt = null;
       btn.remove();
     };
+
     document.body.appendChild(btn);
   });
 
-  document.addEventListener('click',()=>{
+  document.addEventListener('click', function(){
     if(document.fullscreenElement) return;
-    document.documentElement.requestFullscreen?.().catch(()=>{});
-  },{once:true});
+    document.documentElement.requestFullscreen?.().catch(function(){});
+  }, { once:true });
 })();
 </script>
-
-</body>
-</html>
-
 
 </body>
 </html>
