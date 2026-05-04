@@ -6408,9 +6408,18 @@ function loadStoredPhotoState(){
     return;
   }
 
-  if(saved && typeof saved === 'object' && !Array.isArray(saved) && !saved.date){
+function updatePhotoSubmitBtn(){
+  const hasPhoto = photoDraftState.front || photoDraftState.side || photoDraftState.back;
+  const btn = document.getElementById('completePhotoCheckInBtn');
+  if(btn) btn.disabled = !hasPhoto;
+}
+
+function loadStoredPhotoState(){
+  const saved = safeJsonParse(localStorage.getItem('heartyPhotoCheckInDraft'), null);
+  resetPhotoDraftState();
+  if(saved && typeof saved === 'object' && !Array.isArray(saved) && saved.date === todayKey && saved.slots){
     ['front','side','back'].forEach(key => {
-      const item = saved[key] || null;
+      const item = saved.slots[key] || null;
       photoDraftState[key] = item ? {
         name: item.name || '',
         capturedAt: item.capturedAt || null,
@@ -6418,12 +6427,13 @@ function loadStoredPhotoState(){
         previewUrl: item.previewUrl || ''
       } : null;
     });
-    persistPhotoState();
+    updatePhotoSubmitBtn();
     return;
   }
-
-  localStorage.removeItem('heartyPhotoCheckInDraft');
-}
+  if(saved && typeof saved === 'object' && !Array.isArray(saved) && !saved.date){
+    ['front','side','back'].forEach(key => {
+      const item = saved[key] || null;
+      photoDr
 
 function persistPhotoState(){
   localStorage.setItem('heartyPhotoCheckInDraft', JSON.stringify({
