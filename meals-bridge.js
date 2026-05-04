@@ -125,7 +125,7 @@
         renderLeftoverToggle();
         renderMeals(this.state.week[this.state.selectedDayIndex], ui.mealList);
         renderProteinMeter();
-        this.state.shoppingList = buildShoppingList(this.state.week);
+        this.state.shoppingList = buildShoppingList();
       },
 
       regenerateWeek() {
@@ -143,7 +143,7 @@
       },
 
       getShoppingList() {
-        return buildShoppingList(this.state.week);
+        return buildShoppingList();
       }
     };
 
