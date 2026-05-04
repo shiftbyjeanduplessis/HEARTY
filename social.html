@@ -77,12 +77,16 @@
   .hero-copy h1{margin:0;font-size:clamp(2rem,3.6vw,2.7rem);line-height:1.08;letter-spacing:-.04em;font-weight:560}
   .hero-copy p{margin:8px 0 0;max-width:760px;color:var(--muted);font-size:14px;line-height:1.55}
   .hero-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
-  .toggle-wrap{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.64);border:1px solid var(--line)}
-  .toggle-label{font-size:13px;color:var(--muted);font-weight:750;min-width:26px;text-align:right}
-  .toggle{width:62px;height:36px;border-radius:999px;background:rgba(24,32,51,.14);position:relative;box-shadow:inset 0 0 0 1px rgba(24,32,51,.05)}
-  .toggle::after{content:"";position:absolute;width:28px;height:28px;border-radius:50%;top:4px;left:4px;background:white;box-shadow:var(--shadow-soft);transition:.2s ease}
-  .toggle.on{background:rgba(47,109,246,.38)}
-  .toggle.on::after{left:30px}
+  .community-switch{min-width:172px;min-height:54px;border-radius:999px;padding:7px 9px 7px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;background:rgba(24,32,51,.08);border:1px solid var(--line);color:var(--muted);font-weight:850;box-shadow:var(--shadow-soft)}
+  .community-switch .switch-copy{display:grid;text-align:left;line-height:1.05}
+  .community-switch .switch-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.14em;opacity:.72}
+  .community-switch .switch-state{font-size:15px;color:var(--ink);margin-top:3px}
+  .switch-track{width:54px;height:32px;border-radius:999px;background:rgba(24,32,51,.14);position:relative;box-shadow:inset 0 0 0 1px rgba(24,32,51,.05);flex:0 0 auto}
+  .switch-track::after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;top:4px;left:4px;background:white;box-shadow:var(--shadow-soft);transition:.2s ease}
+  .community-switch.on{background:rgba(47,109,246,.13);border-color:rgba(47,109,246,.22);color:var(--blue)}
+  .community-switch.on .switch-track{background:rgba(47,109,246,.48)}
+  .community-switch.on .switch-track::after{left:26px}
+  .community-switch.on .switch-state{color:var(--blue)}
   .action-btn,.ghost-btn,.reaction-btn,.file-pill{
     min-height:46px;padding:12px 16px;border-radius:16px;font-weight:750;
   }
@@ -90,10 +94,9 @@
   .action-btn.off{background:var(--blue-soft);color:var(--blue);box-shadow:none}
   .ghost-btn{background:rgba(24,32,51,.06);color:var(--ink)}
   .ghost-btn.danger{color:var(--danger);background:rgba(220,38,38,.08)}
-  .status-card{margin-top:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;border-radius:22px;background:rgba(255,255,255,.72);border:1px solid var(--line);box-shadow:var(--shadow-soft)}
-  .status-dot{width:12px;height:12px;border-radius:50%;margin-top:5px;background:var(--warning);box-shadow:0 0 0 6px var(--warning-soft);flex:0 0 auto}
-  .status-dot.on{background:var(--success);box-shadow:0 0 0 6px var(--success-soft)}
-  .status-card strong{display:block;font-size:15px}.status-card span{display:block;margin-top:3px;color:var(--muted);font-size:13px;line-height:1.45}
+  .status-card{display:none}
+  .community-disabled{opacity:.48;filter:saturate(.82);pointer-events:none;user-select:none}
+  .community-disabled input,.community-disabled textarea,.community-disabled button{cursor:not-allowed}
   .layout{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;margin-top:16px;align-items:start}
   .profile-card{padding:18px;position:sticky;top:12px}
   .profile-top{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
@@ -144,23 +147,17 @@
         <p>Post a quick update or photo when you choose. Your Community can be turned off at any time. Photo posts expire after 24 hours.</p>
       </div>
       <div class="hero-actions">
-        <div class="toggle-wrap">
-          <span class="toggle-label" id="communityToggleText">Off</span>
-          <button class="toggle" id="communityToggle" type="button" aria-pressed="false" aria-label="Turn Community on or off"></button>
-        </div>
-        <button class="action-btn off" id="communityMainBtn" type="button">Turn Community On</button>
+        <button class="community-switch" id="communityToggle" type="button" aria-pressed="false" aria-label="Turn Community on or off">
+          <span class="switch-copy">
+            <span class="switch-kicker">Community</span>
+            <span class="switch-state" id="communityToggleText">Off</span>
+          </span>
+          <span class="switch-track" aria-hidden="true"></span>
+        </button>
       </div>
     </section>
 
-    <div class="status-card" id="communityStatusCard">
-      <div class="status-dot" id="communityStatusDot"></div>
-      <div>
-        <strong id="communityStatusTitle">Community is off</strong>
-        <span id="communityStatusText">No posts or photos will be shown while Community is off.</span>
-      </div>
-    </div>
-
-    <div class="layout">
+    <div class="layout" id="communityContent">
       <aside class="profile-card card" aria-label="Community profile">
         <div class="profile-top">
           <div class="avatar-lg" id="profileAvatarLarge">H</div>
@@ -225,6 +222,7 @@
   let profile = null;
   let postsCache = [];
   let reactionsCache = {};
+  let communityEnabledCache = false;
 
   function showToast(message){
     const el = document.getElementById('toast');
@@ -254,25 +252,41 @@
     const candidates = [
       window.heartySupabaseClient,
       window.heartySupabase,
+      window.heartyDataLayer?.supabase,
+      window.heartyData?.supabase,
+      window.HeartyData?.supabase,
       window.supabaseClient,
       window.supabaseClientV1,
       window.sb,
       window._supabase
     ];
-    return candidates.find(c => c && typeof c.from === 'function') || null;
+    return candidates.find(c => c && typeof c.from === 'function' && c.auth) || null;
+  }
+
+  async function waitForSupabaseClient(){
+    for (let i = 0; i < 30; i++) {
+      const client = findSupabaseClient();
+      if (client) return client;
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    return null;
   }
 
   async function initSupabase(){
-    sb = findSupabaseClient();
+    sb = await waitForSupabaseClient();
     if (!sb) {
       usingSupabase = false;
-      showToast('Community needs Supabase to be available.');
+      currentUser = null;
+      showToast('Community could not find the main app sign-in session.');
       return;
     }
     try {
-      const { data, error } = await sb.auth.getUser();
-      if (error) throw error;
-      currentUser = data && data.user ? data.user : null;
+      const sessionResult = await sb.auth.getSession();
+      currentUser = sessionResult?.data?.session?.user || null;
+      if (!currentUser) {
+        const userResult = await sb.auth.getUser();
+        currentUser = userResult?.data?.user || null;
+      }
       usingSupabase = Boolean(currentUser);
       if (!usingSupabase) showToast('Please sign in to use Community.');
     } catch (err) {
@@ -291,10 +305,11 @@
   }
 
   async function isEnabled(){
-    if (!(await requireUser())) return false;
+    if (!usingSupabase || !currentUser || !sb) return false;
     const { data, error } = await sb.from(SETTINGS_TABLE).select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
     if (error && error.code !== 'PGRST116') console.warn(error);
-    return data ? data.community_enabled === true : false;
+    communityEnabledCache = data ? data.community_enabled === true : false;
+    return communityEnabledCache;
   }
 
   async function setEnabled(next){
@@ -386,7 +401,7 @@
   }
 
   async function createPost(){
-    if (!(await isEnabled())) { await setEnabled(true); return; }
+    if (!(await isEnabled())) return;
     const input = document.getElementById('communityPostInput');
     const body = input.value.trim().slice(0,280);
     if (!body && !selectedPostImage) return;
@@ -469,19 +484,15 @@
     const signedIn = usingSupabase && currentUser;
     const enabled = signedIn ? await isEnabled() : false;
     const toggle = document.getElementById('communityToggle');
-    toggle.classList.toggle('on', enabled);
-    toggle.setAttribute('aria-pressed', String(enabled));
+    const content = document.getElementById('communityContent');
+    if (toggle) {
+      toggle.classList.toggle('on', enabled);
+      toggle.setAttribute('aria-pressed', String(enabled));
+    }
     document.getElementById('communityToggleText').textContent = enabled ? 'On' : 'Off';
-    document.getElementById('communityMainBtn').textContent = enabled ? 'Turn Community Off' : 'Turn Community On';
-    document.getElementById('communityMainBtn').classList.toggle('off', !enabled);
-    document.getElementById('communityStatusDot').classList.toggle('on', enabled);
-    document.getElementById('communityStatusTitle').textContent = enabled ? 'Community is on' : 'Community is off';
-    document.getElementById('communityStatusText').textContent = enabled
-      ? 'You can post text updates and photos. Photo posts expire after 24 hours.'
-      : 'No posts or photos will be shown while Community is off.';
     document.getElementById('composerStatus').textContent = enabled ? 'Ready to post' : 'Community is off';
-    document.getElementById('composerCard').style.opacity = enabled ? '1' : '.62';
-    ['communityPostInput','communityImageInput','communityPostBtn'].forEach(id => {
+    if (content) content.classList.toggle('community-disabled', !enabled);
+    ['displayNameInput','profilePhotoInput','saveProfileBtn','communityPostInput','communityImageInput','communityPostBtn'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.disabled = !enabled;
     });
@@ -522,9 +533,7 @@
       return;
     }
     if (!(await isEnabled())) {
-      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on to post updates and photos.', 'Turn Community On');
-      const btn = document.getElementById('emptyActionBtn');
-      if (btn) btn.onclick = () => setEnabled(true);
+      feed.innerHTML = renderEmpty('Community is off', 'Turn Community on at the top to unlock the profile, composer, feed, and photo posting.');
       return;
     }
     const posts = await fetchPosts();
@@ -592,7 +601,6 @@
     await loadProfile();
     await renderAll();
     document.getElementById('communityToggle').onclick = async () => setEnabled(!(await isEnabled()));
-    document.getElementById('communityMainBtn').onclick = async () => setEnabled(!(await isEnabled()));
     document.getElementById('communityPostBtn').onclick = createPost;
     document.getElementById('saveProfileBtn').onclick = saveProfile;
     document.getElementById('communityPostInput').addEventListener('keydown', function(e){ if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') createPost(); });
