@@ -9900,6 +9900,27 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
     renderHydration();
   }
 
+  function completePhotos(){
+    localStorage.setItem('heartyPhotoDone','1');
+    const modal = document.createElement('div');
+    modal.style = 'position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:99999;';
+    modal.innerHTML = `
+      <div style="background:white;padding:24px;border-radius:20px;width:90%;max-width:400px;">
+        <h3>Well done.</h3>
+        <p>You've completed your first daily tasks.</p>
+        <p>Next:</p>
+        <button id="lessonBtn">Start Lesson</button>
+        <a href="MEALS.html">Create Meal Plan</a>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('#lessonBtn').onclick = function(){
+      modal.remove();
+      const el = document.getElementById('lessonCard');
+      if(el) el.scrollIntoView({behavior:'smooth'});
+    };
+  }
+
   function bind(){
     const add = document.getElementById('waterGlass');
     if(add && add.dataset.finalHydrationBound !== '1'){
@@ -9920,6 +9941,16 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
         addWater(-250);
       }, true);
     }
+
+    document.addEventListener('click', function(e){
+      if(e.target.closest('#completePhotoCheckInBtn')){
+        setTimeout(completePhotos, 150);
+      }
+      if(e.target.closest('[data-open-lesson]')){
+        const el = document.getElementById('lessonCard');
+        if(el) el.scrollIntoView({behavior:'smooth'});
+      }
+    }, true);
 
     renderHydration();
     setTimeout(renderHydration, 150);
@@ -9974,90 +10005,9 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   setTimeout(updateRings, 100);
   setTimeout(updateRings, 500);
 })();
-<script>
-(function(){
-  const TODAY = new Date().toISOString().slice(0,10);
-  const KEY = 'hearty_hydration_logs';
-
-  function parse(v){ try{return JSON.parse(v);}catch(e){return [];} }
-
-  function read(){
-    const logs = parse(localStorage.getItem(KEY));
-    const t = logs.find(x=>x.date===TODAY);
-    return t ? t.ml : 0;
-  }
-
-  function write(ml){
-    const logs = parse(localStorage.getItem(KEY)).filter(x=>x.date!==TODAY);
-    logs.push({date:TODAY,ml});
-    localStorage.setItem(KEY, JSON.stringify(logs));
-  }
-
-  function render(){
-    const ml = read();
-    const pct = Math.max(0, Math.min(100, (ml/2000)*100));
-
-    const v = document.getElementById('waterValue');
-    if(v) v.textContent = (ml/1000).toFixed(1)+'L';
-
-    const c = document.getElementById('waterGlassCount');
-    if(c) c.textContent = (ml/1000).toFixed(1)+' / 2.0L';
-
-    const fill = document.getElementById('waterProgressFill');
-    if(fill) fill.style.width = pct+'%';
-  }
-
-  function add(d){
-    const next = Math.max(0, Math.min(2000, read()+d));
-    write(next);
-    render();
-  }
-
-  function completePhotos(){
-    localStorage.setItem('heartyPhotoDone','1');
-
-    const modal = document.createElement('div');
-    modal.style = 'position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:99999;';
-    modal.innerHTML = `
-      <div style="background:white;padding:24px;border-radius:20px;width:90%;max-width:400px;">
-        <h3>Well done.</h3>
-        <p>You’ve completed your first daily tasks.</p>
-        <p>Next:</p>
-        <button id="lessonBtn">Start Lesson</button>
-        <a href="MEALS.html">Create Meal Plan</a>
-      </div>
-    `;
-    document.body.appendChild(modal);
-
-    modal.querySelector('#lessonBtn').onclick = ()=>{
-      modal.remove();
-      const el = document.getElementById('lessonCard');
-      if(el) el.scrollIntoView({behavior:'smooth'});
-    };
-  }
-
-  document.addEventListener('click', function(e){
-    if(e.target.closest('#waterGlass')) add(250);
-    if(e.target.closest('#waterUndo')) add(-250);
-
-    if(e.target.closest('#completePhotoCheckInBtn')){
-      setTimeout(completePhotos,150);
-    }
-
-    if(e.target.closest('[data-open-lesson]')){
-      const el = document.getElementById('lessonCard');
-      if(el) el.scrollIntoView({behavior:'smooth'});
-    }
-  }, true);
-
-  render();
-})();
 </script>
 
-<script>
-(function(){
-  let promptEvt=null;
-<script id="hearty-pwa-install-fullscreen-fix-v1">
+<script id="hearty-pwa-install-v1">
 (function(){
   let promptEvt = null;
 
