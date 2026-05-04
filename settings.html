@@ -84,7 +84,7 @@ body::after{z-index:-1;opacity:.18;background:none}
 .switch input:checked + .slider::before{transform:translateX(20px)}
 .link-list{display:grid;gap:10px}
 .link-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:var(--radius-control);text-decoration:none;color:var(--theme-accent);font-weight:800;background:var(--surface-chip);border:1px solid rgba(143,163,184,.18)}
-.bottom-nav{margin-top:18px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:10px;border-radius:26px;background:rgba(255,255,255,.74);border:1px solid var(--line);box-shadow:var(--shadow-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);position:sticky;bottom:12px;z-index:40}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;z-index:80;width:min(880px,calc(100vw - 28px));display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;padding:10px;border-radius:26px;background:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));border:1px solid var(--line);box-shadow:var(--shadow-soft);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .bottom-nav .nav-item{display:grid;gap:6px;justify-items:center;align-items:center;padding:12px 8px 10px;border-radius:18px;color:#627286;transition:all .22s ease;text-align:center;font-size:.78rem;font-weight:600;appearance:none;border:none;background:transparent;cursor:pointer;font:inherit;text-decoration:none;box-shadow:none;outline:none}
 .bottom-nav .nav-item.active,.bottom-nav .nav-item[aria-current="page"]{color:var(--theme-accent);background:linear-gradient(180deg, rgba(233,242,255,.98), rgba(255,255,255,.96));box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 10px 18px rgba(47,109,246,.10)}
 .bottom-nav .nav-item:focus-visible{outline:2px solid rgba(47,109,246,.45);outline-offset:2px}
@@ -97,34 +97,11 @@ html[data-theme="midnight"]{--bg-base:#0a111b;--bg-layer-1:radial-gradient(circl
 html[data-theme="midnight"] body::after{opacity:.035;background-image:radial-gradient(rgba(255,255,255,.18) .6px, transparent .7px);background-size:22px 22px;background-position:0 0}
 html[data-theme="rose_aurora"]{--bg-base:#0d0a10;--bg-layer-1:radial-gradient(circle at 22% 10%, rgba(172,108,138,.13), transparent 30%);--bg-layer-2:radial-gradient(circle at 80% 22%, rgba(100,76,130,.10), transparent 28%);--bg-layer-3:linear-gradient(160deg, #130f18 0%, #0e0b13 55%, #09080d 100%);--ink:#f8f0f5;--muted:#b89fac;--line:rgba(195,148,172,.14);--card:rgba(22,16,26,.82);--shadow:0 22px 52px rgba(6,2,10,.44);--shadow-soft:0 10px 26px rgba(6,2,10,.30);--surface-top:rgba(30,21,36,.80);--surface-bottom:rgba(20,15,24,.68);--surface-button:rgba(36,26,42,.88);--surface-chip:rgba(38,27,44,.92);--theme-accent:#c9955c;}
 html[data-theme="rose_aurora"] body::after{opacity:.055;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:180px 180px;mix-blend-mode:soft-light}
-@media (max-width:760px){.shell{padding:14px 14px 138px}.topbar{min-height:70px;padding:0 14px;border-radius:20px}.brand-logo{height:36px}.page-header,.settings-card{padding:18px;border-radius:22px}.field-grid{grid-template-columns:1fr}.settings-head,.kv-row{flex-direction:column}.bottom-nav{gap:4px;padding:6px;border-radius:18px}.bottom-nav .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}.bottom-nav .nav-item svg{width:18px;height:18px}}
+@media (max-width:760px){.shell{padding:14px 14px 132px}.topbar{min-height:70px;padding:0 14px;border-radius:20px}.brand-logo{height:36px}.page-header,.settings-card{padding:18px;border-radius:22px}.field-grid{grid-template-columns:1fr}.settings-head,.kv-row{flex-direction:column}.bottom-nav{gap:4px;padding:6px;border-radius:18px}.bottom-nav .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}.bottom-nav .nav-item svg{width:18px;height:18px}}
 </style>
 <!-- HEARTY THEME BACKGROUND / SURFACE FIX v1 -->
-<script id="hearty-layer1-nav-unification">
-(function(){
-var pages=[
-['home.html','Home','<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'],
-['meals.html','Meals','<path d="M4 3v8"></path><path d="M8 3v8"></path><path d="M6 3v18"></path><path d="M15 3v18"></path><path d="M15 3c3 2 4.5 5 4.5 8h-4.5"></path>'],
-['exercise.html','Exercise','<path d="M6 7v10"></path><path d="M18 7v10"></path><path d="M3 10v4"></path><path d="M21 10v4"></path><path d="M6 12h12"></path>'],
-['progress.html','Progress','<path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M7 15l3-3 3 2 5-7"></path>'],
-['support.html','Support','<path d="M12 21s-7-4.4-9-9a5 5 0 0 1 8-5 5 5 0 0 1 8 5c-2 4.6-9 9-9 9z"></path>'],
-['social.html','Social','<path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M21 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>'],
-['settings.html','Settings','<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.92 3a1.65 1.65 0 0 0 1-1.51V1a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.4.55.72.67.17.07.35.1.53.1H21a2 2 0 1 1 0 4h-.09A1.65 1.65 0 0 0 19.4 15z"></path>']
-];
-function current(){var p=(location.pathname.split('/').pop()||'home.html').toLowerCase();if(!p||p==='index.html')return 'home.html';var m=p.match(/(?:^|[_-])(home|meals|exercise|progress|support|social|settings)(?:[_-].*)?\.html$/);return m?m[1]+'.html':p;}
-function buildNav(){var nav=document.querySelector('.bottom-nav');if(!nav)return;var cur=current();nav.innerHTML=pages.map(function(item){var active=item[0]===cur;return '<a class="nav-item '+(active?'active':'')+'" '+(active?'aria-current="page"':'')+' href="./'+item[0]+'" data-nav-target="'+item[0]+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+item[2]+'</svg><span>'+item[1]+'</span></a>';}).join('');}
-function wireTopbar(){
-  var btn=document.querySelector('.topbar .icon-btn');
-  if(!btn)return;
-  btn.setAttribute('aria-label','Settings');
-  btn.addEventListener('click',function(e){
-    e.preventDefault();
-    location.href='./settings.html';
-  });
-}
-document.addEventListener('DOMContentLoaded',function(){buildNav();wireTopbar();});
-})();
-</script>
+<!-- Header/nav kept static for shipping: all links lowercase. -->
+
 <!-- =========================================================
   Layer 4: Authoritative Theme System
   Purpose: one shared theme reader/writer across all pages.
