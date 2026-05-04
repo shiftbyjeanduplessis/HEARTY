@@ -9523,22 +9523,24 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   function jsonSet(key, value){ try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){} }
   function setText(sel, value){ const el=document.querySelector(sel); if(el) el.textContent=value; }
   function kgFromState(){
-    const profile=jsonGet('hearty_profile',{}), progress=jsonGet('hearty_progress',{});
-    const candidates=[
-      profile.currentWeightKg,
-      profile.weightKg,
-      profile.weight,
-      profile?.progress?.currentWeight,
-      progress.currentWeight,
-      progress.currentWeightKg,
-      localStorage.getItem('heartyCurrentWeightKg')
-    ];
-    for(const v of candidates){
-      const n=parseFloat(String(v||'').replace(',','.'));
-      if(Number.isFinite(n) && n>0) return n;
-    }
-    return 0;
+  const profile=jsonGet('hearty_profile',{}), progress=jsonGet('hearty_progress',{});
+  const candidates=[
+    localStorage.getItem('heartyTodayWeightKg'),
+    localStorage.getItem('heartyCurrentWeightKg'),
+    profile.currentWeightKg,
+    profile.weightKg,
+    profile.weight,
+    profile.progress?.currentWeight,
+    profile.progress?.currentWeightKg,
+    progress.currentWeight,
+    progress.currentWeightKg
+  ];
+  for(const v of candidates){
+    const n=parseFloat(String(v||'').replace(',','.'));
+    if(Number.isFinite(n) && n>20 && n<350) return n;
   }
+  return 0;
+}
   function waterTargetMl(){
     const kg=kgFromState();
     if(!kg) return 0;
