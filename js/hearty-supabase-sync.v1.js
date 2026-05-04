@@ -4,7 +4,18 @@
 */
 (function(){
   'use strict';
-  if(!window.HeartyData) return;
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+if (!window.supabaseClient && window.supabase && window.supabase.createClient) {
+  window.supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  window.heartySupabase = window.supabaseClient;
+}
+   if(!window.HeartyData) return;
 
   function client(){ return window.supabaseClient || window.heartySupabase || window.supabase || null; }
   function today(){ return window.HeartyData.todayKey(); }
