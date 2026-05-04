@@ -9328,11 +9328,11 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   function jsonSet(k, v){try{localStorage.setItem(k, JSON.stringify(v))}catch(e){}}
   function setText(sel, text){const el=document.querySelector(sel); if(el) el.textContent=text;}
   function kgFromState(){
-    const profile=jsonGet('hearty_profile',{}), progress=jsonGet('hearty_progress',{});
-    const v = profile.currentWeightKg || profile.weightKg || (profile.progress&&profile.progress.currentWeight) || progress.currentWeight || localStorage.getItem('heartyCurrentWeightKg');
-    const n = parseFloat(String(v||'').replace(',','.'));
-    return Number.isFinite(n)&&n>0?n:0;
-  }
+  const v = localStorage.getItem('heartyCurrentWeightKg');
+  const n = parseFloat(String(v || '').replace(',','.'));
+  if(Number.isFinite(n) && n > 20 && n < 350) return n;
+  return 0;
+}
   function glpWaterTargetMl(){
     const kg=kgFromState(); if(!kg) return 0;
     const raw=kg*35; // GLP-1 app target: 35ml/kg, rounded to nearest 250ml, capped.
