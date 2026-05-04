@@ -9519,6 +9519,42 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   }
 </style>
 <script id="hearty-home-current-pass-fixes-js">
+function updateInjectionCard(){
+  const card = document.getElementById('injectionCard');
+  if(!card) return;
+
+  const med = JSON.parse(localStorage.getItem('hearty_medication') || '{}');
+
+  if(!med || !med.type){
+    card.setAttribute('hidden','true');
+    return;
+  }
+
+  const today = new Date();
+  const last = med.lastInjectionDate ? new Date(med.lastInjectionDate) : null;
+
+  if(!last){
+    card.setAttribute('hidden','true');
+    return;
+  }
+
+  const diffDays = Math.floor((today - last) / (1000*60*60*24));
+  const interval = med.frequency === 'weekly' ? 7 : 3;
+
+  const nextIn = interval - diffDays;
+
+  if(nextIn <= 0){
+    card.removeAttribute('hidden');
+    card.querySelector('.injection-title').textContent = "Injection due today";
+    card.querySelector('.injection-copy').textContent = "Time for your next dose";
+  } else if(nextIn <= 2){
+    card.removeAttribute('hidden');
+    card.querySelector('.injection-title').textContent = `Next injection in ${nextIn} day${nextIn>1?'s':''}`;
+    card.querySelector('.injection-copy').textContent = "Stay ready";
+  } else {
+    card.setAttribute('hidden','true');
+  }
+}
 (function(){
   const CIRC = 339.292;
   const DAY_LIMITS = { weekly:1, once_weekly:1, twice_weekly:2 };
