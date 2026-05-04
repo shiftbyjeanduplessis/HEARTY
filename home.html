@@ -6627,6 +6627,22 @@ Object.entries(photoInputs).forEach(([key, input]) => {
       };
       persistPhotoState();
       updatePhotoSheetUI();
+        if(!input) return;
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      photoDraftState[key] = {
+        name: file.name || (key + '-photo.jpg'),
+        capturedAt: new Date().toISOString(),
+        approved: false,
+        previewUrl: typeof reader.result === 'string' ? reader.result : ''
+      };
+      persistPhotoState();
+      updatePhotoSheetUI();
+      updatePhotoSubmitBtn();
+    };
     };
     reader.readAsDataURL(file);
   });
