@@ -5666,6 +5666,204 @@ html[data-theme="rose_aurora"] #todaysRhythmCard.first-use-mode .section-label{
   box-shadow:var(--shadow) !important;
 }
 </style>
+
+
+<!-- FINAL VISUAL FIX: top support/hydration spacing + medication alignment -->
+<style id="hearty-home-visual-alignment-final-v2">
+  /* 1) Pull Support + Hydration closer to the progress box */
+  #injectionTopAnchor{
+    display:none !important;
+    height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  #statusMedLayout.home-grid,
+  #statusMedLayout{
+    margin-top:10px !important;
+    padding-top:0 !important;
+    gap:18px !important;
+    align-items:stretch !important;
+  }
+
+  .progress-band{
+    margin-bottom:0 !important;
+  }
+
+  /* 2) Make Support and Hydration headers sit on the same line */
+  #supportCard,
+  .hydration-compact{
+    padding:18px 18px 20px !important;
+    min-height:208px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:flex-start !important;
+  }
+
+  #supportCard .compact-head,
+  #supportCard .support-home-head{
+    margin:0 !important;
+    padding:0 !important;
+    align-items:flex-start !important;
+  }
+
+  #supportCard .section-label,
+  .hydration-compact > .section-label{
+    display:block !important;
+    margin:0 0 14px 0 !important;
+    padding:0 !important;
+    line-height:1 !important;
+    height:auto !important;
+    text-align:left !important;
+  }
+
+  #supportCard .compact-title{
+    margin-top:0 !important;
+  }
+
+  /* 3) Hydration logger: reduce the big top gap and move +250ml up */
+  .hydration-new{
+    margin-top:0 !important;
+    display:grid !important;
+    grid-template-columns:86px minmax(0,1fr) 28px !important;
+    gap:12px !important;
+    align-items:start !important;
+  }
+
+  .hydration-add-btn{
+    width:86px !important;
+    height:86px !important;
+    min-height:86px !important;
+    padding:8px 8px 6px !important;
+    align-self:start !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:0 !important;
+  }
+
+  .hydration-add-icon{
+    margin:0 !important;
+    transform:translateY(2px) !important;
+  }
+
+  .hydration-add-text{
+    margin-top:-5px !important;
+    line-height:1 !important;
+    display:block !important;
+    font-size:.82rem !important;
+    font-weight:900 !important;
+  }
+
+  .hydration-info{
+    padding-top:4px !important;
+    align-self:start !important;
+  }
+
+  .hydration-progress-wrap,
+  .hydration-progress-bar{
+    margin-top:0 !important;
+  }
+
+  .hydration-meta{
+    margin-top:18px !important;
+    display:grid !important;
+    gap:6px !important;
+  }
+
+  .hydration-amount{
+    line-height:1.05 !important;
+  }
+
+  .water-undo-new,
+  #waterUndo{
+    align-self:start !important;
+    margin-top:34px !important;
+  }
+
+  /* 4) Medication card: keep it elegant and left aligned */
+  #injectionCard{
+    text-align:left !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    padding:18px 20px !important;
+    min-height:170px !important;
+    background:linear-gradient(180deg, rgba(255,250,242,.98), rgba(255,255,255,.96)) !important;
+    border-color:rgba(245,158,11,.22) !important;
+    box-shadow:0 16px 34px rgba(245,158,11,.08) !important;
+  }
+
+  #injectionCard .section-label{
+    text-align:left !important;
+    margin:0 0 12px 0 !important;
+    padding:0 !important;
+    line-height:1 !important;
+  }
+
+  #injectionCard .medication-topline{
+    display:flex !important;
+    align-items:flex-start !important;
+    justify-content:space-between !important;
+    gap:12px !important;
+    margin:0 !important;
+    text-align:left !important;
+  }
+
+  #injectionCard .compact-title,
+  #injectionCard .injection-title{
+    text-align:left !important;
+    margin:0 !important;
+    font-size:1.06rem !important;
+    line-height:1.22 !important;
+    font-weight:850 !important;
+    letter-spacing:-.025em !important;
+  }
+
+  #injectionCard .compact-copy,
+  #injectionCard .injection-copy{
+    text-align:left !important;
+    margin:10px 0 0 0 !important;
+    max-width:34ch !important;
+    line-height:1.45 !important;
+    color:#65758a !important;
+    font-weight:650 !important;
+  }
+
+  #injectionCard .injection-actions{
+    display:flex !important;
+    justify-content:flex-end !important;
+    align-items:flex-start !important;
+    margin:0 !important;
+  }
+
+  #injectionCard .home-dose-btn,
+  #injectionCard button{
+    border-radius:14px !important;
+  }
+
+  @media(max-width:760px){
+    #statusMedLayout.home-grid,
+    #statusMedLayout{
+      margin-top:8px !important;
+      gap:14px !important;
+    }
+    #supportCard,
+    .hydration-compact,
+    #injectionCard{
+      min-height:auto !important;
+    }
+    .hydration-new{
+      grid-template-columns:82px minmax(0,1fr) 28px !important;
+      gap:10px !important;
+    }
+    .hydration-add-btn{
+      width:82px !important;
+      height:82px !important;
+      min-height:82px !important;
+    }
+  }
+</style>
 </head>
 <body data-page="home">
 <div class="shell" id="pageRoot">
@@ -9111,17 +9309,47 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   const TOTAL_LESSONS = 10;
   const LESSON_KEY = 'heartyLessonsV1';
   const lessons = [
-    { title:'Welcome — Start Here', body:'Hearty works best when you keep the basics simple: weigh in, drink water, move gently, and learn one useful idea per day. You do not need a perfect day to make progress.' },
-    { title:'What to expect in week one', body:'The first week is about rhythm, not perfection. Appetite, energy and digestion can shift. Keep portions manageable, focus on protein first, and use Support Mode on harder days.' },
-    { title:'Protein comes first', body:'Protein helps protect muscle while weight drops. Start with the protein part of meals when appetite is low. Smaller meals are fine if you still keep the day protein-forward.' },
-    { title:'Why strength beats extra cardio', body:'Cardio can help fitness, but strength work tells your body to keep muscle. Hearty uses simple movement and strength progressions so weight loss does not become muscle loss.' },
-    { title:'How to use Support Mode', body:'Support Mode is for nausea, low appetite, fatigue, constipation or tough medication days. It softens meals and movement automatically so you can keep going without forcing the normal plan.' },
-    { title:'The scale is not the whole story', body:'Daily weight can jump around because of water, digestion and hormones. Use the trend, photos, waist, habits and how clothes fit to understand progress more clearly.' },
-    { title:'Photos and privacy', body:'Progress photos are for you. Front photos matter most. Side and back are optional. Use them monthly to see changes the scale may miss.' },
-    { title:'Protecting muscle while appetite is low', body:'Focus on protein at the first meal you can tolerate. Small frequent meals are acceptable on harder days. A short walk and hydration can improve tolerance, but do not force volume if nausea is elevated.' },
-    { title:'Building a routine that survives hard days', body:'A good plan must survive imperfect days. When a day is difficult, reduce the target instead of quitting. One small action still keeps the rhythm alive.' },
-    { title:'Your long-term rhythm', body:'The goal is a repeatable lifestyle: simple meals, regular movement, honest tracking and support when needed. Keep the system boring enough to repeat and strong enough to work.' }
-  ];
+    {
+        "title": "What Actually Makes This Work",
+        "body": "<p>You do not need perfect days. You need repeatable ones.</p><p>GLP-1 medication can reduce appetite, but it does not automatically build a lifestyle. That is where many people get stuck. They eat less for a while, lose some weight, then drift because there is no daily structure holding the process together.</p><p>Hearty is built around rhythm: weigh in, hydrate, move, eat protein-first meals, and use Support Mode when the day is harder. These are small actions, but together they create a system that is difficult to fall out of.</p><p>The goal is not to be intense. The goal is to keep contact with the plan even on messy days. A low-energy day can still count if you drink water, eat something protein-based, and take a short walk.</p><p><strong>Today’s rule:</strong> do the smallest version of the plan rather than quitting the plan.</p>"
+    },
+    {
+        "title": "The Appetite Trap",
+        "body": "<p>Lower appetite can feel like a win, especially in the first weeks. But eating as little as possible is not the goal.</p><p>If intake drops too low for too long, people often start feeling flat, weak, cold, irritable, or unmotivated. Training suffers. Protein drops. Muscle loss becomes more likely. Then, later, hunger can rebound and the plan starts feeling unstable.</p><p>The better target is: eat enough, but keep it simple. Start with protein, add vegetables or fruit, and include starch when your plan calls for it or when energy is low. Small meals are fine. Simple meals are fine. Skipping everything is not the goal.</p><p>On low-appetite days, think in anchors: yoghurt, eggs, tuna, chicken, cottage cheese, or a small protein-based meal. You are not trying to force huge portions. You are protecting the process.</p><p><strong>Today’s rule:</strong> low appetite means smaller food, not no food.</p>"
+    },
+    {
+        "title": "Protein Is Your Insurance Policy",
+        "body": "<p>Weight loss is not just about becoming lighter. It is about losing fat while keeping as much muscle as possible.</p><p>Muscle matters because it shapes how your body looks, supports your joints, helps your metabolism, and makes daily life easier. If you lose too much muscle while losing weight, you can end up lighter but softer, weaker, and more likely to regain later.</p><p>GLP-1 medication does not protect muscle for you. Protein and strength work do that.</p><p>This is why Hearty keeps meals protein-forward. You do not need complicated macro tracking to start. Just ask one question before each meal: where is the protein?</p><p>Good options include eggs, chicken, fish, lean beef, tuna, yoghurt, cottage cheese, or another lean protein that fits your diet.</p><p><strong>Today’s rule:</strong> every meal starts with protein. Everything else comes after.</p>"
+    },
+    {
+        "title": "Why Strength Beats Extra Cardio",
+        "body": "<p>Cardio can improve fitness and health, but it is not the main signal your body needs during weight loss.</p><p>When calories drop, your body becomes more willing to give up tissue it does not think it needs. Strength training tells your body: keep this muscle, we still use it.</p><p>That does not mean you need hard gym sessions from day one. For many users, the right starting point is simple: walking, wall push-ups, sit-to-stands, supported squats, light rows, and gradual progression. The goal is to build a body that can carry you well as weight comes down.</p><p>Extra cardio can sometimes increase fatigue and appetite without giving the same muscle-preserving signal. Strength work is the foundation. Walking supports it.</p><p><strong>Today’s rule:</strong> walk for health, strengthen for shape and long-term results.</p>"
+    },
+    {
+        "title": "How to Use Support Mode Properly",
+        "body": "<p>Support Mode is not a failure button. It is a continuity button.</p><p>Some days on GLP-1 are harder: nausea, constipation, low appetite, reflux, fatigue, or just feeling off. Many people respond by abandoning the whole plan for the day. That creates an on-off pattern that becomes discouraging.</p><p>Support Mode is designed to keep you inside the system while lowering the demand. Meals become simpler. Movement becomes lighter. The goal changes from “perform well” to “stay connected.”</p><p>That might mean smaller meals, softer foods, more hydration focus, a shorter walk, or delaying intensity. You are not trying to prove toughness. You are trying to protect consistency.</p><p>Use Support Mode early. Do not wait until the day has already collapsed.</p><p><strong>Today’s rule:</strong> when symptoms rise, reduce the target instead of quitting the day.</p>"
+    },
+    {
+        "title": "The Scale Is Useful, But It Lies Daily",
+        "body": "<p>The scale is a tool, not a verdict.</p><p>Daily weight can jump because of water, salt, constipation, hormones, travel, stress, late meals, hard workouts, or poor sleep. None of those automatically mean fat gain.</p><p>This is why Hearty cares about the trend, not one dramatic weigh-in. A single number can make you emotional. A trend gives you information.</p><p>Progress photos, waist measurements, clothes, energy, strength, and consistency all add context. The scale tells one part of the story. It does not tell the whole story.</p><p>The best habit is to weigh consistently, record it, and move on. Do not negotiate with the number all day.</p><p><strong>Today’s rule:</strong> log the weight, then judge progress by the pattern.</p>"
+    },
+    {
+        "title": "Progress Photos Show What the Scale Misses",
+        "body": "<p>Photos can feel uncomfortable at first, but they are one of the most useful tools in a long fat-loss journey.</p><p>The scale can stay flat while your shape changes. This can happen when water shifts, digestion changes, or muscle is better preserved. Photos help you see changes that numbers hide.</p><p>You do not need perfect lighting or a dramatic pose. In fact, consistency matters more than looking good. Same mirror, same distance, same lighting, similar clothing. Front photo matters most. Side and back are helpful, but optional.</p><p>Do not use photos to punish yourself. Use them as evidence. Future you will be grateful that you captured the starting point clearly.</p><p><strong>Today’s rule:</strong> take honest photos for information, not judgment.</p>"
+    },
+    {
+        "title": "Hydration Is Not a Wellness Bonus",
+        "body": "<p>Hydration becomes more important when appetite and intake drop.</p><p>If you are eating less, you may also be getting less fluid from food. Some people also drink less because they are not thinking about meals as often. That can worsen headaches, constipation, fatigue, and low energy.</p><p>Water will not magically cause fat loss, but dehydration can make the plan feel harder than it needs to be. The point of the water logger is not perfection. It is awareness.</p><p>Small amounts count. A glass now is better than a huge catch-up attempt at night. If plain water feels difficult, use safe options that suit you, like herbal tea or diluted sugar-free drinks.</p><p><strong>Today’s rule:</strong> log water early so hydration does not become an evening rescue mission.</p>"
+    },
+    {
+        "title": "Hard Days Still Count",
+        "body": "<p>One of the biggest differences between successful and unsuccessful plans is how they handle bad days.</p><p>Most people do well when life is calm. The real test is nausea, stress, travel, low sleep, busy work, family pressure, or feeling disappointed by the scale. If the plan only works on perfect days, it is too fragile.</p><p>Hearty is built around minimum actions. On a hard day, you can still drink water, eat protein, walk briefly, and use Support Mode. That is not a wasted day. That is a maintenance day.</p><p>Maintenance days are powerful because they stop the “I failed, so I may as well stop” spiral.</p><p><strong>Today’s rule:</strong> never turn a hard day into a lost week.</p>"
+    },
+    {
+        "title": "Your Long-Term Rhythm",
+        "body": "<p>The goal is not to live inside an app forever. The goal is to learn a rhythm that becomes normal.</p><p>At first, Hearty gives structure: daily tasks, lessons, meal planning, support adjustments, photos, weight tracking, and movement. Over time, these behaviours should start feeling familiar. You learn what meals work, what symptoms need support, what movement you can repeat, and what progress really looks like.</p><p>Long-term success usually comes from boring basics done consistently: protein, hydration, walking, strength, tracking, and flexible support when life is not ideal.</p><p>You are not trying to become a different person overnight. You are building a system that your future self can keep using.</p><p><strong>Today’s rule:</strong> make the plan simple enough to repeat and strong enough to trust.</p>"
+    }
+];
   function todayKey(){ return new Date().toISOString().slice(0,10); }
   function loadState(){
     try{
@@ -9183,7 +9411,7 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
     if(task) task.style.display = 'none';
     if(counter) counter.textContent = `Lesson ${lessonIndex + 1}/${TOTAL_LESSONS}`;
     if(title) title.textContent = lesson.title;
-    body.textContent = lesson.body;
+    body.innerHTML = lesson.body;
     const taskTitle = task && task.querySelector('.task-title');
     let taskSub = task && task.querySelector('.task-sub');
     if(taskTitle) taskTitle.textContent = `Today's lesson — ${lessonIndex + 1}/${TOTAL_LESSONS}`;
@@ -10438,6 +10666,318 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   setTimeout(refreshButton, 250);
   setTimeout(refreshButton, 1000);
   window.heartyRefreshPhotoBtn = refreshButton;
+})();
+</script>
+
+
+<style id="hearty-home-spacing-medication-lessons-final-v1">
+/* Final Home polish: tighter upper grid, aligned headers, cleaner water logger, useful medication card, readable lessons. */
+#statusMedLayout{
+  margin-top:-8px !important;
+  gap:14px !important;
+  align-items:start !important;
+}
+#statusMedLayout > .compact-card,
+#supportCard,
+.hydration-compact,
+#injectionCard{
+  padding:18px !important;
+  min-height:unset !important;
+  align-self:start !important;
+}
+#supportCard .section-label,
+.hydration-compact > .section-label,
+#injectionCard > .section-label{
+  margin:0 0 10px 0 !important;
+  text-align:left !important;
+  line-height:1 !important;
+  display:block !important;
+}
+#supportCard .compact-head,
+#supportCard .support-home-head{
+  margin:0 !important;
+  align-items:flex-start !important;
+}
+#supportCard .support-home-copy{
+  margin:0 !important;
+}
+#supportCard .support-actions-row{
+  margin-top:14px !important;
+}
+.hydration-compact{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+}
+.hydration-compact #hydrationLoggerClean,
+.hydration-compact .hydration-new{
+  margin-top:0 !important;
+  display:grid !important;
+  grid-template-columns:auto minmax(0,1fr) auto !important;
+  gap:12px !important;
+  align-items:center !important;
+}
+.hydration-add-btn{
+  width:74px !important;
+  height:74px !important;
+  min-width:74px !important;
+  border-radius:24px !important;
+}
+.hydration-info{
+  min-width:0 !important;
+  display:grid !important;
+  gap:9px !important;
+  align-content:center !important;
+}
+.hydration-meta{
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:space-between !important;
+  gap:10px !important;
+  flex-wrap:wrap !important;
+}
+.hydration-amount{
+  font-size:1.06rem !important;
+  font-weight:900 !important;
+  letter-spacing:-.02em !important;
+  color:var(--ink) !important;
+}
+.hydration-sub{
+  font-size:.82rem !important;
+  color:var(--muted) !important;
+  font-weight:700 !important;
+}
+.water-undo-new{
+  align-self:center !important;
+}
+#injectionCard{
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--theme-warning) 8%, var(--card)), var(--card)) !important;
+  border-color:color-mix(in srgb, var(--theme-warning) 22%, var(--line)) !important;
+  box-shadow:0 14px 32px color-mix(in srgb, var(--theme-warning) 10%, transparent), var(--shadow-soft) !important;
+}
+#injectionCard .medication-topline{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  margin:0 !important;
+}
+#injectionCard .injection-title{
+  text-align:left !important;
+  font-size:1.05rem !important;
+  font-weight:880 !important;
+  line-height:1.18 !important;
+  letter-spacing:-.025em !important;
+}
+#injectionCard .injection-copy{
+  text-align:left !important;
+  margin-top:8px !important;
+  max-width:46ch !important;
+  color:var(--muted) !important;
+  font-weight:650 !important;
+  line-height:1.45 !important;
+}
+#injectionCard .injection-actions{
+  margin:0 !important;
+  flex:0 0 auto !important;
+}
+#homeDoseDoneBtn,
+.home-dose-btn,
+.home-injection-check{
+  margin-top:14px !important;
+  width:100% !important;
+  min-height:46px !important;
+  border-radius:16px !important;
+  font-weight:900 !important;
+}
+#lessonCard .lesson-body{
+  font-size:.98rem !important;
+  line-height:1.62 !important;
+  color:var(--muted) !important;
+  max-height:360px !important;
+  overflow:auto !important;
+  padding-right:6px !important;
+}
+#lessonCard .lesson-body p{
+  margin:0 0 12px 0 !important;
+}
+#lessonCard .lesson-body p:last-child{
+  margin-bottom:0 !important;
+}
+#lessonCard .lesson-body strong{
+  color:var(--ink) !important;
+  font-weight:900 !important;
+}
+@media(max-width:760px){
+  #statusMedLayout{margin-top:-4px !important;gap:12px !important;}
+  .hydration-compact #hydrationLoggerClean,
+  .hydration-compact .hydration-new{grid-template-columns:auto minmax(0,1fr) auto !important;gap:10px !important;}
+  .hydration-add-btn{width:64px !important;height:64px !important;min-width:64px !important;border-radius:22px !important;}
+  #lessonCard .lesson-body{max-height:420px !important;}
+}
+</style>
+
+
+
+<!-- FINAL MICRO-SPACING FIX: medication card and row gaps -->
+<style id="home-final-micro-spacing-fix-v11">
+  /* Pull the second row closer to Support/Hydration */
+  #statusMedLayout,
+  #statusMedLayout.home-grid{
+    margin-top:14px !important;
+    gap:14px !important;
+    align-items:start !important;
+  }
+
+  /* Stop the medication card being stretched into a tall empty block */
+  #statusMedLayout #injectionCard,
+  #injectionCard.medication-compact,
+  #injectionCard.medication-card{
+    min-height:132px !important;
+    height:auto !important;
+    align-self:start !important;
+    justify-content:flex-start !important;
+    padding:16px 18px 14px !important;
+    gap:0 !important;
+  }
+
+  #injectionCard .section-label{
+    text-align:left !important;
+    margin:0 0 12px 0 !important;
+    line-height:1 !important;
+  }
+
+  #injectionCard .medication-topline{
+    display:block !important;
+    margin:0 !important;
+    padding:0 !important;
+    text-align:left !important;
+  }
+
+  #injectionCard .compact-title,
+  #injectionCard .injection-title{
+    margin:0 !important;
+    text-align:left !important;
+    line-height:1.2 !important;
+  }
+
+  #injectionCard .compact-copy,
+  #injectionCard .injection-copy{
+    margin:10px 0 0 0 !important;
+    text-align:left !important;
+    line-height:1.35 !important;
+    max-width:38ch !important;
+  }
+
+  #injectionCard .injection-actions{
+    margin:10px 0 0 0 !important;
+    padding:0 !important;
+    min-height:0 !important;
+    display:block !important;
+  }
+
+  #injectionCard .injection-actions:empty{
+    display:none !important;
+  }
+
+  #homeDoseDoneBtn,
+  .home-dose-btn{
+    margin-top:0 !important;
+    min-height:42px !important;
+  }
+
+  /* Keep badge card aligned, but don't let it force medication height */
+  #statusMedLayout #markerMiniRow{
+    min-height:132px !important;
+    height:auto !important;
+    align-self:start !important;
+  }
+
+  /* Slightly reduce top row dead height without changing the visual structure */
+  #topMiniRow{
+    gap:14px !important;
+  }
+
+  #topMiniRow > #supportCard,
+  #topMiniRow > .hydration-compact{
+    min-height:188px !important;
+  }
+
+  @media(max-width:820px){
+    #statusMedLayout,
+    #statusMedLayout.home-grid{
+      margin-top:12px !important;
+      gap:12px !important;
+    }
+    #statusMedLayout #injectionCard,
+    #statusMedLayout #markerMiniRow,
+    #topMiniRow > #supportCard,
+    #topMiniRow > .hydration-compact{
+      min-height:auto !important;
+    }
+  }
+</style>
+
+<script id="hearty-medication-card-copy-final-v1">
+(function(){
+  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function readJSON(k,f){try{return JSON.parse(localStorage.getItem(k)||JSON.stringify(f));}catch(e){return f;}}
+  function fmt(d){return d.toLocaleDateString('en-ZA',{weekday:'long',day:'numeric',month:'short'});}
+  function nextDateFor(day){
+    const idx=DAYS.findIndex(x=>x.toLowerCase()===String(day||'').toLowerCase());
+    if(idx<0) return null;
+    const now=new Date();
+    const d=new Date(now);
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate()+((idx-now.getDay()+7)%7));
+    return d;
+  }
+  function render(){
+    const card=document.getElementById('injectionCard');
+    if(!card) return;
+    card.hidden=false;
+    const profile=readJSON('hearty_profile',{});
+    const med=profile.medication||{};
+    let days=readJSON('heartyInjectionDays',null)||med.injectionDays||[];
+    if(!Array.isArray(days)) days=[];
+    const legacy=localStorage.getItem('heartyInjectionDay')||profile.injectionDay||med.injectionDay||document.body?.dataset?.injectionDayName||'';
+    if(!days.length && legacy) days=[legacy];
+    const medName=localStorage.getItem('heartyMedicationName')||med.name||profile.medicationName||document.body?.dataset?.medication||'Medication';
+    const title=card.querySelector('.injection-title');
+    const copy=card.querySelector('.injection-copy');
+    const actions=card.querySelector('#injectionActions')||card.querySelector('.injection-actions');
+    const todayName=DAYS[new Date().getDay()];
+    const dueToday=days.some(d=>String(d).toLowerCase()===todayName.toLowerCase());
+    const todayKey=new Date().toISOString().slice(0,10);
+    const doneKey='heartyInjectionLogged_'+todayKey;
+    const done=localStorage.getItem(doneKey)==='true';
+    if(actions) actions.innerHTML='';
+    if(dueToday){
+      if(title) title.textContent=done?'Injection done today':'Injection due today';
+      if(copy) copy.textContent=done?`${medName} has been marked complete for today.`:`${medName} is due today. Tick it off once your dose is done.`;
+      if(actions){
+        const btn=document.createElement('button');
+        btn.type='button'; btn.id='homeDoseDoneBtn'; btn.className='home-dose-btn'+(done?' done':'');
+        btn.textContent=done?'✓ Done':'Mark done';
+        btn.onclick=function(){localStorage.setItem(doneKey,'true');render();};
+        actions.appendChild(btn);
+      }
+      return;
+    }
+    const next=days.map(d=>({day:d,date:nextDateFor(d)})).filter(x=>x.date).sort((a,b)=>a.date-b.date)[0];
+    if(next){
+      if(title) title.textContent='Next injection';
+      if(copy) copy.textContent=`${medName} is next scheduled for ${fmt(next.date)}. You will be able to tick it off here on the day.`;
+    }else{
+      if(title) title.textContent='Medication schedule';
+      if(copy) copy.textContent='Add your medication name and injection day in Settings so Hearty can show your next dose here.';
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',render); else render();
+  setTimeout(render,300); setTimeout(render,1000);
 })();
 </script>
 
