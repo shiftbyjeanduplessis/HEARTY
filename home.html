@@ -9797,115 +9797,11 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
       const row=document.querySelector('[data-photo-slot="'+key+'"]');
       const status=document.getElementById(key+'PhotoState');
       const img=document.getElementById(key+'PhotoPreview');
-      if(row){
-        row.classList.toggle('has-file', !!item);
-        row.classList.toggle('approved', !!(item&&item.approved));
-      }
-      if(status) status.textContent = item&&item.approved ? 'APPROVED' : (item ? 'REVIEW' : (key==='back'?'OPTIONAL':'PENDING'));
-      if(img){
-        if(item && item.previewUrl){ img.src=item.previewUrl; img.style.display='block'; }
-        else { img.removeAttribute('src'); img.style.display='none'; }
-      }
-    });
-    const selected=Object.values(slots).filter(Boolean).length;
-    const btn=document.getElementById('completePhotoCheckInBtn');
-    if(btn){
-      btn.disabled = selected < 1;
-      btn.textContent = selected < 1 ? 'Use selected photo(s)' : 'Use '+selected+' photo'+(selected===1?'':'s');
-    }
-  }
-  function finalizePhotos(){
-    const slots=getPhotoState();
-    const keys=['front','side','back'].filter(k=>!!slots[k]);
-    if(!keys.length) return false;
-    keys.forEach(k=>{slots[k].approved=true;});
-    savePhotoState(slots);
-    localStorage.setItem('heartyLastPhotoCheckInAt', new Date().toISOString());
-    localStorage.setItem('heartyLastPhotoCheckInCount', String(keys.length));
-    writeDailyFlag('heartyPhotoCheckInComplete', true);
-    setTaskDone('photoTask', true);
-    updatePhotoUI();
-    runRefresh();
-    const sheet=document.getElementById('photoSheet');
-    if(sheet){sheet.classList.remove('show');sheet.setAttribute('aria-hidden','true');document.body.style.overflow='';}
-    return true;
-  }
-  function bindPhotoInput(key){
-    const input=document.getElementById('photo'+key[0].toUpperCase()+key.slice(1)+'Input');
-    if(!input || input.dataset.finalPhotoBound==='1') return;
-    input.dataset.finalPhotoBound='1';
-    input.addEventListener('change', function(){
-      const file=input.files && input.files[0];
-      if(!file) return;
-      const reader=new FileReader();
-      reader.onload=function(){
-        const slots=getPhotoState();
-        slots[key]={name:file.name || (key+'-photo.jpg'),capturedAt:new Date().toISOString(),approved:false,previewUrl:typeof reader.result==='string'?reader.result:''};
-        savePhotoState(slots);
-        updatePhotoUI();
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  ['front','side','back'].forEach(bindPhotoInput);
-
-  document.addEventListener('click', function(e){
-    const trigger=e.target.closest('[data-photo-trigger]');
-    if(trigger){
-      e.preventDefault(); e.stopPropagation();
-      const key=trigger.dataset.photoTrigger;
-      const input=document.getElementById('photo'+key[0].toUpperCase()+key.slice(1)+'Input');
-      if(input){ input.value=''; input.click(); }
-      return;
-    }
-    const approve=e.target.closest('[data-photo-approve]');
-    if(approve){
-      e.preventDefault(); e.stopPropagation();
-      const key=approve.dataset.photoApprove;
-      const slots=getPhotoState();
-      if(slots[key]){ slots[key].approved=true; savePhotoState(slots); updatePhotoUI(); }
-      return;
-    }
-    const retake=e.target.closest('[data-photo-retake]');
-    if(retake){
-      e.preventDefault(); e.stopPropagation();
-      const key=retake.dataset.photoRetake;
-      const slots=getPhotoState(); slots[key]=null; savePhotoState(slots); updatePhotoUI();
-      const input=document.getElementById('photo'+key[0].toUpperCase()+key.slice(1)+'Input');
-      if(input){ input.value=''; input.click(); }
-      return;
-    }
-    if(e.target.closest('#completePhotoCheckInBtn')){
-      e.preventDefault(); e.stopPropagation();
-      finalizePhotos();
-      return;
-    }
-    if(e.target.closest('[data-action="walk"]')){
-      setTimeout(function(){
-        writeDailyFlag('heartyWalkComplete', taskDone('walkTask'));
-        runRefresh();
-      },60);
-      setTimeout(runRefresh,300);
-    }
-    if(e.target.closest('#protocolList .task-action-btn')){
-      setTimeout(runRefresh,100);
-      setTimeout(runRefresh,400);
-    }
-  }, true);
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){updatePhotoUI();runRefresh();});
-  else { updatePhotoUI(); runRefresh(); }
-  setTimeout(runRefresh,250);
-  setTimeout(runRefresh,1000);
-  window.heartyRefreshFirstUseGlow = runRefresh;
-})();
-</script>
-
-<style id="final-hydration-ring-visual-fix-v1">
-/* Final hydration visual lock: the logger and top ring use the same 250ml state. */
+     <style id="final-hydration-ring-visual-fix-v1">
 #waterValue{white-space:nowrap;}
 #waterProgressFill{width:0%;transition:width .25s ease;}
 </style>
+
 <script id="final-hydration-ring-visual-fix-v1">
 (function(){
   const CIRC = 339.292;
@@ -9915,80 +9811,94 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
   function parseJSON(value, fallback){
     try { return JSON.parse(value); } catch(e){ return fallback; }
   }
+
   function getProfileWeightKg(){
     const keys = ['heartyProfile','heartyUserProfile','heartyHomeProfile','heartyProfileV1','hearty_profile'];
     for(const key of keys){
       const obj = parseJSON(localStorage.getItem(key), null);
       if(!obj) continue;
-      const candidates = [obj.currentWeightKg,obj.weightKg,obj.weight,obj.currentWeight,obj.startWeightKg,obj.profile?.currentWeightKg,obj.profile?.weightKg];
+      const candidates = [
+        obj.currentWeightKg,obj.weightKg,obj.weight,obj.currentWeight,obj.startWeightKg,
+        obj.profile?.currentWeightKg,obj.profile?.weightKg
+      ];
       for(const v of candidates){
         const n = Number(v);
         if(Number.isFinite(n) && n > 20 && n < 350) return n;
       }
     }
-    const weightText = document.body.textContent.match(/(\d{2,3}(?:\.\d+)?)\s*kg/i);
-    if(weightText){
-      const n = Number(weightText[1]);
-      if(Number.isFinite(n) && n > 20 && n < 350) return n;
-    }
     return null;
   }
+
   function targetMl(){
     const kg = getProfileWeightKg();
-    if(!kg) return 0;
-    const raw = kg * 35;
-    const rounded = Math.round(raw / 250) * 250;
+    if(!kg) return 2000;
+    const rounded = Math.round((kg * 35) / 250) * 250;
     return Math.min(3700, Math.max(1500, rounded));
   }
+
   function readMl(){
     const logs = parseJSON(localStorage.getItem(STORE_KEY), []);
     const today = Array.isArray(logs) ? logs.find(x => x && x.date === todayKey) : null;
-    if(today){
-      if(Number.isFinite(Number(today.ml))) return Math.max(0, Number(today.ml));
-      if(Number.isFinite(Number(today.liters))) return Math.max(0, Math.round(Number(today.liters) * 1000));
-    }
+    if(today && Number.isFinite(Number(today.ml))) return Math.max(0, Number(today.ml));
     return 0;
   }
+
   function writeMl(ml){
     const target = targetMl();
     const logs = parseJSON(localStorage.getItem(STORE_KEY), []);
     const list = Array.isArray(logs) ? logs.filter(x => !(x && x.date === todayKey)) : [];
-    list.push({date:todayKey, ml, liters:Math.round((ml/1000)*100)/100, targetMl:target, targetLiters:Math.round((target/1000)*100)/100});
+    list.push({
+      date: todayKey,
+      ml,
+      liters: Math.round((ml/1000)*100)/100,
+      targetMl: target,
+      targetLiters: Math.round((target/1000)*100)/100
+    });
     localStorage.setItem(STORE_KEY, JSON.stringify(list));
   }
+
+  function setRing(circle, pct){
+    if(!circle) return;
+    const p = Math.max(0, Math.min(100, Number(pct) || 0));
+    circle.style.strokeDasharray = String(CIRC);
+    circle.style.strokeDashoffset = String(CIRC - (CIRC * p / 100));
+  }
+
   function hydrationCircle(){
     const value = document.getElementById('waterValue');
     const wrap = value ? value.closest('.ring-wrap') : null;
     return wrap ? wrap.querySelector('.ring-progress') : document.querySelectorAll('.ring-progress')[1];
   }
+
   function renderHydration(){
     const ml = readMl();
     const target = targetMl();
     const pct = target ? Math.max(0, Math.min(100, (ml / target) * 100)) : 0;
-    const circle = hydrationCircle();
-    if(circle){
-      circle.style.strokeDasharray = String(CIRC);
-      circle.style.strokeDashoffset = String(CIRC * (1 - pct/100));
-      circle.style.opacity = pct > 0 ? '1' : '.95';
-    }
+
+    setRing(hydrationCircle(), pct);
+
     const fill = document.getElementById('waterProgressFill');
     if(fill) fill.style.width = pct.toFixed(1) + '%';
+
     const value = document.getElementById('waterValue');
     if(value) value.textContent = (ml/1000).toFixed(1) + 'L';
+
     const count = document.getElementById('waterGlassCount');
-    if(count) count.textContent = target ? `${(ml/1000).toFixed(2).replace(/\.00$/,'')} L / ${(target/1000).toFixed(1)} L` : `${(ml/1000).toFixed(1)} L`;
-    const sub = document.querySelector('.hydration-sub');
-    if(sub) sub.textContent = target ? 'Tap +250ml to log water' : 'Add your first weigh-in to set your water target';
+    if(count) count.textContent = `${(ml/1000).toFixed(2).replace(/\.00$/,'')} L / ${(target/1000).toFixed(1)} L`;
+
     const undo = document.getElementById('waterUndo');
     if(undo) undo.disabled = ml <= 0;
+
+    if(window.heartyUpdateRings) window.heartyUpdateRings();
   }
+
   function addWater(delta){
     const target = targetMl();
-    const current = readMl();
-    const next = Math.max(0, target ? Math.min(target, current + delta) : current + delta);
+    const next = Math.max(0, Math.min(target, readMl() + delta));
     writeMl(next);
     renderHydration();
   }
+
   function bind(){
     const add = document.getElementById('waterGlass');
     if(add && add.dataset.finalHydrationBound !== '1'){
@@ -9999,6 +9909,7 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
         addWater(250);
       }, true);
     }
+
     const undo = document.getElementById('waterUndo');
     if(undo && undo.dataset.finalHydrationBound !== '1'){
       undo.dataset.finalHydrationBound = '1';
@@ -10008,15 +9919,19 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
         addWater(-250);
       }, true);
     }
+
     renderHydration();
     setTimeout(renderHydration, 150);
     setTimeout(renderHydration, 800);
   }
+
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind);
   else bind();
+
   window.heartyRenderHydration = renderHydration;
 })();
 </script>
+
 <script id="hearty-ring-visual-fix-v1">
 (function(){
   const CIRC = 339.292;
@@ -10026,8 +9941,8 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
   function setRing(circle, pct){
     if(!circle) return;
     const p = clamp(pct);
-    circle.style.strokeDasharray = CIRC;
-    circle.style.strokeDashoffset = CIRC - (CIRC * p / 100);
+    circle.style.strokeDasharray = String(CIRC);
+    circle.style.strokeDashoffset = String(CIRC - (CIRC * p / 100));
   }
 
   function updateRings(){
@@ -10036,7 +9951,7 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
       const value = block.querySelector('.ring-value');
       if(!circle || !value) return;
 
-      let txt = value.textContent.trim();
+      const txt = value.textContent.trim();
       let pct = 0;
 
       if(txt.includes('%')){
@@ -10059,5 +9974,6 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
   setTimeout(updateRings, 500);
 })();
 </script>
+
 </body>
 </html>
