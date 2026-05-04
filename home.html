@@ -6565,6 +6565,69 @@ function resetPhotoDraftState(){
       }, 50);
     }
 
+    const HEARTY_PROGRESS_KEY = 'heartyProgressV1';
+
+    function getProgressState(){
+      try{
+        return JSON.parse(localStorage.getItem(HEARTY_PROGRESS_KEY)) || {
+          weighIns: [],
+          waterLogs: {},
+          movementLogs: {},
+          photoLogs: {},
+          injectionLogs: {}
+        };
+      }catch(e){
+        return {
+          weighIns: [],
+          waterLogs: {},
+          movementLogs: {},
+          photoLogs: {},
+          injectionLogs: {}
+        };
+      }
+    }
+
+    function saveProgressState(state){
+      localStorage.setItem(HEARTY_PROGRESS_KEY, JSON.stringify(state));
+    }
+
+    function saveWeighInToProgress(weightKg){
+      const clean = roundWeight(Number(weightKg));
+      if(!Number.isFinite(clean) || clean <= 0) return null;
+
+      const state = getProgressState();
+      const today = todayKey;
+
+      state.weighIns = Array.isArray(state.weighIns) ? state.weighIns : [];
+
+      const entry = {
+        date: today,
+        weightKg: clean,
+        createdAt: new Date().toISOString(),
+        source: 'home-weigh-in'
+      };
+
+      const existingIndex = state.weighIns.findIndex(w => w && w.date === today);
+      if(existingIndex >= 0){
+        state.weighIns[existingIndex] = { ...state.weighIns[existingIndex], ...entry };
+      } else {
+        state.weighIns.push(entry);
+      }
+
+      state.currentWeightKg = clean;
+      if(state.startingWeightKg == null || state.startingWeightKg === ''){
+        state.startingWeightKg = clean;
+      }
+
+      saveProgressState(state);
+
+      window.dispatchEvent(new CustomEvent('hearty:progress-updated', {
+        detail: { type: 'weigh-in', entry }
+      }));
+
+      return entry;
+    }
+
     function saveWeightEntry(){
       const parsed = parseFloat(String(weightValueInput.value).replace(',', '.'));
       if(!Number.isFinite(parsed) || parsed <= 0){
@@ -6572,15 +6635,35 @@ function resetPhotoDraftState(){
         return;
       }
       const clean = roundWeight(parsed);
+
+      // Legacy Home keys kept so existing Home UI/rings continue to work.
       writeDailyNumber('heartyTodayWeightKg', clean);
-      upsertDatedLog('hearty_weight_logs', { date: todayKey, value: clean, source: 'home-weigh-in' });
+      localStorage.setItem('heartyCurrentWeightKg', String(clean));
+      upsertDatedLog('hearty_weight_logs', { date: todayKey, value: clean, weightKg: clean, source: 'home-weigh-in' });
+
+      // New shared Progress source of truth. Progress page should read heartyProgressV1.weighIns.
+      saveWeighInToProgress(clean);
+
+      // Legacy progress/profile keys kept for backwards compatibility while the app is being unified.
       const progress = safeJsonParse(localStorage.getItem('hearty_progress'), {}) || {};
       if(progress.startingWeight == null || progress.startingWeight === '') progress.startingWeight = clean;
+      if(progress.startingWeightKg == null || progress.startingWeightKg === '') progress.startingWeightKg = clean;
       progress.currentWeight = clean;
+      progress.currentWeightKg = clean;
       localStorage.setItem('hearty_progress', JSON.stringify(progress));
+
       const profile = safeJsonParse(localStorage.getItem('hearty_profile'), {}) || {};
-      profile.progress = { ...(profile.progress || {}), currentWeight: clean, startingWeight: progress.startingWeight, targetWeight: progress.targetWeight };
+      profile.progress = {
+        ...(profile.progress || {}),
+        currentWeight: clean,
+        currentWeightKg: clean,
+        startingWeight: progress.startingWeight,
+        startingWeightKg: progress.startingWeightKg,
+        targetWeight: progress.targetWeight,
+        targetWeightKg: progress.targetWeightKg
+      };
       localStorage.setItem('hearty_profile', JSON.stringify(profile));
+
       setTaskComplete(document.getElementById('weighInTask'), true);
       closeSheet(weightSheet);
     }
