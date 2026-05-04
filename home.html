@@ -5612,14 +5612,6 @@ html[data-theme="rose_aurora"] .hydration-add-text{
 
 
 <style id="home-first-day-and-meter-final-fix">
-/* Prevent fake/demo meter values from animating on first paint. */
-.ring-progress{
-  transition:none !important;
-  stroke-dashoffset:339.292 !important;
-}
-body.home-ready .ring-progress{
-  transition:stroke-dashoffset .8s cubic-bezier(.2,.9,.2,1) !important;
-}
 #todaysRhythmCard{
   scroll-margin-top:96px;
 }
@@ -9310,8 +9302,6 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
 
 <style id="hearty-recovery-final-patch-css">
 /* Recovery patch: keep previously finished Home UI while fixing the live bugs. */
-.ring-progress{transition:none !important;stroke-dashoffset:339.292 !important;}
-body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,.9,.2,1) !important;}
 #injectionCard[hidden],#homeDayPill[hidden],#homeDayPill:empty{display:none !important;}
 #homeDayPill[data-empty="true"]{display:none !important;}
 #lessonCard{display:block !important;}
@@ -9973,74 +9963,6 @@ body.home-ready .ring-progress{transition:stroke-dashoffset .8s cubic-bezier(.2,
   setTimeout(updateRings, 100);
   setTimeout(updateRings, 500);
 })();
-</script>
-<style>
-.ring-wrap svg,
-.ring-block svg,
-.ring-progress,
-.ring-track{
-  display:none!important;
-}
-
-.ring-wrap,
-.ring-block{
-  position:relative!important;
-  min-height:92px!important;
-  padding:18px!important;
-  border-radius:24px!important;
-  background:rgba(255,255,255,.9)!important;
-  border:1px solid rgba(148,163,184,.28)!important;
-  box-shadow:0 14px 34px rgba(15,23,42,.08)!important;
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:center!important;
-  align-items:flex-start!important;
-  overflow:hidden!important;
-}
-
-.ring-value,
-.ring-center{
-  position:static!important;
-  display:block!important;
-  font-size:26px!important;
-  font-weight:900!important;
-  line-height:1!important;
-  color:#0f172a!important;
-}
-
-.ring-label{
-  margin-top:8px!important;
-  font-size:12px!important;
-  font-weight:800!important;
-  text-transform:uppercase!important;
-  color:#64748b!important;
-}
-
-.ring-wrap::after,
-.ring-block::after{
-  content:"";
-  position:absolute;
-  left:18px;
-  right:18px;
-  bottom:14px;
-  height:7px;
-  border-radius:999px;
-  background:rgba(148,163,184,.18);
-}
-
-#waterProgressFill{
-  position:absolute!important;
-  left:18px!important;
-  bottom:14px!important;
-  height:7px!important;
-  width:0%;
-  border-radius:999px!important;
-  background:#16a34a!important;
-  transition:width .25s ease!important;
-  z-index:5!important;
-}
-</style>
-
 <script>
 (function(){
   const TODAY = new Date().toISOString().slice(0,10);
