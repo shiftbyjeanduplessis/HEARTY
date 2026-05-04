@@ -210,7 +210,7 @@
 
 <script>
 (function(){
-  const SETTINGS_TABLE = 'social_settings';
+  const SETTINGS_TABLE = 'community_user_settings';
   const POSTS_TABLE = 'community_posts';
   const LOVES_TABLE = 'community_reactions';
   const PROFILES_TABLE = 'profiles';
@@ -406,9 +406,9 @@
 
   async function isEnabled(){
     if (!usingSupabase || !currentUser || !sb) return false;
-    const { data, error } = await sb.from(SETTINGS_TABLE).select('enabled').eq('user_id', currentUser.id).maybeSingle();
+    const { data, error } = await sb.from(SETTINGS_TABLE).select('community_enabled').eq('user_id', currentUser.id).maybeSingle();
     if (error && error.code !== 'PGRST116') console.warn(error);
-    communityEnabledCache = data ? data.enabled === true : false;
+    communityEnabledCache = data ? data.community_enabled === true : false;
     return communityEnabledCache;
   }
 
@@ -416,10 +416,7 @@
     if (!(await requireUser())) return;
     const { error } = await sb.from(SETTINGS_TABLE).upsert({
       user_id: currentUser.id,
-      enabled: next,
-      share_photos_updates: true,
-      share_water: false,
-      posts_local_only: true,
+      community_enabled: next,
       updated_at: new Date().toISOString()
     }, { onConflict: 'user_id' });
     if (error) {
