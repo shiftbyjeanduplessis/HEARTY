@@ -289,34 +289,34 @@
     else container.textContent = initials(name);
   }
 
-  /* ── Supabase client discovery ────────────────────────────── */
+  /* ── Supabase bootstrap ───────────────────────────────────── */
+  // Strategy 1: window scan for an already-initialised client
+  // Strategy 2: extract URL+key from the data-layer script and create our own
+  // Strategy 3: extract URL+key from Supabase's own localStorage token
+
   function isSupabaseClient(c){
-    return c && typeof c === 'object' && typeof c.from === 'function' && c.auth && typeof c.auth.getSession === 'function';
+    return c && typeof c==='object' && typeof c.from==='function' && c.auth && typeof c.auth.getSession==='function';
   }
 
-  function deepScanWindow(){
-    // Named candidates first
+  function scanWindow(){
     const named = [
       window.heartySupabaseClient, window.heartySupabase,
       window.heartyDataLayer?.supabase, window.heartyDataLayer?.client,
       window.heartyData?.supabase, window.heartyData?.client,
-      window.HeartyData?.supabase, window.HeartyData?.client,
-      window.supabaseClient, window.supabaseClientV1,
-      window.sb, window._supabase, window.__supabase,
-      window.dbClient, window.heartyDb
+      window.HeartyData?.supabase, window.supabaseClient,
+      window.supabaseClientV1, window.sb, window._supabase,
+      window.__supabase, window.dbClient, window.heartyDb,
+      window.database, window.heartyDatabase
     ];
-    const fromNamed = named.find(isSupabaseClient);
-    if (fromNamed) return fromNamed;
-
-    // Deep scan: top-level window properties
+    const hit = named.find(isSupabaseClient);
+    if (hit) return hit;
     for (const key of Object.keys(window)){
       try {
-        const val = window[key];
-        if (isSupabaseClient(val)) return val;
-        // One level deep into plain objects
-        if (val && typeof val === 'object' && !Array.isArray(val)){
-          for (const k2 of Object.keys(val)){
-            try { if (isSupabaseClient(val[k2])) return val[k2]; } catch(_){}
+        const v = window[key];
+        if (isSupabaseClient(v)) return v;
+        if (v && typeof v==='object' && !Array.isArray(v)){
+          for (const k2 of Object.keys(v)){
+            try { if (isSupabaseClient(v[k2])) return v[k2]; } catch(_){}
           }
         }
       } catch(_){}
@@ -324,45 +324,95 @@
     return null;
   }
 
-  function waitForSupabaseClient(){
-    return new Promise(resolve => {
-      // Try immediately
-      const immediate = deepScanWindow();
-      if (immediate){ resolve(immediate); return; }
+  // Extract supabaseUrl + anonKey from any JS source text
+  function extractCreds(src){
+    const urlMatch  = src.match(/https:\/\/[a-z0-9]+\.supabase\.co/);
+    // anon keys start with "eyJ" and are long JWT strings
+    const keyMatch  = src.match(/eyJ[A-Za-z0-9_\-]{40,}\.[A-Za-z0-9_\-]{6,}\.[A-Za-z0-9_\-]{6,}/);
+    if (urlMatch && keyMatch) return { url: urlMatch[0], key: keyMatch[0] };
+    return null;
+  }
 
-      // Poll for up to 15 s
-      let attempts = 0;
-      const poll = setInterval(() => {
-        const found = deepScanWindow();
-        if (found){ clearInterval(poll); clearTimeout(giveUp); resolve(found); return; }
-        attempts++;
-      }, 200);
+  // Pull project ref from any sb-* key in localStorage then infer URL
+  function credsFromLocalStorage(){
+    try {
+      for (let i = 0; i < localStorage.length; i++){
+        const k = localStorage.key(i);
+        // Supabase stores sessions as sb-<ref>-auth-token or supabase.auth.token
+        if (!k) continue;
+        const refMatch = k.match(/^sb-([a-z0-9]+)-auth-token$/);
+        if (refMatch){
+          const raw = localStorage.getItem(k);
+          if (!raw) continue;
+          const parsed = JSON.parse(raw);
+          // The value contains the access_token (JWT) — we need the anon key
+          // but at minimum we have the project ref for the URL
+          const url = `https://${refMatch[1]}.supabase.co`;
+          // Try to find anon key in other localStorage entries or the parsed token
+          const anonSearch = JSON.stringify(Object.fromEntries(
+            Array.from({length:localStorage.length},(_,j)=>[localStorage.key(j), localStorage.getItem(localStorage.key(j))])
+          ));
+          const keyMatch = anonSearch.match(/eyJ[A-Za-z0-9_\-]{40,}\.[A-Za-z0-9_\-]{6,}\.[A-Za-z0-9_\-]{6,}/g);
+          // The shortest matching token is most likely the anon key (access tokens are longer)
+          if (keyMatch){
+            const anon = keyMatch.sort((a,b)=>a.length-b.length)[0];
+            return { url, key: anon };
+          }
+        }
+      }
+    } catch(_){}
+    return null;
+  }
 
-      // Also listen for any ready-style events the data layer might fire
-      const onReady = () => {
-        const found = deepScanWindow();
-        if (found){ clearInterval(poll); clearTimeout(giveUp); resolve(found); }
-      };
-      ['hearty:ready','hearty:db:ready','supabase:ready','app:ready'].forEach(ev => window.addEventListener(ev, onReady, {once:true}));
-
-      const giveUp = setTimeout(() => {
-        clearInterval(poll);
-        resolve(null);
-      }, 15000);
-    });
+  async function createOwnClient(url, key){
+    // Load Supabase JS from CDN if not already present
+    if (!window.supabase?.createClient){
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    return window.supabase.createClient(url, key);
   }
 
   async function initSupabase(){
     showDbStatus('connecting');
-    sb = await waitForSupabaseClient();
-    if (!sb){
-      showDbStatus('failed');
-      console.warn('[Community] Supabase client not found after 15 s. Keys on window:', Object.keys(window).filter(k => {
-        try { const v = window[k]; return v && typeof v === 'object' && typeof v.from === 'function'; } catch(_){ return false; }
-      }));
-      return;
+
+    // Strategy 1 – window scan (instant if data layer already ran)
+    let client = scanWindow();
+    if (!client){
+      // Give data layer up to 3 s to initialise
+      await new Promise(r => setTimeout(r, 3000));
+      client = scanWindow();
     }
+
+    // Strategy 2 – fetch + parse the data-layer script
+    if (!client){
+      try {
+        const res = await fetch('/js/hearty-data-layer.v1.js');
+        if (res.ok){
+          const src = await res.text();
+          const creds = extractCreds(src);
+          if (creds) client = await createOwnClient(creds.url, creds.key);
+        }
+      } catch(e){ console.warn('[Community] data-layer fetch failed:', e); }
+    }
+
+    // Strategy 3 – derive from localStorage session keys
+    if (!client){
+      try {
+        const creds = credsFromLocalStorage();
+        if (creds) client = await createOwnClient(creds.url, creds.key);
+      } catch(e){ console.warn('[Community] localStorage strategy failed:', e); }
+    }
+
+    if (!client){ showDbStatus('failed'); return; }
+
+    sb = client;
     showDbStatus('ok');
+
     try {
       const sess = await sb.auth.getSession();
       currentUser = sess?.data?.session?.user || null;
@@ -370,22 +420,25 @@
         const u = await sb.auth.getUser();
         currentUser = u?.data?.user || null;
       }
-    } catch(e){ console.warn('Auth lookup:', e); }
+    } catch(e){ console.warn('[Community] auth lookup:', e); }
   }
 
   function showDbStatus(state){
     const bar = document.getElementById('dbStatusBar');
     if (!bar) return;
-    if (state === 'connecting'){ bar.textContent = '⏳ Connecting to database…'; bar.style.display='block'; bar.style.background='rgba(217,119,6,.12)'; bar.style.color='#92400e'; }
-    else if (state === 'ok')   { bar.style.display='none'; }
-    else if (state === 'failed'){
-      bar.innerHTML = '⚠️ Database connection timed out. <button onclick="retryInit()" style="margin-left:10px;padding:4px 12px;border-radius:8px;background:#2f6df6;color:white;border:none;cursor:pointer;font-weight:700">Retry</button>';
-      bar.style.display='block'; bar.style.background='rgba(220,38,38,.10)'; bar.style.color='#991b1b';
+    if (state==='connecting'){
+      bar.textContent='⏳ Connecting…';
+      bar.style.cssText='display:block;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;background:rgba(217,119,6,.12);color:#92400e';
+    } else if (state==='ok'){
+      bar.style.display='none';
+    } else {
+      bar.innerHTML='⚠️ Could not connect to the database. <button onclick="window.retryInit()" style="margin-left:10px;padding:4px 14px;border-radius:8px;background:#2f6df6;color:white;border:none;cursor:pointer;font-weight:700;font-size:13px">Retry</button>';
+      bar.style.cssText='display:block;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;background:rgba(220,38,38,.10);color:#991b1b';
     }
   }
 
   window.retryInit = async function(){
-    sb = null; currentUser = null;
+    sb=null; currentUser=null;
     await initSupabase();
     if (sb) await renderAll();
   };
