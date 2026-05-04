@@ -2317,8 +2317,6 @@
     }
 
 </style>
-<link href="./css/hearty-badges.css" rel="stylesheet"/>
-<script src="./js/hearty-badge-boot.js" type="module"></script>
 <style id="hearty-nav-7tab-lock">
   .bottom-nav{
     margin-top:18px !important;
@@ -10039,6 +10037,20 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   }, { once:true });
 })();
 </script>
+<script id="hearty-support-button-route-fix-v1">
+(function(){
+  function goSupport(e){
+    const btn = e.target.closest('#supportModeBtn,#supportButton,#supportMainBtn,.support-main-btn,[data-open-support]');
+    if(!btn) return;
 
+    e.preventDefault();
+    e.stopPropagation();
+
+    window.location.href = 'SUPPORT.html';
+  }
+
+  document.addEventListener('click', goSupport, true);
+})();
+</script>
 </body>
 </html>
