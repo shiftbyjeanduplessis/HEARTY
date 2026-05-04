@@ -155,6 +155,7 @@
     </a>
   </header>
 
+  <div id="dbStatusBar" style="display:none;margin-bottom:12px;padding:11px 18px;border-radius:16px;font-size:13px;font-weight:600;line-height:1.4"></div>
   <main>
     <section class="hero-card" aria-label="Community overview">
       <div class="hero-copy">
@@ -288,29 +289,80 @@
     else container.textContent = initials(name);
   }
 
-  /* ── Supabase client discovery (patient, non-blocking) ───── */
-  function findSupabaseClient(){
-    const candidates = [
-      window.heartySupabaseClient, window.heartySupabase,
-      window.heartyDataLayer?.supabase, window.heartyData?.supabase,
-      window.HeartyData?.supabase, window.supabaseClient,
-      window.supabaseClientV1, window.sb, window._supabase
-    ];
-    return candidates.find(c => c && typeof c.from === 'function' && c.auth) || null;
+  /* ── Supabase client discovery ────────────────────────────── */
+  function isSupabaseClient(c){
+    return c && typeof c === 'object' && typeof c.from === 'function' && c.auth && typeof c.auth.getSession === 'function';
   }
 
-  async function waitForSupabaseClient(){
-    for (let i = 0; i < 50; i++){
-      const c = findSupabaseClient();
-      if (c) return c;
-      await new Promise(r => setTimeout(r, 100));
+  function deepScanWindow(){
+    // Named candidates first
+    const named = [
+      window.heartySupabaseClient, window.heartySupabase,
+      window.heartyDataLayer?.supabase, window.heartyDataLayer?.client,
+      window.heartyData?.supabase, window.heartyData?.client,
+      window.HeartyData?.supabase, window.HeartyData?.client,
+      window.supabaseClient, window.supabaseClientV1,
+      window.sb, window._supabase, window.__supabase,
+      window.dbClient, window.heartyDb
+    ];
+    const fromNamed = named.find(isSupabaseClient);
+    if (fromNamed) return fromNamed;
+
+    // Deep scan: top-level window properties
+    for (const key of Object.keys(window)){
+      try {
+        const val = window[key];
+        if (isSupabaseClient(val)) return val;
+        // One level deep into plain objects
+        if (val && typeof val === 'object' && !Array.isArray(val)){
+          for (const k2 of Object.keys(val)){
+            try { if (isSupabaseClient(val[k2])) return val[k2]; } catch(_){}
+          }
+        }
+      } catch(_){}
     }
     return null;
   }
 
+  function waitForSupabaseClient(){
+    return new Promise(resolve => {
+      // Try immediately
+      const immediate = deepScanWindow();
+      if (immediate){ resolve(immediate); return; }
+
+      // Poll for up to 15 s
+      let attempts = 0;
+      const poll = setInterval(() => {
+        const found = deepScanWindow();
+        if (found){ clearInterval(poll); clearTimeout(giveUp); resolve(found); return; }
+        attempts++;
+      }, 200);
+
+      // Also listen for any ready-style events the data layer might fire
+      const onReady = () => {
+        const found = deepScanWindow();
+        if (found){ clearInterval(poll); clearTimeout(giveUp); resolve(found); }
+      };
+      ['hearty:ready','hearty:db:ready','supabase:ready','app:ready'].forEach(ev => window.addEventListener(ev, onReady, {once:true}));
+
+      const giveUp = setTimeout(() => {
+        clearInterval(poll);
+        resolve(null);
+      }, 15000);
+    });
+  }
+
   async function initSupabase(){
+    showDbStatus('connecting');
     sb = await waitForSupabaseClient();
-    if (!sb){ showToast('Could not reach the database. Check your connection.'); return; }
+    if (!sb){
+      showDbStatus('failed');
+      console.warn('[Community] Supabase client not found after 15 s. Keys on window:', Object.keys(window).filter(k => {
+        try { const v = window[k]; return v && typeof v === 'object' && typeof v.from === 'function'; } catch(_){ return false; }
+      }));
+      return;
+    }
+    showDbStatus('ok');
     try {
       const sess = await sb.auth.getSession();
       currentUser = sess?.data?.session?.user || null;
@@ -318,8 +370,25 @@
         const u = await sb.auth.getUser();
         currentUser = u?.data?.user || null;
       }
-    } catch(e){ console.warn('Auth lookup failed', e); }
+    } catch(e){ console.warn('Auth lookup:', e); }
   }
+
+  function showDbStatus(state){
+    const bar = document.getElementById('dbStatusBar');
+    if (!bar) return;
+    if (state === 'connecting'){ bar.textContent = '⏳ Connecting to database…'; bar.style.display='block'; bar.style.background='rgba(217,119,6,.12)'; bar.style.color='#92400e'; }
+    else if (state === 'ok')   { bar.style.display='none'; }
+    else if (state === 'failed'){
+      bar.innerHTML = '⚠️ Database connection timed out. <button onclick="retryInit()" style="margin-left:10px;padding:4px 12px;border-radius:8px;background:#2f6df6;color:white;border:none;cursor:pointer;font-weight:700">Retry</button>';
+      bar.style.display='block'; bar.style.background='rgba(220,38,38,.10)'; bar.style.color='#991b1b';
+    }
+  }
+
+  window.retryInit = async function(){
+    sb = null; currentUser = null;
+    await initSupabase();
+    if (sb) await renderAll();
+  };
 
   /* ── Community enabled state ──────────────────────────────── */
   async function isEnabled(){
@@ -331,7 +400,7 @@
   }
 
   async function setEnabled(next){
-    if (!sb || !currentUser){ showToast('Database not ready — please try again.'); return; }
+    if (!sb || !currentUser){ showDbStatus('failed'); return; }
     const { error } = await sb.from(SETTINGS_TABLE).upsert({
       user_id: currentUser.id,
       community_enabled: next,
