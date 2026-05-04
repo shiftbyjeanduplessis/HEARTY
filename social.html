@@ -6,6 +6,8 @@
 <title>Hearty — Community</title>
 <link rel="stylesheet" href="/css/hearty-theme.css">
 <script src="/js/hearty-data-layer.v1.js"></script>
+<script src="/glp-supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/js/hearty-theme.js"></script>
 <style>
   :root {
@@ -297,12 +299,47 @@
     return null;
   }
 
+  function getSupabaseConfig(){
+    const cfg = window.GLP_SUPABASE_CONFIG || window.HEARTY_SUPABASE_CONFIG || window.SUPABASE_CONFIG || {};
+    const url = cfg.url || cfg.supabaseUrl || cfg.SUPABASE_URL || cfg.projectUrl || '';
+    const anonKey = cfg.anonKey || cfg.anon_key || cfg.supabaseAnonKey || cfg.SUPABASE_ANON_KEY || cfg.key || '';
+    return { url, anonKey };
+  }
+
+  function createConfiguredSupabaseClient(){
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') return null;
+    const cfg = getSupabaseConfig();
+    if (!cfg.url || !cfg.anonKey) return null;
+    try {
+      const client = window.supabase.createClient(cfg.url, cfg.anonKey, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+      window.heartySupabaseClient = client;
+      window.sb = client;
+      return client;
+    } catch (err) {
+      console.warn('[Community] createConfiguredSupabaseClient failed:', err);
+      return null;
+    }
+  }
+
   async function waitForSupabaseClient(){
-    for (let i = 0; i < 50; i++) {
-      const client = findSupabaseClient();
-      if (client) return client;
+    for (let i = 0; i < 20; i++) {
+      const existing = findSupabaseClient();
+      if (existing) return existing;
       await new Promise(resolve => setTimeout(resolve, 100));
     }
+
+    // Main app pages do not always expose their client globally.
+    // In that case, create the same Supabase client from the shared config file.
+    // Because this is the same domain/project, Supabase will read the existing Hearty session from localStorage.
+    const configured = createConfiguredSupabaseClient();
+    if (configured) return configured;
+
     return null;
   }
 
@@ -337,7 +374,7 @@
     if (!sb) {
       usingSupabase = false;
       currentUser = null;
-      showToast('App session not detected. Open Community from inside Hearty, then refresh.');
+      showToast('App connection missing. Check glp-supabase-config.js is loaded.');
       return false;
     }
 
