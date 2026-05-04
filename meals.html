@@ -1,511 +1,419 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="clean_blue">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Hearty — Meals</title>
+  <title>Hearty — Home</title>
 
-  <script>
-    (function(){
-      document.documentElement.setAttribute("data-theme", "clean_blue");
-
-      function readJsonStorage(key){
-        try {
-          var raw = localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : null;
-        } catch(e) {
-          return null;
-        }
-      }
-
-      function hasMealProfile(){
-        var state = readJsonStorage("heartyMealsPageStateVFinal") ||
-          readJsonStorage("heartyMealsStateVFinal") ||
-          readJsonStorage("heartyMealsStateV1") ||
-          readJsonStorage("heartyMealProfile") ||
-          readJsonStorage("heartyMealsProfile");
-
-        if (!state) return false;
-
-        var profile = state.preferences || state.onboarding || state.profile || state.mealProfile || state;
-        if (!profile || typeof profile !== "object") return false;
-
-        return state.profileComplete === true ||
-          state.onboardingComplete === true ||
-          state.mealsOnboardingComplete === true ||
-          profile.profileComplete === true ||
-          profile.onboardingComplete === true ||
-          Object.keys(profile).length > 2;
-      }
-
-      try {
-        var path = (window.location.pathname || "").toLowerCase();
-        var file = path.split("/").pop();
-        var isMealsPage = file === "meals.html" || file === "meals";
-        var isMealsOnboarding = path.indexOf("meals-onboarding") !== -1;
-
-        if (isMealsPage && !isMealsOnboarding && !hasMealProfile()) {
-          window.location.replace("meals-onboarding.html");
-        }
-      } catch(e) {}
-    })();
-  </script>
+  <script src="/js/hearty-data-layer.v1.js"></script>
 
   <style>
-    :root,
-    html[data-theme="clean_blue"]{
-      --bg-1:#eef4fb;
-      --bg-2:#fbfdff;
+    :root{
+      --bg:#f6f9fe;
       --ink:#132235;
       --muted:#6f7c8d;
       --line:rgba(143,163,184,.22);
       --card:rgba(255,255,255,.94);
-      --surface-top:rgba(255,255,255,.82);
-      --surface-bottom:rgba(255,255,255,.68);
-      --surface-inner:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,255,.94));
-      --surface-button:rgba(255,255,255,.94);
-      --surface-chip:rgba(255,255,255,.90);
-      --theme-accent:#2f6df6;
-      --theme-accent-2:#22b8a7;
-      --theme-warning:#f59e0b;
-      --theme-success:#16a34a;
+      --accent:#ff6b00;
+      --blue:#1550b3;
+      --success:#0ea56b;
+      --warning:#f59e0b;
+      --danger:#ef4444;
       --shadow:0 18px 44px rgba(14,31,53,.08);
-      --shadow-soft:0 8px 22px rgba(14,31,53,.055);
-      --nav-active-bg:linear-gradient(180deg,rgba(233,242,255,.98),rgba(255,255,255,.96));
-      --nav-active-ink:#1f4ec0;
+      --shadow-soft:0 8px 22px rgba(14,31,53,.05);
     }
 
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      min-height:100vh;
-      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       color:var(--ink);
       background:
-        radial-gradient(1200px 500px at 0% -10%, color-mix(in srgb, var(--theme-accent) 16%, transparent), transparent 50%),
-        radial-gradient(1000px 450px at 100% 0%, color-mix(in srgb, var(--theme-accent-2) 10%, transparent), transparent 45%),
-        linear-gradient(180deg,var(--bg-2),var(--bg-1));
+        radial-gradient(circle at 20% 0%, rgba(21,80,179,.08), transparent 32%),
+        radial-gradient(circle at 90% 8%, rgba(255,107,0,.08), transparent 30%),
+        linear-gradient(180deg,#fbfdff 0%,var(--bg) 100%);
       overflow-x:hidden;
     }
 
-    .shell{max-width:1280px;margin:0 auto;padding:20px 20px 32px}
+    button,input{
+      font:inherit;
+    }
+
+    .shell{
+      width:min(100%,1280px);
+      margin:0 auto;
+      padding:18px 16px 30px;
+    }
 
     .topbar{
-      min-height:88px;
+      min-height:82px;
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:16px;
-      margin-bottom:18px;
+      gap:14px;
       padding:0 18px;
+      margin-bottom:18px;
       border:1px solid var(--line);
-      border-radius:22px;
-      background:linear-gradient(180deg,var(--surface-top),var(--surface-bottom));
+      border-radius:24px;
+      background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(255,255,255,.68));
       box-shadow:var(--shadow-soft);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
     }
 
-    .brand{display:flex;align-items:center;gap:8px;min-width:0;padding-left:8px}
-    .brand-logo{display:block;height:48px;width:auto;object-fit:contain;object-position:left center;max-width:min(72vw,300px)}
+    .brand{
+      display:flex;
+      align-items:center;
+      min-width:0;
+    }
+
+    .brand-logo{
+      height:46px;
+      width:auto;
+      max-width:min(70vw,280px);
+      object-fit:contain;
+      display:block;
+    }
 
     .icon-btn{
-      width:44px;
-      height:44px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:var(--surface-button);
-      color:var(--muted);
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:15px;
       display:grid;
       place-items:center;
+      color:#4d5e72;
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--line);
       box-shadow:var(--shadow-soft);
-      text-decoration:none;
+      cursor:pointer;
     }
 
-    .icon-btn svg,.nav-item svg{
+    .icon-btn svg,
+    .nav-item svg,
+    .task-btn svg,
+    .mini-icon svg,
+    .sheet-close svg{
       width:20px;
       height:20px;
       stroke:currentColor;
-      stroke-width:1.8;
+      stroke-width:2;
       fill:none;
       stroke-linecap:round;
       stroke-linejoin:round;
     }
 
-    .status-strip{
+    .status-row{
       display:flex;
-      align-items:flex-end;
       justify-content:space-between;
-      gap:18px;
-      margin:4px 0 20px;
+      align-items:flex-end;
+      gap:14px;
+      margin:0 2px 18px;
       flex-wrap:wrap;
     }
 
-    .eyebrow,.section-label{
+    .eyebrow{
       font-size:.74rem;
-      font-weight:760;
-      letter-spacing:.17em;
-      color:var(--muted);
+      font-weight:800;
+      letter-spacing:.16em;
       text-transform:uppercase;
-      margin-bottom:12px;
+      color:var(--muted);
     }
 
     .headline{
-      font-size:clamp(1.55rem,2.4vw,2.15rem);
-      line-height:1.05;
-      margin:.22rem 0 .22rem;
-      font-weight:760;
-      letter-spacing:-.035em;
-      color:var(--ink);
+      margin:4px 0 4px;
+      font-size:clamp(1.65rem,4vw,2.45rem);
+      line-height:1.02;
+      letter-spacing:-.045em;
+      font-weight:850;
     }
 
-    .subline{color:var(--muted);font-size:.96rem;line-height:1.5;margin:0}
+    .subline{
+      color:var(--muted);
+      font-size:.96rem;
+      line-height:1.4;
+    }
 
     .day-pill{
       padding:10px 14px;
       border-radius:999px;
-      background:var(--surface-chip);
+      background:rgba(255,255,255,.84);
       border:1px solid var(--line);
-      color:var(--ink);
-      font-size:.9rem;
-      font-weight:650;
+      color:#52657a;
+      font-size:.86rem;
+      font-weight:800;
       box-shadow:var(--shadow-soft);
-      white-space:nowrap;
     }
 
-    .status-pills{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-
-    .support-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      min-height:38px;
-      padding:9px 13px;
-      border-radius:999px;
-      border:1px solid var(--line);
-      background:var(--surface-chip);
-      color:var(--muted);
-      font-size:.82rem;
-      font-weight:760;
-      box-shadow:var(--shadow-soft);
-      white-space:nowrap;
-      transition:.22s ease;
+    .grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.45fr) minmax(320px,.9fr);
+      gap:18px;
+      align-items:start;
     }
 
-    .support-pill::before{
-      content:"";
-      width:9px;
-      height:9px;
-      border-radius:50%;
-      background:color-mix(in srgb,var(--muted) 42%,transparent);
-      box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 10%,transparent);
+    .stack{
+      display:grid;
+      gap:18px;
     }
-
-    .support-pill.is-on{
-      color:var(--ink);
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 16%,var(--surface-chip)),var(--surface-chip));
-      border-color:color-mix(in srgb,var(--theme-warning) 32%,var(--line));
-    }
-
-    .support-pill.is-on::before{
-      background:var(--theme-warning);
-      box-shadow:
-        0 0 0 4px color-mix(in srgb,var(--theme-warning) 14%,transparent),
-        0 0 14px color-mix(in srgb,var(--theme-warning) 40%,transparent);
-      animation:supportPulse 1.8s ease-in-out infinite;
-    }
-
-    .support-pill.is-off{
-      color:var(--muted);
-      background:var(--surface-chip);
-      border-color:var(--line);
-      opacity:.88;
-    }
-
-    .support-pill.is-off::before{
-      background:color-mix(in srgb,var(--muted) 38%,transparent);
-      box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 9%,transparent);
-      animation:none;
-    }
-
-    @keyframes supportPulse{
-      0%,100%{transform:scale(1)}
-      50%{transform:scale(1.16)}
-    }
-
-    .layout{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(300px,.85fr);gap:24px;align-items:start}
-    .stack{display:grid;gap:18px}
 
     .card{
-      position:relative;
       background:var(--card);
       border:1px solid var(--line);
       border-radius:28px;
       box-shadow:var(--shadow);
-      padding:22px;
+      padding:20px;
       overflow:hidden;
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      position:relative;
     }
 
-    .card::before{
-      content:"";
-      position:absolute;
-      inset:0 0 auto 0;
-      height:1px;
-      background:linear-gradient(90deg,rgba(255,255,255,.72),rgba(255,255,255,0));
-    }
-
-    .compact-title{font-size:1.05rem;font-weight:760;letter-spacing:-.02em;color:var(--ink);margin:0}
-    .compact-copy{font-size:.92rem;color:var(--muted);line-height:1.5;margin:6px 0 0}
-
-    .planner-action,.meal-card__actions button{
-      appearance:none;
-      border:1px solid var(--line);
-      background:var(--surface-button);
-      color:var(--ink);
-      min-height:42px;
-      padding:0 13px;
-      border-radius:14px;
-      font:inherit;
-      font-size:.88rem;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:var(--shadow-soft);
-      transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
-    }
-
-    .planner-action:hover,.meal-card__actions button:hover{transform:translateY(-1px)}
-
-    .meal-control-card{display:grid;gap:16px}
-
-    .control-row{
+    .card-title-row{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:14px;
-      padding:12px 0;
-      border-top:1px solid var(--line);
+      margin-bottom:14px;
     }
 
-    .control-row:first-of-type{border-top:none;padding-top:0}
-    .control-row strong{display:block;font-size:.95rem;letter-spacing:-.01em}
-    .control-row span{display:block;margin-top:3px;color:var(--muted);font-size:.84rem;font-weight:650}
-
-    .support-off-btn{
-      appearance:none;
-      border:none;
-      border-radius:999px;
-      padding:10px 14px;
-      font:inherit;
-      font-size:.83rem;
-      font-weight:820;
-      color:#8a3d00;
-      background:linear-gradient(180deg,#fff4df,#ffe2b3);
-      box-shadow:0 8px 18px rgba(245,158,11,.18);
-      cursor:pointer;
-    }
-
-    .switch-btn{
-      appearance:none;
-      width:54px;
-      height:31px;
-      border:none;
-      border-radius:999px;
-      background:#d6deea;
-      padding:4px;
-      box-shadow:inset 0 1px 4px rgba(15,35,55,.12);
-      cursor:pointer;
-    }
-
-    .switch-btn span{
-      display:block;
-      width:23px;
-      height:23px;
-      border-radius:50%;
-      background:#fff;
-      box-shadow:0 3px 9px rgba(15,35,55,.18);
-      transition:transform .2s ease;
-    }
-
-    .switch-btn.is-on{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2))}
-    .switch-btn.is-on span{transform:translateX(23px)}
-
-    .planner-card{display:grid;gap:14px}
-    .planner-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .planner-actions{display:flex;gap:10px;flex-wrap:wrap}
-
-    .planner-action.primary{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));
-      color:#fff;
-      border-color:transparent;
-    }
-
-    .planner-days,.day-tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-
-    .planner-day,.day-tab{
-      min-height:50px;
-      border-radius:15px;
-      border:1px solid var(--line);
-      background:var(--surface-inner);
+    .section-label{
+      font-size:.72rem;
+      font-weight:850;
+      letter-spacing:.15em;
+      text-transform:uppercase;
       color:var(--muted);
-      font:inherit;
-      font-size:.8rem;
-      font-weight:760;
-      cursor:pointer;
-      box-shadow:var(--shadow-soft);
+      margin-bottom:6px;
     }
 
-    .planner-day.is-active,
-    .planner-day.active,
-    .day-tab.active{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-accent) 92%,white),color-mix(in srgb,var(--theme-accent) 78%,black));
-      color:#fff;
-      border-color:transparent;
+    .card-title{
+      font-size:1.14rem;
+      font-weight:850;
+      letter-spacing:-.03em;
     }
 
-    .meal-list{display:grid;gap:14px}
+    .card-copy{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+      margin-top:4px;
+    }
 
-    .meal-card{
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:18px;
-      background:var(--surface-inner);
-      box-shadow:var(--shadow-soft);
+    .progress-card{
+      display:grid;
+      gap:16px;
+    }
+
+    .progress-main{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .metric{
+      border:1px solid rgba(143,163,184,.18);
+      border-radius:22px;
+      background:linear-gradient(180deg,#fff,#f8fbff);
+      padding:16px;
+      text-align:center;
+    }
+
+    .metric-value{
+      font-size:1.42rem;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .metric-label{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:.78rem;
+      font-weight:750;
+    }
+
+    .goalbar{
+      height:14px;
+      border-radius:999px;
+      background:#e9f0f8;
+      overflow:hidden;
+      border:1px solid rgba(143,163,184,.2);
+    }
+
+    .goalbar-fill{
+      height:100%;
+      width:0%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--accent),#06c2a8,var(--blue));
+      transition:width .35s ease;
+    }
+
+    .micro-note{
+      color:var(--muted);
+      font-size:.86rem;
+      line-height:1.4;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .task-list{
       display:grid;
       gap:12px;
     }
 
-    .meal-card[data-slot="breakfast"]{border-left:4px solid color-mix(in srgb,var(--theme-accent) 70%,transparent)}
-    .meal-card[data-slot="lunch"]{border-left:4px solid color-mix(in srgb,var(--theme-accent-2) 70%,transparent)}
-    .meal-card[data-slot="dinner"]{border-left:4px solid color-mix(in srgb,var(--theme-warning) 75%,transparent)}
-    .meal-card[data-slot="snack"]{border-left:4px solid color-mix(in srgb,var(--muted) 45%,transparent)}
-
-    .meal-card__header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start}
-    .meal-card__eyebrow{font-size:.74rem;font-weight:760;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
-    .meal-card__title{margin:0;color:var(--ink);font-size:1.02rem;line-height:1.25;letter-spacing:-.02em}
-    .meal-card__subtitle,.meal-card__desc{font-size:.88rem;color:var(--muted);line-height:1.5;margin-top:4px}
-    .meal-card__protein{white-space:nowrap;border:1px solid var(--line);background:var(--surface-chip);color:var(--ink);border-radius:999px;padding:7px 10px;font-size:.8rem;font-weight:760}
-    .meal-card__actions{display:flex;gap:8px;flex-wrap:wrap}
-    .meal-card__actions button{min-height:36px;font-size:.82rem}
-
-    .meal-card__actions button[data-log-protein],
-    .meal-card__actions button.log-protein,
-    .meal-card__actions button.log-protein-btn{
-      background:linear-gradient(180deg,#3f7cff,#1856d6);
-      color:#fff;
-      border-color:transparent;
-      box-shadow:0 10px 20px rgba(47,109,246,.22);
-    }
-
-    .protein-card{display:grid;gap:14px}
-
-    .protein-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-
-    .protein-meter{
-      --protein-percent:0;
-      width:158px;
-      height:158px;
-      border-radius:50%;
+    .task-row{
       display:grid;
-      place-items:center;
-      background:
-        conic-gradient(
-          from -90deg,
-          var(--theme-accent) 0 calc(var(--protein-percent) * 1%),
-          color-mix(in srgb,var(--theme-accent) 10%,rgba(143,163,184,.20)) calc(var(--protein-percent) * 1%) 100%
-        );
-      box-shadow:
-        0 18px 38px rgba(47,109,246,.12),
-        inset 0 1px 0 rgba(255,255,255,.8);
-      border:1px solid color-mix(in srgb,var(--theme-accent) 18%,var(--line));
-      flex:0 0 auto;
-      position:relative;
-      overflow:hidden;
-    }
-
-    .protein-meter::before{
-      content:"";
-      position:absolute;
-      inset:13px;
-      border-radius:50%;
-      background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(246,250,255,.95));
-      border:1px solid rgba(255,255,255,.85);
-      box-shadow:inset 0 1px 4px rgba(14,31,53,.04);
-      z-index:0;
-    }
-
-    .protein-meter::after{
-      content:"";
-      position:absolute;
-      inset:5px;
-      border-radius:50%;
-      border:1px solid rgba(255,255,255,.62);
-      pointer-events:none;
-      z-index:2;
-    }
-
-    .protein-center{
-      width:112px;
-      height:112px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      text-align:center;
-      background:transparent;
-      border:none;
-      box-shadow:none;
-      padding:12px;
-      position:relative;
-      z-index:3;
-    }
-
-    .protein-center-title{font-size:.68rem;font-weight:760;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-    .protein-center-copy{margin-top:6px;font-size:.88rem;font-weight:760;color:var(--ink);line-height:1.2}
-
-    .protein-mini{flex:1;min-width:220px;display:grid;gap:9px}
-
-    .protein-chip{
-      display:flex;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:12px;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      padding:11px 14px;
-      border-radius:16px;
-      background:var(--surface-inner);
-      border:1px solid var(--line);
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(143,163,184,.18);
+      background:linear-gradient(180deg,#fff,#f8fbff);
+    }
+
+    .task-row.done{
+      background:linear-gradient(180deg,#effbf5,#fff);
+      border-color:rgba(14,165,107,.26);
+    }
+
+    .task-name{
+      font-weight:850;
+      letter-spacing:-.02em;
+    }
+
+    .task-sub{
+      color:var(--muted);
+      font-size:.84rem;
+      margin-top:3px;
+      line-height:1.35;
+    }
+
+    .task-btn{
+      width:52px;
+      height:52px;
+      border:none;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      color:#40546b;
+      background:linear-gradient(180deg,#fff,#f4f8fd);
+      border:1px solid rgba(143,163,184,.2);
       box-shadow:var(--shadow-soft);
     }
 
-    .protein-chip.done{
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-success) 14%,var(--surface-button)),var(--surface-inner));
-      border-color:color-mix(in srgb,var(--theme-success) 28%,var(--line));
+    .task-row.done .task-btn{
+      color:var(--success);
+      background:linear-gradient(180deg,rgba(14,165,107,.14),rgba(14,165,107,.07));
+      border-color:rgba(14,165,107,.28);
     }
 
-    .protein-chip-left{display:flex;align-items:center;gap:10px}
-    .protein-dot{width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,var(--muted) 40%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--muted) 12%,transparent)}
-    .protein-chip.done .protein-dot{background:var(--theme-success);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-success) 13%,transparent),0 0 14px color-mix(in srgb,var(--theme-success) 28%,transparent)}
-    .protein-name{font-weight:700;color:var(--ink);font-size:.9rem}
-    .protein-state{font-size:.83rem;color:var(--muted);font-weight:660}
-    .protein-pips{display:flex;gap:6px;justify-content:center}
-    .protein-pip{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--muted) 24%,transparent)}
-    .protein-pip.is-filled{background:var(--theme-success)}
+    .quick-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+
+    .quick-card{
+      min-height:170px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .mini-icon{
+      width:54px;
+      height:54px;
+      border-radius:19px;
+      display:grid;
+      place-items:center;
+      color:var(--accent);
+      background:linear-gradient(180deg,rgba(255,107,0,.12),rgba(255,255,255,.9));
+      border:1px solid rgba(255,107,0,.18);
+      box-shadow:var(--shadow-soft);
+      margin-bottom:12px;
+    }
+
+    .soft-btn{
+      width:100%;
+      min-height:48px;
+      border:none;
+      border-radius:16px;
+      cursor:pointer;
+      color:#fff;
+      font-weight:850;
+      background:linear-gradient(180deg,var(--accent),#e25d00);
+      box-shadow:0 12px 24px rgba(255,107,0,.18);
+    }
+
+    .ghost-btn{
+      width:100%;
+      min-height:48px;
+      border-radius:16px;
+      cursor:pointer;
+      color:#4e6177;
+      font-weight:850;
+      background:linear-gradient(180deg,#fff,#f5f8fd);
+      border:1px solid rgba(143,163,184,.22);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .support-card.active{
+      background:linear-gradient(180deg,#fff8ee,#fff);
+      border-color:rgba(245,158,11,.32);
+      box-shadow:0 18px 44px rgba(245,158,11,.13);
+    }
+
+    .support-state{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      color:var(--muted);
+      font-size:.84rem;
+      font-weight:800;
+    }
+
+    .led{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#cbd5e1;
+      box-shadow:0 0 0 4px rgba(148,163,184,.14);
+    }
+
+    .support-card.active .led{
+      background:var(--warning);
+      box-shadow:0 0 0 5px rgba(245,158,11,.14),0 0 18px rgba(245,158,11,.44);
+    }
+
+    .lesson-card{
+      background:linear-gradient(180deg,#f7f5ff,#fff);
+      border-color:rgba(126,108,242,.18);
+    }
+
+    .lesson-card .soft-btn{
+      background:linear-gradient(180deg,#7d6cf2,#6655da);
+      box-shadow:0 12px 24px rgba(102,85,218,.18);
+    }
 
     .bottom-nav{
       margin-top:18px;
       display:grid;
       grid-template-columns:repeat(7,minmax(0,1fr));
-      gap:6px;
+      gap:8px;
       padding:8px;
       border-radius:24px;
-      background:color-mix(in srgb,var(--card) 88%,transparent);
+      background:rgba(255,255,255,.78);
       border:1px solid var(--line);
-      box-shadow:0 12px 28px rgba(14,31,53,.10);
+      box-shadow:var(--shadow-soft);
       backdrop-filter:blur(14px);
       -webkit-backdrop-filter:blur(14px);
       position:sticky;
       bottom:12px;
-      z-index:40;
+      z-index:30;
     }
 
     .nav-item{
@@ -513,593 +421,640 @@
       border:none;
       background:transparent;
       text-decoration:none;
-      cursor:pointer;
+      color:#627286;
       display:grid;
-      gap:4px;
       justify-items:center;
-      align-items:center;
-      align-content:center;
-      width:100%;
-      min-height:54px;
-      padding:9px 4px 7px;
-      border-radius:16px;
-      color:var(--muted);
-      transition:all .22s ease;
+      gap:5px;
+      padding:10px 4px 8px;
+      border-radius:18px;
+      font-size:.68rem;
+      font-weight:750;
+      line-height:1.05;
+      cursor:pointer;
       text-align:center;
-      font-size:.72rem;
-      font-weight:600;
-      line-height:1.08;
     }
 
-    .nav-item.active,.nav-item[aria-current="page"]{
-      color:var(--nav-active-ink);
-      background:var(--nav-active-bg);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 8px 16px color-mix(in srgb,var(--theme-accent) 14%,transparent);
+    .nav-item.active{
+      color:var(--accent);
+      background:linear-gradient(180deg,#fff4e8,#fff);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 8px 18px rgba(255,107,0,.08);
     }
 
-    .nav-item span{display:block;white-space:nowrap;color:inherit}
-
-    .boot-warning{
+    .sheet-overlay{
+      position:fixed;
+      inset:0;
+      z-index:100;
       display:none;
-      margin-top:12px;
-      padding:12px 14px;
-      border-radius:16px;
-      border:1px solid color-mix(in srgb,var(--theme-warning) 32%,var(--line));
-      background:linear-gradient(180deg,color-mix(in srgb,var(--theme-warning) 13%,var(--card)),var(--card));
-      color:var(--ink);
-      font-size:.9rem;
-      line-height:1.45;
+      align-items:flex-end;
+      justify-content:center;
+      padding:18px 14px calc(24px + env(safe-area-inset-bottom));
+      background:rgba(15,23,42,.32);
+      backdrop-filter:blur(6px);
     }
 
-    .boot-warning.show{display:block}
+    .sheet-overlay.show{
+      display:flex;
+    }
 
-    @media(max-width:1080px){.layout{grid-template-columns:1fr}}
+    .sheet{
+      width:min(100%,520px);
+      border-radius:28px;
+      border:1px solid var(--line);
+      background:#fff;
+      box-shadow:0 24px 70px rgba(15,23,42,.18);
+      padding:18px;
+    }
 
-    @media(max-width:760px){
-      .shell{padding:14px 14px 104px}
-      .topbar{min-height:78px;padding:0 14px;border-radius:20px}
-      .brand-logo{height:42px;max-width:min(68vw,230px)}
-      .layout{gap:16px}
-      .status-pills{justify-content:flex-start;width:100%}
-      .card{padding:18px;border-radius:22px}
-      .planner-days,.day-tabs{gap:5px}
-      .planner-day,.day-tab{font-size:.68rem;min-height:46px}
-      .meal-card__header{grid-template-columns:1fr}
-      .meal-card__protein{justify-self:start}
-      .bottom-nav{gap:4px;padding:6px;border-radius:18px}
-      .nav-item{min-height:50px;padding:7px 2px 6px;font-size:.62rem}
-      .nav-item svg{width:18px;height:18px}
+    .sheet-handle{
+      width:46px;
+      height:5px;
+      border-radius:999px;
+      background:#cbd5e1;
+      margin:0 auto 14px;
+    }
+
+    .sheet-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .sheet-title{
+      font-size:1.2rem;
+      font-weight:900;
+      letter-spacing:-.04em;
+    }
+
+    .sheet-copy{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.45;
+      margin-top:4px;
+    }
+
+    .sheet-close{
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      color:#52657a;
+      background:#f6f9fe;
+      border:1px solid var(--line);
+      cursor:pointer;
+    }
+
+    .field{
+      display:grid;
+      gap:7px;
+      margin:12px 0;
+    }
+
+    .field label{
+      font-size:.78rem;
+      font-weight:850;
+      color:#52657a;
+    }
+
+    .field input{
+      width:100%;
+      min-height:52px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      padding:0 14px;
+      font-size:1rem;
+      color:var(--ink);
+      background:#f8fbff;
+      outline:none;
+    }
+
+    .sheet-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:16px;
+    }
+
+    @media(max-width:920px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:700px){
+      .shell{
+        padding:12px 10px 24px;
+      }
+
+      .topbar{
+        min-height:76px;
+        padding:0 14px;
+        border-radius:20px;
+      }
+
+      .brand-logo{
+        height:40px;
+      }
+
+      .grid,
+      .stack{
+        gap:14px;
+      }
+
+      .card{
+        padding:17px;
+        border-radius:22px;
+      }
+
+      .progress-main,
+      .quick-grid{
+        grid-template-columns:1fr;
+      }
+
+      .task-row{
+        padding:13px;
+      }
+
+      .bottom-nav{
+        gap:4px;
+        padding:6px;
+        border-radius:18px;
+      }
+
+      .nav-item{
+        min-height:50px;
+        padding:7px 2px 6px;
+        font-size:.6rem;
+      }
+
+      .nav-item svg{
+        width:18px;
+        height:18px;
+      }
+
+      .sheet-actions{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 
-<body data-page="meals">
+<body>
   <div class="shell">
     <header class="topbar">
-      <a class="brand" href="home.html" aria-label="Hearty Home">
-        <img class="brand-logo" src="/hearty-logo.png" alt="Hearty" onerror="this.onerror=null;this.src='hearty-logo.png';" />
-      </a>
-      <a class="icon-btn" href="Settings.html" aria-label="Settings">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.91 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.66 0 1.27.39 1.51 1H21a2 2 0 1 1 0 4h-.09c-.24.61-.85 1-1.51 1z"></path></svg>
-      </a>
+      <div class="brand">
+        <img class="brand-logo" src="/hearty-logo.png" alt="Hearty" />
+      </div>
+
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="Open settings">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/>
+          <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.36a1.7 1.7 0 0 0-1 .57V20a2 2 0 1 1-4 0v-.07a1.7 1.7 0 0 0-1-.57 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-.57-1H4a2 2 0 1 1 0-4h.07a1.7 1.7 0 0 0 .57-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1-.57V4a2 2 0 1 1 4 0v.07a1.7 1.7 0 0 0 1 .57 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9c.2.35.39.68.57 1H20a2 2 0 1 1 0 4h-.07a1.7 1.7 0 0 0-.53 1Z"/>
+        </svg>
+      </button>
     </header>
 
-    <section class="status-strip" aria-label="Meals status">
+    <section class="status-row">
       <div>
-        <div class="eyebrow">MEAL PLANNER</div>
-        <h1 class="headline">Your meals for today</h1>
-        <p class="subline">Protein-forward meals based on your setup.</p>
+        <div class="eyebrow">Today on Hearty</div>
+        <h1 class="headline" id="welcomeTitle">Welcome back</h1>
+        <div class="subline" id="welcomeSubline">Your daily rhythm starts here.</div>
       </div>
-      <div class="status-pills">
-        <div class="support-pill is-off" id="supportPill">Support Off</div>
-        <div class="day-pill" id="todayLabel">Today</div>
-      </div>
+
+      <div class="day-pill" id="dayPill">Day 1</div>
     </section>
 
-    <div class="layout">
-      <main class="stack">
-        <section class="card protein-card" aria-label="Protein meter">
-          <div class="section-label">PROTEIN METER</div>
-          <div class="protein-row">
-            <div class="protein-meter" id="proteinMeter" aria-hidden="true">
-              <div class="protein-center">
-                <div>
-                  <div class="protein-center-title">Today</div>
-                  <div class="protein-center-copy" id="proteinMeterText">0 / 3 protein meals</div>
-                  <div class="protein-pips" id="proteinMeterPips" aria-hidden="true"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="protein-mini" aria-label="Protein meal status">
-              <div class="protein-chip">
-                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Breakfast</span></div>
-                <span class="protein-state">Pending</span>
-              </div>
-              <div class="protein-chip">
-                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Lunch</span></div>
-                <span class="protein-state">Pending</span>
-              </div>
-              <div class="protein-chip">
-                <div class="protein-chip-left"><span class="protein-dot"></span><span class="protein-name">Dinner</span></div>
-                <span class="protein-state">Pending</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="card planner-card" aria-label="Meal plan">
-          <div class="planner-head">
+    <main class="grid">
+      <section class="stack">
+        <article class="card progress-card">
+          <div class="card-title-row">
             <div>
-              <div class="section-label">7-DAY PLAN</div>
-              <h2 class="compact-title">Generated week</h2>
-              <p class="compact-copy">Your meals update from your preferences, support status and snack setting.</p>
-            </div>
-            <div class="planner-actions">
-              <button class="planner-action" type="button" data-regenerate-day>Regenerate day</button>
-              <button class="planner-action primary" type="button" data-regenerate-week>Generate week</button>
+              <div class="section-label">Progress</div>
+              <div class="card-title">Your current weight journey</div>
+              <div class="card-copy" id="progressCopy">No weight logged yet. Start with your first weigh-in.</div>
             </div>
           </div>
 
-          <div class="planner-days" id="plannerDays" aria-label="Choose day">
-            <button class="planner-day is-active" type="button">Day 1</button>
-            <button class="planner-day" type="button">Day 2</button>
-            <button class="planner-day" type="button">Day 3</button>
-            <button class="planner-day" type="button">Day 4</button>
-            <button class="planner-day" type="button">Day 5</button>
-            <button class="planner-day" type="button">Day 6</button>
-            <button class="planner-day" type="button">Day 7</button>
+          <div class="progress-main">
+            <div class="metric">
+              <div class="metric-value" id="currentWeight">—</div>
+              <div class="metric-label">Current</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="startWeight">—</div>
+              <div class="metric-label">Start</div>
+            </div>
+            <div class="metric">
+              <div class="metric-value" id="targetWeight">Doctor</div>
+              <div class="metric-label">Target</div>
+            </div>
           </div>
 
-          <div class="meal-list" id="mealList">
-            <article class="meal-card">
-              <div class="meal-card__header">
-                <div>
-                  <div class="meal-card__eyebrow">Loading</div>
-                  <h3 class="meal-card__title">Loading your meals</h3>
-                  <div class="meal-card__subtitle">If this stays here, check that meals-engine.js and meals-bridge.js are in the repo.</div>
-                </div>
-                <div class="meal-card__protein">—</div>
+          <div class="goalbar">
+            <div class="goalbar-fill" id="goalbarFill"></div>
+          </div>
+
+          <div class="micro-note">
+            <span id="weightNote">Weigh yourself first thing in the morning, before eating or drinking.</span>
+            <span>Target weight must be provided by your doctor.</span>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-title-row">
+            <div>
+              <div class="section-label">Daily Rhythm</div>
+              <div class="card-title">Today’s protocol</div>
+              <div class="card-copy" id="protocolCopy">Complete the basics. Keep it simple.</div>
+            </div>
+          </div>
+
+          <div class="task-list" id="taskList">
+            <div class="task-row" data-task="weight">
+              <div>
+                <div class="task-name">Daily weigh-in</div>
+                <div class="task-sub">Log your morning weight.</div>
               </div>
-            </article>
-          </div>
+              <button class="task-btn" type="button" data-action="weight">
+                <svg viewBox="0 0 24 24"><path d="M4 19V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11"/><path d="M8 11a4 4 0 0 1 8 0"/><path d="M12 11l2-3"/></svg>
+              </button>
+            </div>
 
-          <div class="boot-warning" id="bootWarning">
-            Meal engine did not boot. Check that meals-engine.js and meals-bridge.js are present.
+            <div class="task-row" data-task="photos">
+              <div>
+                <div class="task-name">Progress photos</div>
+                <div class="task-sub">Front photo required. Side and back are optional.</div>
+              </div>
+              <button class="task-btn" type="button" data-action="photos">
+                <svg viewBox="0 0 24 24"><path d="M4 8h4l2-3h4l2 3h4v11H4z"/><circle cx="12" cy="13" r="3"/></svg>
+              </button>
+            </div>
+
+            <div class="task-row" data-task="movement">
+              <div>
+                <div class="task-name">20–30 min movement</div>
+                <div class="task-sub">A walk or gentle movement counts.</div>
+              </div>
+              <button class="task-btn" type="button" data-action="movement">
+                <svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z"/><path d="M6 21l3-6 2-4 3 3 1 7"/><path d="M9 15l-3-2"/><path d="M14 14l4-1"/></svg>
+              </button>
+            </div>
+
+            <div class="task-row" data-task="lesson">
+              <div>
+                <div class="task-name">Today’s lesson</div>
+                <div class="task-sub">A short 2-minute read.</div>
+              </div>
+              <button class="task-btn" type="button" data-action="lesson">
+                <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+              </button>
+            </div>
           </div>
-        </section>
-      </main>
+        </article>
+
+        <article class="card lesson-card" id="lessonCard">
+          <div class="card-title-row">
+            <div>
+              <div class="section-label">Daily Lesson</div>
+              <div class="card-title" id="lessonTitle">Day 1: Start simple</div>
+              <div class="card-copy" id="lessonCopy">Your job today is not to be perfect. Your job is to create a rhythm you can repeat.</div>
+            </div>
+          </div>
+          <button class="soft-btn" type="button" id="completeLessonBtn">Mark lesson complete</button>
+        </article>
+      </section>
 
       <aside class="stack">
-        <section class="card meal-control-card">
-          <div class="section-label">TODAY'S SETTINGS</div>
-
-          <div class="control-row">
+        <section class="quick-grid">
+          <article class="card quick-card">
             <div>
-              <strong>Support mode</strong>
-              <span id="supportModeLabel">Off</span>
+              <div class="mini-icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2s6 6.2 6 11a6 6 0 1 1-12 0c0-4.8 6-11 6-11Z"/></svg>
+              </div>
+              <div class="card-title">Water</div>
+              <div class="card-copy" id="waterCopy">0 glasses logged today.</div>
             </div>
-            <button class="support-off-btn" id="supportOffBtn" type="button">Support Off</button>
-          </div>
+            <button class="soft-btn" type="button" id="waterBtn">Log water</button>
+          </article>
 
-          <div class="control-row">
+          <article class="card quick-card" id="medCard">
             <div>
-              <strong>Snacks</strong>
-              <span id="snackToggleLabel">On</span>
+              <div class="mini-icon">
+                <svg viewBox="0 0 24 24"><path d="M10 21h4"/><path d="M12 17v4"/><path d="M7 4h10"/><path d="M8 4v8a4 4 0 0 0 8 0V4"/></svg>
+              </div>
+              <div class="card-title">Medication</div>
+              <div class="card-copy" id="medCopy">No dose logged today.</div>
             </div>
-            <button class="switch-btn is-on" id="snackToggleBtn" type="button" aria-pressed="true">
-              <span></span>
-            </button>
-          </div>
+            <button class="ghost-btn" type="button" id="doseBtn">Mark dose</button>
+          </article>
         </section>
 
-        <section class="card">
-          <div class="section-label">SHOPPING LIST</div>
-          <h2 class="compact-title">Download shopping list</h2>
-          <p class="compact-copy">Create a print-ready shopping list with 7-day and 30-day quantities.</p>
-          <div class="planner-actions" style="margin-top:14px">
-            <button class="planner-action primary" type="button" id="shoppingPdfBtn">Create PDF</button>
+        <article class="card support-card" id="supportCard">
+          <div class="card-title-row">
+            <div>
+              <div class="section-label">Support Mode</div>
+              <div class="card-title">Do you need some support?</div>
+              <div class="card-copy" id="supportCopy">Support is off. Turn it on from the Support page when symptoms are affecting your day.</div>
+            </div>
+            <div class="support-state">
+              <span class="led"></span>
+              <span id="supportStateText">Off</span>
+            </div>
           </div>
-        </section>
+
+          <button class="soft-btn" type="button" id="supportBtn">Open Support</button>
+        </article>
+
+        <article class="card">
+          <div class="card-title-row">
+            <div>
+              <div class="section-label">Privacy</div>
+              <div class="card-title">Your data starts clean</div>
+              <div class="card-copy">This rebuild starts at zero and only displays real saved information.</div>
+            </div>
+          </div>
+        </article>
       </aside>
-    </div>
+    </main>
 
-    <nav class="bottom-nav" aria-label="Page selector">
-      <a class="nav-item" href="home.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-5h5v5"></path></svg>
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <a class="nav-item active" href="/HOME_V2.html" aria-current="page">
+        <svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
         <span>Home</span>
       </a>
-      <a class="nav-item active" href="meals.html" aria-current="page">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v8"></path><path d="M4.5 3v5.2A2.5 2.5 0 0 0 7 10.7a2.5 2.5 0 0 0 2.5-2.5V3"></path><path d="M7 11v10"></path><path d="M16.5 3v18"></path><path d="M16.5 3c2.2 1.2 3.5 3.2 3.5 5.8 0 2.4-1.2 4.2-3.5 5.1"></path></svg>
+      <a class="nav-item" href="/MEALS.html">
+        <svg viewBox="0 0 24 24"><path d="M4 3v18"/><path d="M9 3v18"/><path d="M4 8h5"/><path d="M14 3v8a4 4 0 0 0 4 4v6"/></svg>
         <span>Meals</span>
       </a>
-      <a class="nav-item" href="exercise.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5v11"></path><path d="M17.5 6.5v11"></path><path d="M3.5 9v6"></path><path d="M20.5 9v6"></path><path d="M6.5 12h11"></path></svg>
-        <span>Exercise</span>
+      <a class="nav-item" href="/EXERCISE.html">
+        <svg viewBox="0 0 24 24"><path d="M6 7v10"/><path d="M18 7v10"/><path d="M3 10v4"/><path d="M21 10v4"/><path d="M6 12h12"/></svg>
+        <span>Move</span>
       </a>
-      <a class="nav-item" href="progress.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5"></path><path d="M4 19h16"></path><path d="M7.5 15.5l3.2-3.2 2.4 2.4 4.8-6"></path><path d="M17.9 8.7h-3.2"></path><path d="M17.9 8.7v3.2"></path></svg>
-        <span>Progress</span>
-      </a>
-      <a class="nav-item" href="support.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.6c-.2 0-.4-.07-.56-.22C6.2 15.65 3 12.75 3 8.95 3 6.05 5.2 4 8 4c1.55 0 3.03.72 4 1.85A5.25 5.25 0 0 1 16 4c2.8 0 5 2.05 5 4.95 0 3.8-3.2 6.7-8.44 11.43-.16.15-.36.22-.56.22z"></path></svg>
+      <a class="nav-item" href="/SUPPORT.html">
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-11a7 7 0 0 1 14 0c0 6.6-7 11-7 11Z"/><path d="M9 10h6"/><path d="M12 7v6"/></svg>
         <span>Support</span>
       </a>
-      <a class="nav-item" href="social.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M21 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <a class="nav-item" href="/PROGRESS.html">
+        <svg viewBox="0 0 24 24"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-3 3 2 5-7"/></svg>
+        <span>Progress</span>
+      </a>
+      <a class="nav-item" href="/SOCIAL.html">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span>Social</span>
       </a>
-      <a class="nav-item" href="Settings.html">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8.91 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.66 0 1.27.39 1.51 1H21a2 2 0 1 1 0 4h-.09c-.24.61-.85 1-1.51 1z"></path></svg>
+      <a class="nav-item" href="/SETTINGS.html">
+        <svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.36a1.7 1.7 0 0 0-1 .57V20a2 2 0 1 1-4 0v-.07a1.7 1.7 0 0 0-1-.57 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-.57-1H4a2 2 0 1 1 0-4h.07a1.7 1.7 0 0 0 .57-1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.64a1.7 1.7 0 0 0 1-.57V4a2 2 0 1 1 4 0v.07a1.7 1.7 0 0 0 1 .57 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.36 9c.2.35.39.68.57 1H20a2 2 0 1 1 0 4h-.07a1.7 1.7 0 0 0-.53 1Z"/></svg>
         <span>Settings</span>
       </a>
     </nav>
   </div>
 
+  <div class="sheet-overlay" id="weightSheet">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title">Daily weigh-in</div>
+          <div class="sheet-copy">Weigh yourself first thing in the morning, before eating or drinking.</div>
+        </div>
+        <button class="sheet-close" type="button" data-close="weightSheet">
+          <svg viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="weightInput">Today’s weight</label>
+        <input id="weightInput" type="number" inputmode="decimal" step="0.1" placeholder="Example: 84.5" />
+      </div>
+
+      <div class="sheet-actions">
+        <button class="ghost-btn" type="button" data-close="weightSheet">Cancel</button>
+        <button class="soft-btn" type="button" id="saveWeightBtn">Save weight</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    (function(){
-      "use strict";
+    const STORAGE = {
+      profile: "heartyUserProfile",
+      daily: "heartyDailyState",
+      progress: "heartyProgress",
+      support: "heartySupportState"
+    };
 
-      var SNACKS_KEY = "heartyMealsSnacksOn";
+    const todayKey = new Date().toISOString().slice(0,10);
 
-      function safeSet(key, value){
-        try { localStorage.setItem(key, value); } catch(e) {}
+    const defaultDaily = {
+      date: todayKey,
+      water: 0,
+      tasks: {
+        weight:false,
+        photos:false,
+        movement:false,
+        lesson:false
+      },
+      medicationLogged:false
+    };
+
+    const defaultProgress = {
+      startWeight:null,
+      currentWeight:null,
+      targetWeight:null,
+      entries:[]
+    };
+
+    function readJSON(key, fallback){
+      try{
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      }catch(e){
+        return fallback;
+      }
+    }
+
+    function writeJSON(key, value){
+      try{
+        localStorage.setItem(key, JSON.stringify(value));
+      }catch(e){}
+    }
+
+    function getDaily(){
+      const daily = readJSON(STORAGE.daily, defaultDaily);
+      if(daily.date !== todayKey){
+        return {...defaultDaily};
+      }
+      return {
+        ...defaultDaily,
+        ...daily,
+        tasks:{...defaultDaily.tasks, ...(daily.tasks || {})}
+      };
+    }
+
+    function getProgress(){
+      return {
+        ...defaultProgress,
+        ...readJSON(STORAGE.progress, defaultProgress)
+      };
+    }
+
+    function getProfile(){
+      return readJSON(STORAGE.profile, {});
+    }
+
+    function getSupport(){
+      return readJSON(STORAGE.support, {active:false,type:null});
+    }
+
+    function formatWeight(value){
+      if(value === null || value === undefined || value === "") return "—";
+      return `${Number(value).toFixed(1)} kg`;
+    }
+
+    function setTask(taskName, done=true){
+      const daily = getDaily();
+      daily.tasks[taskName] = done;
+      writeJSON(STORAGE.daily, daily);
+      render();
+    }
+
+    function openSheet(id){
+      document.getElementById(id)?.classList.add("show");
+    }
+
+    function closeSheet(id){
+      document.getElementById(id)?.classList.remove("show");
+    }
+
+    function render(){
+      const profile = getProfile();
+      const daily = getDaily();
+      const progress = getProgress();
+      const support = getSupport();
+
+      const name = profile.name || profile.firstName || "";
+      document.getElementById("welcomeTitle").textContent = name ? `Welcome back, ${name}` : "Welcome back";
+      document.getElementById("dayPill").textContent = profile.day ? `Day ${profile.day}` : "Day 1";
+
+      document.getElementById("currentWeight").textContent = formatWeight(progress.currentWeight);
+      document.getElementById("startWeight").textContent = formatWeight(progress.startWeight);
+      document.getElementById("targetWeight").textContent = progress.targetWeight ? formatWeight(progress.targetWeight) : "Doctor";
+
+      if(progress.currentWeight){
+        document.getElementById("progressCopy").textContent = `Current weight: ${formatWeight(progress.currentWeight)}.`;
+      }else{
+        document.getElementById("progressCopy").textContent = "No weight logged yet. Start with your first weigh-in.";
       }
 
-      function getSnacksOn(){
-        try { return localStorage.getItem(SNACKS_KEY) !== "false"; } catch(e) { return true; }
+      let pct = 0;
+      if(progress.startWeight && progress.currentWeight && progress.targetWeight && progress.startWeight !== progress.targetWeight){
+        pct = ((progress.startWeight - progress.currentWeight) / (progress.startWeight - progress.targetWeight)) * 100;
+        pct = Math.max(0, Math.min(100, pct));
       }
+      document.getElementById("goalbarFill").style.width = `${pct}%`;
 
-      function setSnacksOn(value){
-        safeSet(SNACKS_KEY, value ? "true" : "false");
+      Object.entries(daily.tasks).forEach(([task,done])=>{
+        const row = document.querySelector(`[data-task="${task}"]`);
+        if(row) row.classList.toggle("done", !!done);
+      });
 
-        var bridge = window.heartyMealsBridge;
-        if (bridge && bridge.state) {
-          bridge.state.adjustments = bridge.state.adjustments || {};
-          bridge.state.adjustments.snacksOn = !!value;
+      document.getElementById("waterCopy").textContent = `${daily.water || 0} glasses logged today.`;
+      document.getElementById("medCopy").textContent = daily.medicationLogged ? "Dose logged today." : "No dose logged today.";
+      document.querySelector('[data-task="lesson"]')?.classList.toggle("done", !!daily.tasks.lesson);
+
+      document.getElementById("supportCard").classList.toggle("active", !!support.active);
+      document.getElementById("supportStateText").textContent = support.active ? "On" : "Off";
+      document.getElementById("supportCopy").textContent = support.active
+        ? "Support is active. Meals and movement should soften today."
+        : "Support is off. Turn it on from the Support page when symptoms are affecting your day.";
+    }
+
+    document.getElementById("settingsBtn").addEventListener("click",()=>{
+      window.location.href = "/SETTINGS.html";
+    });
+
+    document.querySelectorAll("[data-close]").forEach(btn=>{
+      btn.addEventListener("click",()=>closeSheet(btn.dataset.close));
+    });
+
+    document.querySelectorAll("[data-action]").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        const action = btn.dataset.action;
+
+        if(action === "weight"){
+          openSheet("weightSheet");
+          return;
         }
 
-        if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
-        else if (bridge && typeof bridge.regenerateWeek === "function") bridge.regenerateWeek();
-        else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
-        else if (bridge && typeof bridge.init === "function") bridge.init();
-      }
-
-      function syncSnackToggle(){
-        var btn = document.getElementById("snackToggleBtn");
-        var label = document.getElementById("snackToggleLabel");
-        var on = getSnacksOn();
-
-        if (btn) {
-          btn.classList.toggle("is-on", on);
-          btn.setAttribute("aria-pressed", String(on));
+        if(action === "photos"){
+          setTask("photos", true);
+          return;
         }
 
-        if (label) label.textContent = on ? "On" : "Off";
-      }
-
-      function bindSnackToggle(){
-        var btn = document.getElementById("snackToggleBtn");
-        if (!btn || btn.__bound) return;
-
-        btn.__bound = true;
-        syncSnackToggle();
-
-        btn.addEventListener("click", function(){
-          setSnacksOn(!getSnacksOn());
-          syncSnackToggle();
-        });
-      }
-
-      function readGlobalSupport(){
-        try {
-          var raw = localStorage.getItem("heartySupportMode") || localStorage.getItem("supportMode") || "";
-          if (raw && raw.charAt(0) === "{") {
-            var parsed = JSON.parse(raw);
-            if (parsed && parsed.isActive && parsed.reason) return parsed.reason;
-          }
-          return raw || localStorage.getItem("meals_support_mode") || "";
-        } catch(e) {
-          return "";
-        }
-      }
-
-      function writeGlobalSupport(reason){
-        if (reason) {
-          safeSet("meals_support_mode", reason);
-          safeSet("heartySupportMode", JSON.stringify({
-            isActive:true,
-            reason:reason,
-            sourcePage:"meals",
-            startedAt:new Date().toISOString()
-          }));
-        } else {
-          safeSet("meals_support_mode", "");
-          safeSet("heartySupportMode", JSON.stringify({
-            isActive:false,
-            reason:null,
-            sourcePage:"meals",
-            endedAt:new Date().toISOString()
-          }));
-        }
-      }
-
-      function updateSupportBanner(reason){
-        var isOn = !!reason;
-        var pill = document.getElementById("supportPill");
-        var label = document.getElementById("supportModeLabel");
-
-        if (pill) {
-          pill.textContent = isOn ? "Support On" : "Support Off";
-          pill.classList.toggle("is-on", isOn);
-          pill.classList.toggle("is-off", !isOn);
+        if(action === "movement"){
+          const daily = getDaily();
+          setTask("movement", !daily.tasks.movement);
+          return;
         }
 
-        if (label) label.textContent = isOn ? "On" : "Off";
-      }
-
-      function bindSupportOffButton(){
-        var btn = document.getElementById("supportOffBtn");
-        if (!btn || btn.__bound) return;
-
-        btn.__bound = true;
-
-        btn.addEventListener("click", function(){
-          writeGlobalSupport("");
-          updateSupportBanner("");
-
-          var bridge = window.heartyMealsBridge;
-          if (bridge && bridge.state) {
-            bridge.state.adjustments = bridge.state.adjustments || {};
-            bridge.state.adjustments.supportMode = null;
-          }
-
-          if (bridge && typeof bridge.generateWeek === "function") bridge.generateWeek();
-          else if (bridge && typeof bridge.regenerateWeek === "function") bridge.regenerateWeek();
-          else if (bridge && typeof bridge.refresh === "function") bridge.refresh();
-        });
-      }
-
-      function syncTodayLabel(){
-        var el = document.getElementById("todayLabel");
-        if (!el) return;
-        var d = new Date();
-        el.textContent = d.toLocaleDateString(undefined, { weekday:"long", month:"short", day:"numeric" });
-      }
-
-      function escapeHtml(value){
-        return String(value == null ? "" : value).replace(/[&<>"]/g, function(ch){
-          return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[ch];
-        });
-      }
-
-      function collectShoppingItems(){
-        var bridge = window.heartyMealsBridge;
-
-        if (bridge && typeof bridge.getShoppingList === "function") {
-          return bridge.getShoppingList();
+        if(action === "lesson"){
+          document.getElementById("lessonCard").scrollIntoView({behavior:"smooth", block:"center"});
         }
+      });
+    });
 
-        if (bridge && bridge.state && Array.isArray(bridge.state.shoppingList)) {
-          return bridge.state.shoppingList;
-        }
+    document.getElementById("saveWeightBtn").addEventListener("click",()=>{
+      const input = document.getElementById("weightInput");
+      const value = Number(input.value);
 
-        return [
-          { name:"Eggs", qty7:"12–14 eggs", qty30:"52–60 eggs" },
-          { name:"Chicken breast / strips", qty7:"1.2–1.5 kg", qty30:"5–6.5 kg" },
-          { name:"Fish / hake / salmon", qty7:"700–900 g", qty30:"3–4 kg" },
-          { name:"Canned tuna", qty7:"3–4 tins", qty30:"13–17 tins" },
-          { name:"Lean beef / mince", qty7:"700–900 g", qty30:"3–4 kg" },
-          { name:"Low-fat yoghurt", qty7:"1.5–2 kg", qty30:"6.5–8.5 kg" },
-          { name:"Vegetables / salad", qty7:"4–6 kg mixed", qty30:"17–26 kg mixed" },
-          { name:"Fruit", qty7:"7–10 portions", qty30:"30–43 portions" },
-          { name:"Rice / couscous / sweet potato", qty7:"7 portions", qty30:"30 portions" },
-          { name:"Low-calorie dressing", qty7:"1 bottle", qty30:"3–4 bottles" },
-          { name:"Optional snacks", qty7:getSnacksOn() ? "7 snack portions" : "Off", qty30:getSnacksOn() ? "30 snack portions" : "Off" }
-        ];
-      }
+      if(!value || value <= 0) return;
 
-      function openShoppingPdf(){
-        var items = collectShoppingItems();
+      const progress = getProgress();
+      const daily = getDaily();
 
-        var rows = items.map(function(item){
-          var name = item.name || item.item || item.label || item[0] || "";
-          var qty7 = item.qty7 || item.weekQty || item.quantity7 || item[1] || "";
-          var qty30 = item.qty30 || item.monthQty || item.quantity30 || item[2] || "";
+      if(!progress.startWeight) progress.startWeight = value;
+      progress.currentWeight = value;
+      progress.entries = Array.isArray(progress.entries) ? progress.entries : [];
 
-          if (!qty30 && qty7) qty30 = "≈ 4.3 × 7-day quantity";
+      progress.entries.push({
+        date:todayKey,
+        weight:value
+      });
 
-          return "<tr><td>" + escapeHtml(name) + "</td><td>" + escapeHtml(qty7) + "</td><td>" + escapeHtml(qty30) + "</td></tr>";
-        }).join("");
+      daily.tasks.weight = true;
 
-        var win = window.open("", "_blank", "width=900,height=1100");
-        if (!win) return;
+      writeJSON(STORAGE.progress, progress);
+      writeJSON(STORAGE.daily, daily);
 
-        win.document.write("<!doctype html><html><head><title>Hearty Shopping List</title><style>body{font-family:Inter,Arial,sans-serif;padding:32px;color:#102033}h1{margin:0 0 8px;font-size:28px}p{color:#66788c}table{width:100%;border-collapse:collapse;margin-top:22px}th,td{border-bottom:1px solid #e3eaf3;padding:12px;text-align:left;vertical-align:top}th{background:#f4f7fb}.note{margin-top:18px;font-size:12px;color:#7a8798}</style></head><body><h1>Hearty Shopping List</h1><p>7-day and 30-day quantities generated from your current meal plan.</p><table><thead><tr><th>Item</th><th>7 days</th><th>30 days</th></tr></thead><tbody>" + rows + "</tbody></table><p class='note'>Use your browser print dialog and choose Save as PDF.</p><script>window.onload=function(){window.print()};<\/script></body></html>");
-        win.document.close();
-      }
+      input.value = "";
+      closeSheet("weightSheet");
+      render();
+    });
 
-      function bindShoppingPdf(){
-        var btn = document.getElementById("shoppingPdfBtn");
-        if (!btn || btn.__bound) return;
-        btn.__bound = true;
-        btn.addEventListener("click", openShoppingPdf);
-      }
+    document.getElementById("waterBtn").addEventListener("click",()=>{
+      const daily = getDaily();
+      daily.water = (daily.water || 0) + 1;
+      writeJSON(STORAGE.daily, daily);
+      render();
+    });
 
-      function loadScript(src){
-        return new Promise(function(resolve, reject){
-          if (document.querySelector('script[src="'+src+'"]')) return resolve();
-          var s = document.createElement("script");
-          s.src = src;
-          s.async = false;
-          s.onload = resolve;
-          s.onerror = function(){ reject(new Error("Could not load " + src)); };
-          document.body.appendChild(s);
-        });
-      }
+    document.getElementById("doseBtn").addEventListener("click",()=>{
+      const daily = getDaily();
+      daily.medicationLogged = !daily.medicationLogged;
+      writeJSON(STORAGE.daily, daily);
+      render();
+    });
 
-      async function loadFirst(paths){
-        var lastError = null;
+    document.getElementById("completeLessonBtn").addEventListener("click",()=>{
+      setTask("lesson", true);
+    });
 
-        for (var i = 0; i < paths.length; i++) {
-          try {
-            await loadScript(paths[i]);
-            return paths[i];
-          } catch(e) {
-            lastError = e;
-          }
-        }
+    document.getElementById("supportBtn").addEventListener("click",()=>{
+      window.location.href = "/SUPPORT.html";
+    });
 
-        throw lastError || new Error("No scripts loaded");
-      }
-
-      function findEngine(){
-        return window.HeartyMealsEngineV6 ||
-          window.HeartyMealsEngine ||
-          window.heartyMealsEngine ||
-          window.MealsEngine ||
-          window.mealsEngine ||
-          window.HEARTY_MEALS_ENGINE ||
-          null;
-      }
-
-      function findBridgeFactory(){
-        return window.createMealsBridge ||
-          window.createHeartyMealsBridge ||
-          window.createHeartyMealsDBBridge ||
-          window.HeartyMealsBridge ||
-          window.HeartyMealsDBBridge ||
-          window.heartyCreateMealsBridge ||
-          null;
-      }
-
-      function showBootWarning(message){
-        var warn = document.getElementById("bootWarning");
-        if (!warn) return;
-        warn.textContent = message || warn.textContent;
-        warn.classList.add("show");
-      }
-
-      function readJsonStorage(key){
-        try {
-          var raw = localStorage.getItem(key);
-          return raw ? JSON.parse(raw) : null;
-        } catch(e) {
-          return null;
-        }
-      }
-
-      function readMealProfile(){
-        var state = readJsonStorage("heartyMealsPageStateVFinal") ||
-          readJsonStorage("heartyMealsStateVFinal") ||
-          readJsonStorage("heartyMealsStateV1") ||
-          readJsonStorage("heartyMealProfile") ||
-          readJsonStorage("heartyMealsProfile");
-
-        if (!state) return null;
-
-        var profile = state.preferences || state.onboarding || state.profile || state.mealProfile || state;
-        var complete = state.profileComplete === true ||
-          state.onboardingComplete === true ||
-          state.mealsOnboardingComplete === true ||
-          profile.profileComplete === true ||
-          profile.onboardingComplete === true ||
-          Object.keys(profile || {}).length > 2;
-
-        return complete ? profile : null;
-      }
-
-      function redirectToMealsOnboarding(){
-        var current = (window.location.pathname || "").toLowerCase();
-        if (current.indexOf("meals-onboarding") !== -1) return;
-        window.location.href = "meals-onboarding.html";
-      }
-
-      async function bootMeals(){
-        syncTodayLabel();
-        updateSupportBanner(readGlobalSupport());
-        bindSnackToggle();
-        bindSupportOffButton();
-        bindShoppingPdf();
-
-        try {
-          var mealProfile = readMealProfile();
-
-          if (!mealProfile) {
-            redirectToMealsOnboarding();
-            return;
-          }
-
-          await loadFirst([
-            "./meals-engine-v6.5.js",
-            "./js/meals-engine-v6.5.js",
-            "./meals-engine.js",
-            "./js/meals-engine.js",
-            "./hearty-meals-engine.js",
-            "./js/hearty-meals-engine.js"
-          ]);
-
-          await loadFirst([
-            "./meals-bridge.js",
-            "./js/meals-bridge.js",
-            "./hearty-meals-bridge.js",
-            "./js/hearty-meals-bridge.js"
-          ]);
-
-          try {
-            await loadFirst([
-              "./hearty-meals-db-bridge.js",
-              "./js/hearty-meals-db-bridge.js"
-            ]);
-          } catch(dbBridgeError) {
-            console.info("[Hearty Meals] DB bridge not loaded; continuing with local meals bridge.", dbBridgeError);
-          }
-
-          var engine = findEngine();
-          var factory = findBridgeFactory();
-
-          if (factory && typeof factory !== "function" && typeof factory.create === "function") {
-            factory = factory.create.bind(factory);
-          }
-
-          if (!engine || typeof factory !== "function") {
-            throw new Error("Meal engine or bridge factory was not found on window.");
-          }
-
-          var supportMode = readGlobalSupport();
-
-          var bridge = factory({
-            engine: engine,
-            initialProfile: mealProfile,
-            ui: {
-              dayTabs: document.getElementById("plannerDays"),
-              mealList: document.getElementById("mealList"),
-              shoppingList: null
-            }
-          });
-
-          if (bridge && bridge.state) {
-            bridge.state.adjustments = bridge.state.adjustments || {};
-            bridge.state.adjustments.supportMode = supportMode || bridge.state.adjustments.supportMode || null;
-            bridge.state.adjustments.snacksOn = getSnacksOn();
-          }
-
-          window.heartyMealsBridge = bridge;
-
-          if (bridge && typeof bridge.init === "function") bridge.init();
-
-        } catch(error) {
-          console.warn("[Hearty Meals] Boot failed:", error);
-          showBootWarning("Meal engine did not boot: " + error.message + ". Check that meals-engine.js and meals-bridge.js exist.");
-        }
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", bootMeals);
-      } else {
-        bootMeals();
-      }
-    })();
+    render();
   </script>
 </body>
 </html>
