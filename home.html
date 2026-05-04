@@ -10395,6 +10395,76 @@ body.hearty-first-tasks-complete .task-card.glow{
   window.heartyRenderHydration = renderWater;
 })();
 </script>
+<style id="hearty-home-kill-rings-clean-cards-v1">
+.ring-progress,
+.ring-track,
+.ring-wrap svg,
+.ring-block svg{
+  display:none!important;
+}
 
+.ring-wrap,
+.ring-block{
+  min-height:96px!important;
+  border-radius:24px!important;
+  padding:18px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(248,250,252,.86))!important;
+  border:1px solid rgba(148,163,184,.28)!important;
+  box-shadow:0 14px 36px rgba(15,23,42,.08)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+
+.ring-wrap::after,
+.ring-block::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:14px;
+  height:7px;
+  border-radius:999px;
+  background:rgba(148,163,184,.18);
+}
+
+.ring-value,
+.ring-center{
+  position:static!important;
+  inset:auto!important;
+  display:block!important;
+  font-size:26px!important;
+  font-weight:900!important;
+  line-height:1!important;
+  letter-spacing:-.05em!important;
+  color:#0f172a!important;
+  z-index:2!important;
+}
+
+.ring-label,
+.ring-caption{
+  margin-top:8px!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  color:#64748b!important;
+  z-index:2!important;
+}
+
+#waterProgressFill{
+  height:7px!important;
+  border-radius:999px!important;
+  background:#16a34a!important;
+  position:absolute!important;
+  left:18px!important;
+  bottom:14px!important;
+  width:0%;
+  z-index:3!important;
+}
+</style>
 </body>
 </html>
