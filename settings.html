@@ -135,6 +135,10 @@ html[data-theme="rose_aurora"] body::after{opacity:.055;background-image:url("da
         <div class="kv-row"><div class="kv-key">Plan</div><div class="kv-val">Annual License</div></div>
         <div class="kv-row"><div class="kv-key">Expiry</div><div id="license-expiry" class="kv-val">—</div></div>
       </div>
+
+      <div class="inline-actions" style="margin-top:16px">
+        <button class="btn secondary" id="logoutBtn" type="button">Log out</button>
+      </div>
       <div class="mini-note" style="margin-top:16px">Need help with your account or billing? Email support@hearty.health.</div>
     </section>
 
@@ -452,6 +456,23 @@ $('water-target').addEventListener('change', e => { const v=clamp(e.target.value
 $('units-system').addEventListener('change', e => save(STORAGE.unitsSystem,e.target.value));
 $('export-data').addEventListener('click', ()=>{ const data={}; Object.values(STORAGE).forEach(k=>data[k]=localStorage.getItem(k)); const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='hearty-settings-export.json'; a.click(); URL.revokeObjectURL(a.href); showToast('Exported data'); });
 $('reset-data').addEventListener('click', ()=>{ if(confirm('Reset all Settings data on this device?')){ Object.keys(defaults).forEach(k=>localStorage.setItem(k, defaults[k])); render(); showToast('Settings reset'); } });
+
+$('logoutBtn')?.addEventListener('click', async () => {
+  try {
+    if (window.supabaseClient?.auth) {
+      await window.supabaseClient.auth.signOut();
+    } else if (window.supabase?.auth) {
+      await window.supabase.auth.signOut();
+    }
+  } catch(e) {}
+
+  localStorage.removeItem('heartyProfile');
+  localStorage.removeItem('heartyUser');
+  localStorage.removeItem('heartyAuthUser');
+  localStorage.removeItem('heartySession');
+  location.href = './login.html';
+});
+
 ['privacy-link','terms-link','refund-link'].forEach(id => $(id).addEventListener('click', e => { e.preventDefault(); showToast('Public legal page link to be added'); }));
 hydrateBodyMetricsFromHome();
 render();
