@@ -9961,7 +9961,105 @@ html[data-theme="rose_aurora"] .goal-marker.has-goal{
   window.heartyRenderHydration = renderHydration;
 })();
 </script>
+<style id="hearty-home-final-override-v2">
+/* Hide badge box to stop flash/vanish */
+#markerMiniRow,
+#homeLatestBadges,
+.milestones-card{
+  display:none !important;
+}
 
+/* Injection card: hidden unless JS says today */
+#injectionCard{
+  display:none !important;
+}
+
+#injectionCard.injection-visible{
+  display:flex !important;
+  min-height:150px !important;
+}
+</style>
+
+<script id="hearty-home-final-override-v2">
+(function(){
+  const CIRC = 339.292;
+  const TODAY = new Date().toISOString().slice(0,10);
+
+  function json(key, fallback){
+    try{return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));}
+    catch(e){return fallback;}
+  }
+
+  function setRing(circle,pct){
+    if(!circle) return;
+    const p=Math.max(0,Math.min(100,Number(pct)||0));
+    circle.style.strokeDasharray=String(CIRC);
+    circle.style.strokeDashoffset=String(CIRC-(CIRC*p/100));
+  }
+
+  function fixHydration(){
+    const logs=json('hearty_hydration_logs',[]);
+    const today=Array.isArray(logs) ? logs.find(x=>x.date===TODAY) : null;
+    const ml=today ? Number(today.ml||0) : 0;
+    const target=2000;
+    const pct=(ml/target)*100;
+
+    const value=document.getElementById('waterValue');
+    if(value) value.textContent=(ml/1000).toFixed(1)+'L';
+
+    const unit=value?.closest('.ring-center')?.querySelector('.ring-unit');
+    if(unit) unit.textContent='of 2.0 L';
+
+    const count=document.getElementById('waterGlassCount');
+    if(count) count.textContent=(ml/1000).toFixed(1)+' L of 2.0 L';
+
+    const circle=value?.closest('.ring-wrap')?.querySelector('.ring-progress');
+    setRing(circle,pct);
+
+    const fill=document.getElementById('waterProgressFill');
+    if(fill) fill.style.width=Math.max(0,Math.min(100,pct))+'%';
+  }
+
+  function fixInjection(){
+    const card=document.getElementById('injectionCard');
+    if(!card) return;
+
+    const profile=json('hearty_profile',{});
+    const med=profile.medication || {};
+    const name=localStorage.getItem('heartyMedicationName') || med.name || '';
+    const status=localStorage.getItem('heartyMedicationStatus') || med.status || '';
+
+    let days=json('heartyInjectionDays',null) || med.injectionDays || [];
+    if(!Array.isArray(days)) days=[];
+
+    const todayName=new Date().toLocaleDateString('en-US',{weekday:'long'});
+    const isToday=status==='active' && days.some(d=>String(d).toLowerCase()===todayName.toLowerCase());
+
+    if(!isToday){
+      card.classList.remove('injection-visible');
+      card.style.setProperty('display','none','important');
+      return;
+    }
+
+    card.classList.add('injection-visible');
+    card.style.setProperty('display','flex','important');
+  }
+
+  document.addEventListener('click',function(e){
+    if(e.target.closest('#waterGlass')){
+      setTimeout(fixHydration,80);
+    }
+    if(e.target.closest('#waterUndo')){
+      setTimeout(fixHydration,80);
+    }
+  },true);
+
+  fixHydration();
+  fixInjection();
+  setTimeout(fixHydration,300);
+  setTimeout(fixInjection,300);
+})();
+</script>
 <script id="hearty-ring-visual-fix-v1">
 (function(){
   const CIRC = 339.292;
